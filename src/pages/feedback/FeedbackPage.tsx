@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { submitFeedback } from "../../services/feedbackApi";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { submitFeedback } from "../../services/public/feedbackApi";
 
 const FeedbackPage: React.FC = () => {
   const navigate = useNavigate();

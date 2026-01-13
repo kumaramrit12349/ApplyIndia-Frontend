@@ -6,7 +6,7 @@ import ConfirmModal from "../../components/ConfirmModal/ConfirmModal";
 import Toast from "../../components/Toast/Toast";
 import { NOTIFICATION_CATEGORIES } from "../../constant/SharedConstant";
 import type { INotification } from "../../interface/NotificationInterface";
-import { epochToDateInput, toEpoch } from "../../services/utils";
+import { epochToDateInput, toEpoch } from "../../utils/utils";
 
 type Props = {
   mode: "create" | "edit";

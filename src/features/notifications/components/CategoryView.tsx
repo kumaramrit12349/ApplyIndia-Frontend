@@ -2,8 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import InfiniteScroll from "react-infinite-scroll-component";
 import ListView from "./ListView";
-import { fetchNotificationsByCategory } from "../../../services/api";
 import type { HomePageNotification } from "../../../types/notification";
+import { fetchNotificationsByCategory } from "../../../services/public/notiifcationApi";
 
 const PAGE_SIZE = 100;
 

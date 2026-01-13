@@ -1,9 +1,9 @@
 import React from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { addNotification } from "../../services/api";
 import NotificationForm from "./NotificationForm";
 import type { INotification } from "../../interface/NotificationInterface";
-import { emptyNotificationForm } from "../../services/utils";
+import { emptyNotificationForm } from "../../utils/utils";
+import { addNotification } from "../../services/private/notificationApi";
 
 const AddNotificationPage: React.FC = () => {
   const navigate = useNavigate();

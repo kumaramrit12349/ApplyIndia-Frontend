@@ -13,7 +13,7 @@ import {
   BsYoutube,
 } from "react-icons/bs";
 import { FcViewDetails } from "react-icons/fc";
-import { formatCategoryTitle, getId } from "../../services/utils";
+import { formatCategoryTitle, getId } from "../../utils/utils";
 import type { INotification } from "../../interface/NotificationInterface";
 
 /* ---------------- Helpers ---------------- */

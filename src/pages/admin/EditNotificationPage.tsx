@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { getNotificationById, updateNotification } from "../../services/api";
 import NotificationForm from "./NotificationForm";
 import type { INotification } from "../../interface/NotificationInterface";
+import { getNotificationById, updateNotification } from "../../services/private/notificationApi";
 
 const EditNotificationPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -16,7 +16,7 @@ const EditNotificationPage: React.FC = () => {
     if (!id) return;
 
     getNotificationById(id)
-      .then((res) => {
+      .then((res: any) => {
         setInitialValues(res.notification);
         setLoading(false);
       })

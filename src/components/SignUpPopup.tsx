@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
-import { loginUser, signUpUser } from "../services/api";
+import { loginUser, signUpUser } from "../services/authApi";
 
 const API_BASE_URL = "http://localhost:3000";
 
@@ -139,9 +139,9 @@ const AuthPopup: React.FC<AuthPopupProps> = ({
     }
   };
 
-  const handleSSO = (providerUrl: string) => {
-    window.open(providerUrl, "_blank", "noopener");
-  };
+  // const handleSSO = (providerUrl: string) => {
+  //   window.open(providerUrl, "_blank", "noopener");
+  // };
 
   const handleForgotPassword = () => {
     window.open(`${API_BASE_URL}/forgot-password`, "_blank");

@@ -107,7 +107,7 @@ export const APPLYINDIA_SOCIAL_LINKS = [
   {
     name: "YouTube",
     icon: "https://img.icons8.com/color/28/000000/youtube-play.png",
-    url: "https://youtube.com/@applyindia",
+    url: "https://www.youtube.com/@ApplyIndia-online",
   },
   {
     name: "Instagram",

@@ -1,13 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import {
-  getNotificationById,
-  approveNotification,
-} from "../../services/api";
 import NotificationDetailView from "../../components/Generic/NotificationDetailView";
 import ConfirmModal from "../../components/ConfirmModal/ConfirmModal";
 import Toast from "../../components/Toast/Toast";
-import { getId } from "../../services/utils";
+import { getId } from "../../utils/utils";
+import { approveNotification, getNotificationById } from "../../services/private/notificationApi";
 
 const ReviewNotificationPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -38,7 +35,7 @@ const ReviewNotificationPage: React.FC = () => {
   const loadNotification = async () => {
     setLoading(true);
     try {
-      const data = await getNotificationById(id!);
+      const data: any = await getNotificationById(id!);
       setNotification(data.notification);
     } catch (err) {
       showToast("Failed to load notification", "error");

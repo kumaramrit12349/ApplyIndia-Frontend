@@ -1,12 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import ListView from "../../features/notifications/components/ListView";
-import {
-  fetchNotificationsByCategory,
-  fetchHomePageNotifications,
-} from "../../services/api";
 import { useLocation } from "react-router-dom";
 import InfiniteScroll from "react-infinite-scroll-component";
 import type { HomePageNotification } from "../../types/notification";
+import { fetchHomePageNotifications, fetchNotificationsByCategory } from "../../services/public/notiifcationApi";
 
 interface GroupedNotifications {
   [category: string]: HomePageNotification[];
