@@ -32,7 +32,7 @@ import FeedbackPage from "./pages/feedback/FeedbackPage";
 import { ToastContainer } from "react-toastify";
 import { checkAuthStatus, logoutUser } from "./services/authApi";
 
-const POPUP_INTERVAL = 90 * 1000;
+const POPUP_INTERVAL = 300 * 1000;
 
 const AppLayout: React.FC = () => {
   const location = useLocation();
