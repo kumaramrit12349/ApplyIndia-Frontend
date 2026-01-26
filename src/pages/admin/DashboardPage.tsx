@@ -226,7 +226,7 @@ const DashboardPage: React.FC = () => {
                         View
                       </Link>
                       {/* Edit button - hidden for archived */}
-                      {!n.is_archived && (
+                      {(
                         <Link
                           to={`/admin/edit/${getId(n.sk)}`}
                           className="btn btn-sm btn-secondary me-2"
