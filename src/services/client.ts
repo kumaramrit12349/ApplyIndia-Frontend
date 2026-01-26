@@ -7,8 +7,6 @@ export async function apiFetch<T>(
   if (!url) {
     throw new Error("API URL is undefined");
   }
-  console.log('url', url);
-  console.log('`${BASE_URL}${url}`', `${BASE_URL}${url}`);
   const response = await fetch(`${BASE_URL}${url}`, {
     headers: {
       "Content-Type": "application/json",
