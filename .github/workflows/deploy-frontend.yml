@@ -29,7 +29,7 @@ jobs:
       # 4. Build React app (WITH ENV VARIABLE)
       - name: Build React app
         run: |
-          REACT_APP_API_URL=${{ secrets.REACT_APP_API_URL }} npm run build
+          VITE_API_BASE_URL=${{ secrets.VITE_API_BASE_URL }} npm run build
 
       # 5. Configure AWS credentials
       - name: Configure AWS credentials
