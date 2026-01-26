@@ -42,10 +42,10 @@ export async function privateFetch<T>(
   const finalUrl = url.startsWith("/") ? url : `/${url}`;
 
   const res = await fetch(`${BASE_URL}${finalUrl}`, {
-    credentials: "include", // REQUIRED for auth
+    mode: "cors",
     headers: {
       "Content-Type": "application/json",
-      ...options.headers, // allows Authorization header
+      ...options.headers, // Authorization header here
     },
     ...options,
   });
@@ -55,11 +55,10 @@ export async function privateFetch<T>(
   }
 
   if (!res.ok) {
-    const errorText = await res.text();
-    throw new Error(
-      `REQUEST_FAILED: ${res.status} ${errorText}`
-    );
+    const text = await res.text();
+    throw new Error(`REQUEST_FAILED: ${text}`);
   }
 
   return res.json() as Promise<T>;
 }
+
