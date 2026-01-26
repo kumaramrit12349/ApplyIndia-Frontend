@@ -1,4 +1,7 @@
-const BASE_URL = import.meta.env.REACT_APP_API_URL;
+const BASE_URL =
+  import.meta.env.MODE === "development"
+    ? "http://localhost:4000"
+    : ""; // production → same domain
 
 export async function apiFetch<T>(
   url: string,

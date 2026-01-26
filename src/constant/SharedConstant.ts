@@ -1,6 +1,4 @@
 export const WEBSITE_NAME = "Apply India";
-export const API_BASE_URL =
-  import.meta.env.REACT_APP_API_URL || "http://localhost:4000/api";
 
 
 export const NOTIFICATION_CATEGORIES = [
