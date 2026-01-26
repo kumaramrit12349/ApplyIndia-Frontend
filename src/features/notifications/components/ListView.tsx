@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import type { HomePageNotification } from "../../../types/notification";
-import { makeSlug } from "../../../services/utils";
+import { makeSlug } from "../../../utils/utils";
 
 interface ListViewProps {
   category: string;

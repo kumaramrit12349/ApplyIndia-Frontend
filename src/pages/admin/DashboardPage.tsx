@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
-import {
-  fetchNotifications,
-  approveNotification,
-  deleteNotification,
-  unarchiveNotification,
-} from "../../services/api";
 import { Link } from "react-router-dom";
 import ConfirmModal from "../../components/ConfirmModal/ConfirmModal";
 import Toast from "../../components/Toast/Toast";
-import { getId } from "../../services/utils";
+import { getId } from "../../utils/utils";
+import {
+  approveNotification,
+  deleteNotification,
+  fetchNotifications,
+  unarchiveNotification,
+} from "../../services/private/notificationApi";
 
 const DashboardPage: React.FC = () => {
   const [notifications, setNotifications] = useState<any[]>([]);
@@ -21,12 +21,19 @@ const DashboardPage: React.FC = () => {
   const loadNotifications = async () => {
     setLoading(true);
     try {
-      const data = await fetchNotifications();
-      setNotifications(data.notifications || []);
-    } catch (err) {
-      console.error(err);
+      const res = await fetchNotifications();
+      setNotifications(res.notifications ?? []);
+    } catch (err: any) {
+      if (err.message === "NOT_AUTHENTICATED") {
+        console.warn("User not authenticated, redirecting to login");
+        // optional: navigate("/auth/signin");
+      } else {
+        console.error("Failed to load notifications:", err);
+      }
+      setNotifications([]);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   useEffect(() => {
@@ -219,7 +226,7 @@ const DashboardPage: React.FC = () => {
                         View
                       </Link>
                       {/* Edit button - hidden for archived */}
-                      {!n.is_archived && (
+                      {(
                         <Link
                           to={`/admin/edit/${getId(n.sk)}`}
                           className="btn btn-sm btn-secondary me-2"

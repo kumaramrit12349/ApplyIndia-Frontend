@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
-import { verifyAccount, resendVerificationCode } from "../services/api";
+import { resendVerificationCode, verifyAccount } from "../services/authApi";
 
 interface VerifyAccountPopupProps {
   show: boolean;

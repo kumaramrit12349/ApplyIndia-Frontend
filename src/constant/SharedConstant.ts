@@ -1,6 +1,6 @@
 export const WEBSITE_NAME = "Apply India";
 export const API_BASE_URL =
-  import.meta.env.VITE_API_URL || "http://localhost:4000/api";
+  import.meta.env.REACT_APP_API_URL || "http://localhost:4000/api";
 
 
 export const NOTIFICATION_CATEGORIES = [
@@ -107,7 +107,7 @@ export const APPLYINDIA_SOCIAL_LINKS = [
   {
     name: "YouTube",
     icon: "https://img.icons8.com/color/28/000000/youtube-play.png",
-    url: "https://youtube.com/@applyindia",
+    url: "https://www.youtube.com/@ApplyIndia-online",
   },
   {
     name: "Instagram",

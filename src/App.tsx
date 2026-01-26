@@ -20,7 +20,6 @@ import Navigation from "./components/Navigation/Navigation";
 import SearchBar from "./components/SearchBar/SearchBar";
 import Footer from "./components/Footer/Footer";
 import SignUpPopup from "./components/SignUpPopup";
-import { checkAuthStatus, logoutUser } from "./services/api";
 import VerifyAccountPopup from "./components/VerifyAccount";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import CategoryView from "./features/notifications/components/CategoryView";
@@ -31,8 +30,9 @@ import Disclaimer from "./pages/legal/Disclaimer";
 import AboutUs from "./pages/legal/AboutUs";
 import FeedbackPage from "./pages/feedback/FeedbackPage";
 import { ToastContainer } from "react-toastify";
+import { checkAuthStatus, logoutUser } from "./services/authApi";
 
-const POPUP_INTERVAL = 90 * 1000;
+const POPUP_INTERVAL = 300 * 1000;
 
 const AppLayout: React.FC = () => {
   const location = useLocation();

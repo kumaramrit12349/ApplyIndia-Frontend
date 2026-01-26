@@ -6,8 +6,6 @@ import {
 } from "../../constant/SharedConstant";
 
 const Footer: React.FC = () => {
-  const currentYear = new Date().getFullYear();
-
   return (
     <footer className="footer-bg text-light mt-auto" role="contentinfo">
       <div className="container py-5">
