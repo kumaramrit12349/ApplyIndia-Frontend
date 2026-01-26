@@ -1,12 +1,12 @@
-const BASE_URL =
-  import.meta.env.MODE === "development"
-    ? "http://localhost:4000"
-    : ""; // production → same domain
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export async function apiFetch<T>(
   url: string,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<T> {
+  if (!url) {
+    throw new Error("API URL is undefined");
+  }
   const response = await fetch(`${BASE_URL}${url}`, {
     headers: {
       "Content-Type": "application/json",
@@ -17,7 +17,7 @@ export async function apiFetch<T>(
   if (!response.ok) {
     const errorText = await response.text();
     throw new Error(
-      `API Error ${response.status}: ${errorText || response.statusText}`
+      `API Error ${response.status}: ${errorText || response.statusText}`,
     );
   }
 
@@ -25,7 +25,7 @@ export async function apiFetch<T>(
 }
 export async function privateFetch<T>(
   url: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
 ): Promise<T> {
   const finalUrl = url.startsWith("/") ? url : `/${url}`;
 
@@ -48,6 +48,3 @@ export async function privateFetch<T>(
 
   return res.json();
 }
-
-
-
