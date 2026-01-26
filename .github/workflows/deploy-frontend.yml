@@ -42,7 +42,7 @@ jobs:
       # 6. Upload build to S3
       - name: Upload build to S3
         run: |
-          aws s3 sync build s3://${{ secrets.S3_BUCKET }} \
+          aws s3 sync build s3://${{ secrets.S3_BUCKET_NAME }} \
             --delete \
             --cache-control "max-age=31536000"
 
