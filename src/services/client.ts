@@ -29,7 +29,7 @@ export async function privateFetch<T>(
 ): Promise<T> {
   const finalUrl = url.startsWith("/") ? url : `/${url}`;
 
-  const res = await fetch(finalUrl, {
+  const res = await fetch(`${BASE_URL}${finalUrl}`, {
     ...options,
     credentials: "include",
     headers: {

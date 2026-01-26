@@ -18,7 +18,7 @@ export const signUpUser = async (
   password: string,
   gender: string
 ) => {
-  const response = await fetch(`${BASE_URL}/${AUTH_API.SIGN_UP}`, {
+  const response = await fetch(`${BASE_URL}${AUTH_API.SIGN_UP}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ given_name, family_name, email, password, gender }),
@@ -32,7 +32,7 @@ export const signUpUser = async (
 };
 
 export const loginUser = async (email: string, password: string) => {
-  const response = await fetch(`${BASE_URL}/${AUTH_API.SIGN_IN}`, {
+  const response = await fetch(`${BASE_URL}${AUTH_API.SIGN_IN}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include", // crucial for cookies
@@ -48,14 +48,14 @@ export const loginUser = async (email: string, password: string) => {
 };
 
 export const logoutUser = async () => {
-  await fetch(`${BASE_URL}/${AUTH_API.LOG_OUT}`, {
+  await fetch(`${BASE_URL}${AUTH_API.LOG_OUT}`, {
     method: "POST",
     credentials: "include",
   });
 };
 
 export const verifyAccount = async (email: string, code: string) => {
-  const res = await fetch(`${BASE_URL}/${AUTH_API.VERIFY_ACCOUNT}`, {
+  const res = await fetch(`${BASE_URL}${AUTH_API.VERIFY_ACCOUNT}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, code }),
@@ -69,7 +69,7 @@ export const verifyAccount = async (email: string, code: string) => {
 };
 
 export const resendVerificationCode = async (email: string) => {
-  const res = await fetch(`${BASE_URL}/${AUTH_API.RESEND_VERIFICATION_CODE}`, {
+  const res = await fetch(`${BASE_URL}${AUTH_API.RESEND_VERIFICATION_CODE}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email }),
@@ -84,7 +84,7 @@ export const resendVerificationCode = async (email: string) => {
 
 export const checkAuthStatus = async (): Promise<AuthStatus> => {
   try {
-    const res = await fetch(`${BASE_URL}/${AUTH_API.CHECK_AUTH_STATUS}`, {
+    const res = await fetch(`${BASE_URL}${AUTH_API.CHECK_AUTH_STATUS}`, {
       credentials: "include",
     });
 
