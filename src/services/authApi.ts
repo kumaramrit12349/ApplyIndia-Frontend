@@ -21,6 +21,7 @@ export const signUpUser = async (
   const response = await fetch(`${BASE_URL}${AUTH_API.SIGN_UP}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
+    credentials: "include", // crucial for cookies
     body: JSON.stringify({ given_name, family_name, email, password, gender }),
   });
 
@@ -54,15 +55,10 @@ export const loginUser = async (email: string, password: string) => {
 
 
 export const logoutUser = async () => {
-  try {
-    await fetch(`${BASE_URL}${AUTH_API.LOG_OUT}`, {
-      method: "POST",
-    });
-  } finally {
-    // ALWAYS clear local tokens
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("id_token");
-  }
+  await fetch(`${BASE_URL}${AUTH_API.LOG_OUT}`, {
+    method: "POST",
+    credentials: "include",
+  });
 };
 
 export const verifyAccount = async (email: string, code: string) => {

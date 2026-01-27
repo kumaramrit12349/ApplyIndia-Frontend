@@ -45,7 +45,7 @@ export async function privateFetch<T>(
   }
   const finalUrl = url.startsWith("/") ? url : `/${url}`;
   const res = await fetch(`${BASE_URL}${finalUrl}`, {
-    ...options,
+    mode: "cors",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
