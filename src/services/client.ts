@@ -51,6 +51,7 @@ export async function privateFetch<T>(
       Authorization: `Bearer ${token}`,
       ...options.headers,
     },
+    ...options,
   });
   if (res.status === 401) {
     throw new Error("NOT_AUTHENTICATED");
@@ -59,7 +60,7 @@ export async function privateFetch<T>(
     const text = await res.text();
     throw new Error(`REQUEST_FAILED: ${text}`);
   }
-  return res.json();
+  return res.json() as Promise<T>;
 }
 
 
