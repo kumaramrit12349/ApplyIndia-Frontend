@@ -40,25 +40,23 @@ export async function privateFetch<T>(
   options: RequestInit = {}
 ): Promise<T> {
   const finalUrl = url.startsWith("/") ? url : `/${url}`;
-
   const res = await fetch(`${BASE_URL}${finalUrl}`, {
     mode: "cors",
+    credentials: "include", // REQUIRED
+    ...options,
     headers: {
       "Content-Type": "application/json",
-      ...options.headers, // Authorization header here
+      ...options.headers,
     },
-    ...options,
   });
-
   if (res.status === 401) {
     throw new Error("NOT_AUTHENTICATED");
   }
-
   if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`REQUEST_FAILED: ${text}`);
+    throw new Error("REQUEST_FAILED");
   }
-
-  return res.json() as Promise<T>;
+  return res.json();
 }
+
+
 
