@@ -39,13 +39,16 @@ export async function privateFetch<T>(
   url: string,
   options: RequestInit = {}
 ): Promise<T> {
+  const token = localStorage.getItem("access_token");
+  if (!token) {
+    throw new Error("NOT_AUTHENTICATED");
+  }
   const finalUrl = url.startsWith("/") ? url : `/${url}`;
   const res = await fetch(`${BASE_URL}${finalUrl}`, {
-    mode: "cors",
-    credentials: "include", // REQUIRED
     ...options,
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
       ...options.headers,
     },
   });
@@ -53,10 +56,10 @@ export async function privateFetch<T>(
     throw new Error("NOT_AUTHENTICATED");
   }
   if (!res.ok) {
-    throw new Error("REQUEST_FAILED");
+    const text = await res.text();
+    throw new Error(`REQUEST_FAILED: ${text}`);
   }
   return res.json();
 }
-
 
 

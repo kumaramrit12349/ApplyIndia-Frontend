@@ -35,23 +35,34 @@ export const loginUser = async (email: string, password: string) => {
   const response = await fetch(`${BASE_URL}${AUTH_API.SIGN_IN}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    credentials: "include", // crucial for cookies
     body: JSON.stringify({ email, password }),
   });
-
   if (!response.ok) {
     const err = await response.json().catch(() => ({}));
     throw new Error(err.message || "Failed to login");
   }
-
-  return response.json();
+  const data = await response.json();
+  // THIS IS WHERE YOU SET IT
+  if (data.accessToken) {
+    localStorage.setItem("access_token", data.accessToken);
+  }
+  if (data.idToken) {
+    localStorage.setItem("id_token", data.idToken);
+  }
+  return data;
 };
 
+
 export const logoutUser = async () => {
-  await fetch(`${BASE_URL}${AUTH_API.LOG_OUT}`, {
-    method: "POST",
-    credentials: "include",
-  });
+  try {
+    await fetch(`${BASE_URL}${AUTH_API.LOG_OUT}`, {
+      method: "POST",
+    });
+  } finally {
+    // ALWAYS clear local tokens
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("id_token");
+  }
 };
 
 export const verifyAccount = async (email: string, code: string) => {
