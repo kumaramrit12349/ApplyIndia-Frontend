@@ -9,27 +9,22 @@ if (!BASE_URL) {
 ================================ */
 export async function apiFetch<T>(
   url: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
 ): Promise<T> {
-  const finalUrl = url.startsWith("/") ? url : `/${url}`;
-
-  const res = await fetch(`${BASE_URL}${finalUrl}`, {
-    credentials: "include", // IMPORTANT
+  const response = await fetch(`${BASE_URL}${url}`, {
     headers: {
       "Content-Type": "application/json",
       ...options.headers,
     },
     ...options,
   });
-
-  if (!res.ok) {
-    const errorText = await res.text();
+  if (!response.ok) {
+    const errorText = await response.text();
     throw new Error(
-      `API Error ${res.status}: ${errorText || res.statusText}`
+      `API Error ${response.status}: ${errorText || response.statusText}`,
     );
   }
-
-  return res.json() as Promise<T>;
+  return response.json() as Promise<T>;
 }
 
 /* ===============================
@@ -37,30 +32,25 @@ export async function apiFetch<T>(
 ================================ */
 export async function privateFetch<T>(
   url: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
 ): Promise<T> {
-  const token = localStorage.getItem("access_token");
-  if (!token) {
-    throw new Error("NOT_AUTHENTICATED");
-  }
   const finalUrl = url.startsWith("/") ? url : `/${url}`;
   const res = await fetch(`${BASE_URL}${finalUrl}`, {
-    mode: "cors",
+    ...options,
+    credentials: "include",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
       ...options.headers,
     },
-    ...options,
   });
-  if (res.status === 401) {
-    throw new Error("NOT_AUTHENTICATED");
+  if (res.status === 401 || res.status === 403) {
+    // GLOBAL REDIRECT
+    window.location.href = "/";
+    throw new Error("AUTH_REDIRECT");
   }
   if (!res.ok) {
     const text = await res.text();
     throw new Error(`REQUEST_FAILED: ${text}`);
   }
-  return res.json() as Promise<T>;
+  return res.json();
 }
-
-
