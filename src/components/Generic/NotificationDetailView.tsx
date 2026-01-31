@@ -35,8 +35,10 @@ const formatDateTime = (d?: number | string | null) => {
   return isNaN(date.getTime()) ? "—" : date.toLocaleString("en-IN");
 };
 
-const formatCurrency = (amount?: string | number) =>
-  amount ? `₹${parseFloat(String(amount)).toLocaleString()}` : "—";
+const formatCurrency = (amount?: string | number | null) => {
+  if (amount === null || amount === undefined) return "—";
+  return `₹ ${Number(amount).toLocaleString()}`;
+};
 
 const formatPercentage = (value?: string | number) => {
   if (value === null || value === undefined) {
@@ -46,7 +48,7 @@ const formatPercentage = (value?: string | number) => {
 };
 
 const getGroupedFees = (fee?: INotification["fee"]) => {
-  if (!fee) return [];
+  if (fee === null || fee === undefined) return [];
 
   const map: Record<string, string[]> = {};
 
@@ -60,7 +62,8 @@ const getGroupedFees = (fee?: INotification["fee"]) => {
 
   fees.forEach(({ key, label }) => {
     const value = fee[key];
-    if (value !== undefined && value !== null) {
+    // allows 0, blocks null/undefined
+    if (value !== null && value !== undefined) {
       const formatted = formatCurrency(value);
       map[formatted] = map[formatted] || [];
       map[formatted].push(label);
@@ -106,7 +109,7 @@ const LabelValue = ({
   highlight?: boolean;
   fallback?: string;
 }) => {
-  const displayValue = value ? value : fallback ?? "Not Available";
+  const displayValue = value ? value : (fallback ?? "Not Available");
 
   return (
     <div className="d-flex flex-wrap mb-2 align-items-start">
@@ -291,7 +294,7 @@ export default function NotificationDetailView({
                 <LabelValue
                   label="Minimum %:"
                   value={formatPercentage(
-                    notification.eligibility?.min_percentage
+                    notification.eligibility?.min_percentage,
                   )}
                 />
               </Card>
