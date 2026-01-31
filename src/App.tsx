@@ -32,7 +32,7 @@ import FeedbackPage from "./pages/feedback/FeedbackPage";
 import { ToastContainer } from "react-toastify";
 import { checkAuthStatus, logoutUser } from "./services/authApi";
 
-const POPUP_INTERVAL = 300 * 1000;
+// const POPUP_INTERVAL = 300 * 1000;
 
 const AppLayout: React.FC = () => {
   const location = useLocation();
@@ -70,13 +70,13 @@ const AppLayout: React.FC = () => {
       }
       setCheckingAuth(false);
 
-      if (!isAuthenticated) {
-        setShowAuthPopup(true);
-        timerRef.current = setInterval(
-          () => setShowAuthPopup(true),
-          POPUP_INTERVAL
-        );
-      }
+      // if (!isAuthenticated) {
+      //   setShowAuthPopup(true);
+      //   timerRef.current = setInterval(
+      //     () => setShowAuthPopup(true),
+      //     POPUP_INTERVAL
+      //   );
+      // }
     };
 
     verifyAuth();
@@ -119,12 +119,12 @@ const AppLayout: React.FC = () => {
     setIsAuthenticated(false);
     setShowVerifyPopup(false);
     setShowAuthPopup(true);
-    if (!timerRef.current) {
-      timerRef.current = setInterval(
-        () => setShowAuthPopup(true),
-        POPUP_INTERVAL
-      );
-    }
+    // if (!timerRef.current) {
+    //   timerRef.current = setInterval(
+    //     () => setShowAuthPopup(true),
+    //     POPUP_INTERVAL
+    //   );
+    // }
   };
 
   if (checkingAuth) {
