@@ -3,35 +3,41 @@ name: Deploy React Frontend to S3 + CloudFront
 on:
   push:
     branches:
-      - main
+      - devAWS
 
 jobs:
   deploy:
-    name: Build & Deploy
+    name: Build & Deploy Frontend
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout code
+      # 1️⃣ Checkout code
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. Setup Node
+      # 2️⃣ Setup Node.js (Vite requires Node 20+)
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
-          cache: npm
+          node-version: 20.20.0
 
-      # 3. Install dependencies
-      - name: Install dependencies
-        run: npm ci
-
-      # 4. Build React app (WITH ENV VARIABLE)
-      - name: Build React app
+      # 3️⃣ Clean install (important for Rollup)
+      - name: Clean install dependencies
         run: |
-          REACT_APP_API_URL=${{ secrets.REACT_APP_API_URL }} npm run build
+          rm -rf node_modules package-lock.json
+          npm install --include=optional
 
-      # 5. Configure AWS credentials
+      # 4️⃣ Force rebuild Rollup native binary (🔥 KEY FIX)
+      - name: Rebuild Rollup
+        run: npm rebuild rollup
+
+      # 5️⃣ Build React app with ENV
+      - name: Build React app
+        env:
+          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
+        run: npm run build
+
+      # 6️⃣ Configure AWS credentials
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -39,14 +45,14 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      # 6. Upload build to S3
-      - name: Upload build to S3
+      # 7️⃣ Upload dist to S3
+      - name: Upload dist to S3
         run: |
-          aws s3 sync build s3://${{ secrets.S3_BUCKET }} \
+          aws s3 sync dist s3://${{ secrets.S3_BUCKET_NAME }} \
             --delete \
-            --cache-control "max-age=31536000"
+            --cache-control "max-age=31536000,public"
 
-      # 7. Invalidate CloudFront cache
+      # 8️⃣ Invalidate CloudFront cache
       - name: Invalidate CloudFront cache
         run: |
           aws cloudfront create-invalidation \

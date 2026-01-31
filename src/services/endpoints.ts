@@ -7,6 +7,7 @@ export const PUBLIC_API = {
   FEEDBACK: {
     SUBMIT: "/fedback",
   },
+  FORGOT_PASSWORD: "/forgot-password"
 };
 
 export const PRIVATE_API = {
