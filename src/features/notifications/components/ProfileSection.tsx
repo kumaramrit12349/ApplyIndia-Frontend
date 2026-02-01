@@ -141,7 +141,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({
           </div>
 
           {/* Actions */}
-          <div className="d-grid gap-2">
+          <div className="d-grid gap-2 m-2">
             {/* Dashboard – only for admin & moderator */}
             {(isAdmin) && (
               <button
