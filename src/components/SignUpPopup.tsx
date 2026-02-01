@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import { loginUser, signUpUser } from "../services/authApi";
-import { PUBLIC_API } from "../services/endpoints";
+// import { PUBLIC_API } from "../services/endpoints";
 
 // const SSO_PROVIDERS = [
 //   {
@@ -142,9 +142,9 @@ const AuthPopup: React.FC<AuthPopupProps> = ({
   //   window.open(providerUrl, "_blank", "noopener");
   // };
 
-  const handleForgotPassword = () => {
-    window.open(`${PUBLIC_API.FORGOT_PASSWORD}`, "_blank");
-  };
+  // const handleForgotPassword = () => {
+  //   window.open(`${PUBLIC_API.FORGOT_PASSWORD}`, "_blank");
+  // };
 
   return (
     <Modal
