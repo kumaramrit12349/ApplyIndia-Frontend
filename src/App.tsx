@@ -32,7 +32,7 @@ import FeedbackPage from "./pages/feedback/FeedbackPage";
 import { ToastContainer } from "react-toastify";
 import { checkAuthStatus, logoutUser } from "./services/authApi";
 
-const POPUP_INTERVAL = 300 * 1000;
+// const POPUP_INTERVAL = 300 * 1000;
 
 const AppLayout: React.FC = () => {
   const location = useLocation();
@@ -51,6 +51,7 @@ const AppLayout: React.FC = () => {
   const [givenName, setGivenName] = useState<string | undefined>(undefined);
   const [familyName, setFamilyName] = useState<string | undefined>(undefined);
   const [userEmail, setUserEmail] = useState<string | undefined>(undefined);
+  const [isAdmin, setIsAdmin] = useState<boolean | undefined>(undefined);
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -63,20 +64,22 @@ const AppLayout: React.FC = () => {
         setGivenName(user.given_name);
         setFamilyName(user.family_name);
         setUserEmail(user.email);
+        setIsAdmin(user.isAdmin);
       } else {
         setGivenName(undefined);
         setFamilyName(undefined);
         setUserEmail(undefined);
+        setIsAdmin(undefined);
       }
       setCheckingAuth(false);
 
-      if (!isAuthenticated) {
-        setShowAuthPopup(true);
-        timerRef.current = setInterval(
-          () => setShowAuthPopup(true),
-          POPUP_INTERVAL
-        );
-      }
+      // if (!isAuthenticated) {
+      //   setShowAuthPopup(true);
+      //   timerRef.current = setInterval(
+      //     () => setShowAuthPopup(true),
+      //     POPUP_INTERVAL
+      //   );
+      // }
     };
 
     verifyAuth();
@@ -95,6 +98,7 @@ const AppLayout: React.FC = () => {
       setGivenName(user.given_name);
       setFamilyName(user.family_name);
       setUserEmail(user.email);
+      setIsAdmin(user.isAdmin);
     }
 
     setShowAuthPopup(false);
@@ -119,12 +123,16 @@ const AppLayout: React.FC = () => {
     setIsAuthenticated(false);
     setShowVerifyPopup(false);
     setShowAuthPopup(true);
-    if (!timerRef.current) {
-      timerRef.current = setInterval(
-        () => setShowAuthPopup(true),
-        POPUP_INTERVAL
-      );
-    }
+    setGivenName(undefined);
+    setFamilyName(undefined);
+    setUserEmail(undefined);
+    setIsAdmin(undefined);
+    // if (!timerRef.current) {
+    //   timerRef.current = setInterval(
+    //     () => setShowAuthPopup(true),
+    //     POPUP_INTERVAL
+    //   );
+    // }
   };
 
   if (checkingAuth) {
@@ -144,6 +152,7 @@ const AppLayout: React.FC = () => {
         givenName={givenName}
         familyName={familyName}
         userEmail={userEmail}
+        isAdmin={isAdmin}
         onLogout={handleLogout}
         onShowAuthPopup={() => setShowAuthPopup(true)}
       />

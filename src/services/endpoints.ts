@@ -5,9 +5,9 @@ export const PUBLIC_API = {
     BY_ID: (id: string) => `/public/notification/getById/${id}`,
   },
   FEEDBACK: {
-    SUBMIT: "/fedback",
+    SUBMIT: "/public/feedback",
   },
-  FORGOT_PASSWORD: "/forgot-password"
+  FORGOT_PASSWORD: "/public/forgot-password"
 };
 
 export const PRIVATE_API = {

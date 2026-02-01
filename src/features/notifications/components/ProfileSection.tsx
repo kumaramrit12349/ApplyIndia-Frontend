@@ -1,10 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface ProfileSectionProps {
   isAuthenticated: boolean;
   givenName?: string;
   familyName?: string;
   email?: string;
+  isAdmin?: boolean;
   onLogout: () => void;
   onShowAuthPopup: () => void;
 }
@@ -14,11 +16,13 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({
   givenName,
   familyName,
   email,
+  isAdmin,
   onLogout,
   onShowAuthPopup,
 }) => {
   const [open, setOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
   /* ---------- Close on outside click ---------- */
   useEffect(() => {
@@ -137,16 +141,31 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({
           </div>
 
           {/* Actions */}
-          <button
-            className="btn btn-link text-danger w-100 text-start px-3 py-2"
-            style={{ textDecoration: "none" }}
-            onClick={() => {
-              setOpen(false);
-              onLogout();
-            }}
-          >
-            Logout
-          </button>
+          <div className="d-grid gap-2 m-2">
+            {/* Dashboard – only for admin & moderator */}
+            {(isAdmin) && (
+              <button
+                className="btn btn-outline-primary text-start px-3 py-2"
+                onClick={() => {
+                  setOpen(false);
+                  navigate("/admin/dashboard");
+                }}
+              >
+                Dashboard
+              </button>
+            )}
+
+            {/* Logout */}
+            <button
+              className="btn btn-outline-danger text-start px-3 py-2"
+              onClick={() => {
+                setOpen(false);
+                onLogout();
+              }}
+            >
+              Logout
+            </button>
+          </div>
         </div>
       )}
     </div>

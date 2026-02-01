@@ -28,11 +28,55 @@ const NotificationForm: React.FC<Props> = ({
     type: "success" as "success" | "error",
   });
 
+  const [totalVacanciesUI, setTotalVacanciesUI] = useState(
+    initialValues.total_vacancies !== undefined
+      ? String(initialValues.total_vacancies)
+      : "",
+  );
+
+  const [feeUI, setFeeUI] = useState<Record<string, string>>({
+    general_fee:
+      initialValues.fee.general_fee !== undefined
+        ? String(initialValues.fee.general_fee)
+        : "",
+    obc_fee:
+      initialValues.fee.obc_fee !== undefined
+        ? String(initialValues.fee.obc_fee)
+        : "",
+    sc_fee:
+      initialValues.fee.sc_fee !== undefined
+        ? String(initialValues.fee.sc_fee)
+        : "",
+    st_fee:
+      initialValues.fee.st_fee !== undefined
+        ? String(initialValues.fee.st_fee)
+        : "",
+    ph_fee:
+      initialValues.fee.ph_fee !== undefined
+        ? String(initialValues.fee.ph_fee)
+        : "",
+  });
+
+  const [eligibilityUI, setEligibilityUI] = useState<Record<string, string>>({
+    min_age:
+      initialValues.eligibility.min_age !== undefined
+        ? String(initialValues.eligibility.min_age)
+        : "",
+    max_age:
+      initialValues.eligibility.max_age !== undefined
+        ? String(initialValues.eligibility.max_age)
+        : "",
+    min_percentage:
+      initialValues.eligibility.min_percentage !== undefined
+        ? String(initialValues.eligibility.min_percentage)
+        : "",
+  });
+
   /* ---------------- Dirty Tracking ---------------- */
 
   const isDirty = useMemo(
     () => JSON.stringify(form) !== JSON.stringify(initialValues),
-    [form, initialValues]
+    [form, initialValues],
   );
 
   const buildPatchPayload = (): Partial<INotification> => {
@@ -48,7 +92,7 @@ const NotificationForm: React.FC<Props> = ({
   /* ---------------- Helpers ---------------- */
 
   const handleRootChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value, type } = e.target;
     setForm((prev) => ({
@@ -60,7 +104,7 @@ const NotificationForm: React.FC<Props> = ({
   const handleNestedChange = (
     section: keyof INotification,
     field: string,
-    value: any
+    value: any,
   ) => {
     setForm((prev) => ({
       ...prev,
@@ -147,15 +191,29 @@ const NotificationForm: React.FC<Props> = ({
             onChange={handleRootChange}
           />
         </div>
-
         <div className="mb-3">
           <label className="form-label">Total Vacancies</label>
           <input
-            type="number"
+            type="text"
+            inputMode="numeric"
             className="form-control"
-            name="total_vacancies"
-            value={form.total_vacancies}
-            onChange={handleRootChange}
+            value={totalVacanciesUI}
+            onChange={(e) => {
+              const value = e.target.value;
+              // allow clearing
+              if (value === "") {
+                setTotalVacanciesUI("");
+                setForm((p) => ({ ...p, total_vacancies: 0 }));
+                return;
+              }
+              // allow only non-negative integers
+              if (!/^[0-9]+$/.test(value)) return;
+              setTotalVacanciesUI(value);
+              setForm((p) => ({
+                ...p,
+                total_vacancies: Number(value),
+              }));
+            }}
           />
         </div>
 
@@ -266,12 +324,24 @@ const NotificationForm: React.FC<Props> = ({
           <div className="mb-3" key={key}>
             <label className="form-label">{label}</label>
             <input
-              type="number"
+              type="text"
+              inputMode="numeric"
               className="form-control"
-              value={(form.fee as any)[key]}
-              onChange={(e) =>
-                handleNestedChange("fee", key, Number(e.target.value))
-              }
+              value={feeUI[key] ?? ""}
+              onChange={(e) => {
+                const value = e.target.value;
+                // allow clearing
+                if (value === "") {
+                  setFeeUI((p) => ({ ...p, [key]: "" }));
+                  handleNestedChange("fee", key, 0);
+                  return;
+                }
+                // allow only non-negative integers
+                if (!/^[0-9]+$/.test(value)) return;
+
+                setFeeUI((p) => ({ ...p, [key]: value }));
+                handleNestedChange("fee", key, Number(value));
+              }}
             />
           </div>
         ))}
@@ -294,29 +364,46 @@ const NotificationForm: React.FC<Props> = ({
           ["qualification", "Qualification"],
           ["specialization", "Specialization"],
           ["min_percentage", "Minimum Percentage"],
-        ].map(([key, label]) => (
-          <div className="mb-3" key={key}>
-            <label className="form-label">{label}</label>
-            <input
-              className="form-control"
-              type={
-                key.includes("age") || key.includes("percentage")
-                  ? "number"
-                  : "text"
-              }
-              value={(form.eligibility as any)[key]}
-              onChange={(e) =>
-                handleNestedChange(
-                  "eligibility",
-                  key,
-                  key.includes("age") || key.includes("percentage")
-                    ? Number(e.target.value)
-                    : e.target.value
-                )
-              }
-            />
-          </div>
-        ))}
+        ].map(([key, label]) => {
+          const isNumber = key.includes("age") || key.includes("percentage");
+
+          return (
+            <div className="mb-3" key={key}>
+              <label className="form-label">{label}</label>
+
+              {isNumber ? (
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  className="form-control"
+                  value={eligibilityUI[key] ?? ""}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    // allow clearing
+                    if (value === "") {
+                      setEligibilityUI((p) => ({ ...p, [key]: "" }));
+                      handleNestedChange("eligibility", key, 0);
+                      return;
+                    }
+                    // allow only non-negative integers
+                    if (!/^[0-9]+$/.test(value)) return;
+                    setEligibilityUI((p) => ({ ...p, [key]: value }));
+                    handleNestedChange("eligibility", key, Number(value));
+                  }}
+                />
+              ) : (
+                <input
+                  type="text"
+                  className="form-control"
+                  value={(form.eligibility as any)[key]}
+                  onChange={(e) =>
+                    handleNestedChange("eligibility", key, e.target.value)
+                  }
+                />
+              )}
+            </div>
+          );
+        })}
 
         <div className="mb-3">
           <label className="form-label">Age Relaxation Details</label>
@@ -365,8 +452,8 @@ const NotificationForm: React.FC<Props> = ({
               ? "Creating..."
               : "Updating..."
             : mode === "create"
-            ? "Add Notification"
-            : "Update Notification"}
+              ? "Add Notification"
+              : "Update Notification"}
         </button>
       </form>
 

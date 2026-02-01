@@ -9,6 +9,7 @@ interface NavbarProps {
   givenName?: string;
   familyName?: string;
   userEmail?: string;
+  isAdmin?: boolean;
   onLogout: () => void;
   onShowAuthPopup: () => void;
 }
@@ -18,6 +19,7 @@ const Navbar: React.FC<NavbarProps> = ({
   givenName,
   familyName,
   userEmail,
+  isAdmin,
   onLogout,
   onShowAuthPopup,
 }) => {
@@ -46,6 +48,7 @@ const Navbar: React.FC<NavbarProps> = ({
             givenName={givenName}
             familyName={familyName}
             email={userEmail}
+            isAdmin={isAdmin}
             onLogout={onLogout}
             onShowAuthPopup={onShowAuthPopup}
           />

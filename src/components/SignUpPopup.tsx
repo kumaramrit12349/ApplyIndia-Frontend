@@ -344,7 +344,7 @@ const AuthPopup: React.FC<AuthPopupProps> = ({
           )}
 
           {/* Forgot Password & Submit */}
-          <div className="d-flex align-items-center justify-content-between mb-3">
+          {/* <div className="d-flex align-items-center justify-content-between mb-3">
             {tab === "login" && (
               <a
                 className="link-primary fw-semibold"
@@ -355,7 +355,7 @@ const AuthPopup: React.FC<AuthPopupProps> = ({
               </a>
             )}
             {tab === "register" && <span />}
-          </div>
+          </div> */}
 
           <Button
             type="submit"
