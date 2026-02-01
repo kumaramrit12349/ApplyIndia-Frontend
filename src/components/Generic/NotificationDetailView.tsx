@@ -327,6 +327,8 @@ export default function NotificationDetailView({
                   notification.links?.admit_card_url && (
                     <a
                       href={notification.links.admit_card_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="btn btn-success w-100"
                     >
                       <BsDownload /> Admit Card
@@ -335,6 +337,8 @@ export default function NotificationDetailView({
                   notification.links?.notification_pdf_url && (
                     <a
                       href={notification.links.notification_pdf_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="btn btn-outline-danger w-100"
                     >
                       <BsFileEarmarkText /> Notification PDF
@@ -343,6 +347,8 @@ export default function NotificationDetailView({
                   notification.links?.official_website_url && (
                     <a
                       href={notification.links.official_website_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="btn btn-outline-dark w-100"
                     >
                       <BsGlobe /> Official Website
@@ -351,6 +357,8 @@ export default function NotificationDetailView({
                   notification.links?.result_url && (
                     <a
                       href={notification.links.result_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="btn btn-warning w-100"
                     >
                       <BsCheckCircle /> Result
@@ -359,6 +367,8 @@ export default function NotificationDetailView({
                   notification.links?.answer_key_url && (
                     <a
                       href={notification.links.answer_key_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="btn btn-outline-secondary w-100"
                     >
                       Answer Key
@@ -367,6 +377,8 @@ export default function NotificationDetailView({
                   notification.links?.youtube_link && (
                     <a
                       href={notification.links.youtube_link}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="btn btn-outline-danger w-100"
                     >
                       <BsYoutube /> YouTube
@@ -375,6 +387,8 @@ export default function NotificationDetailView({
                   notification.links?.other_links && (
                     <a
                       href={notification.links.other_links}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="btn btn-outline-dark w-100"
                     >
                       Other Links
