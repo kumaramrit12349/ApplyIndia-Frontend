@@ -147,7 +147,7 @@ export const APPLYINDIA_SOCIAL_LINKS = [
   {
     name: "Telegram",
     icon: "https://img.icons8.com/color/28/000000/telegram-app.png",
-    url: "https://web.telegram.org/k/#@applyindia_online",
+    url: "https://t.me/applyindia_online",
   },
   {
     name: "WhatsApp",
