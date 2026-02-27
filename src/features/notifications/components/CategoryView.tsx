@@ -5,7 +5,7 @@ import ListView from "./ListView";
 import type { HomePageNotification } from "../../../types/notification";
 import { fetchNotificationsByCategory } from "../../../services/public/notiifcationApi";
 
-const PAGE_SIZE = 100;
+const PAGE_SIZE = 20;
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
