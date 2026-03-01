@@ -17,13 +17,17 @@ const SearchBar: React.FC<SearchBarProps> = ({
   const match = location.pathname.match(/\/notification\/category\/([^/]+)/i);
   const urlCategory = match ? decodeURIComponent(match[1]) : "all";
 
-  const [query, setQuery] = useState("");
+  const searchParams = new URLSearchParams(location.search);
+  const urlSearchValue = searchParams.get("searchValue") || "";
+
+  const [query, setQuery] = useState(urlSearchValue);
   const [filter, setFilter] = useState(urlCategory);
-  // When route/category changes, always reset filter and input
+
+  // Sync state with URL changes (e.g. Navigation clicks, forward/back, reload)
   useEffect(() => {
     setFilter(urlCategory);
-    setQuery(""); // <- This clears search field every time category changes
-  }, [urlCategory]);
+    setQuery(urlSearchValue);
+  }, [urlCategory, urlSearchValue]);
 
   const handleSearch = () => {
     if (onSearch) onSearch(query, filter);

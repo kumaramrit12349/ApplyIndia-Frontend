@@ -7,6 +7,7 @@ const Navigation: React.FC = () => {
   const match = location.pathname.match(/\/notification\/category\/([^/]+)/i);
   const activeCategory = match ? decodeURIComponent(match[1]) : "all";
 
+  // Note: we purposely do NOT include ?searchValue= here, to ensure search is cleared on category navigation
   const getNavLink = (item: (typeof NOTIFICATION_CATEGORIES)[number]) =>
     item.value === "all" ? "/" : `/notification/category/${item.value}`;
 
@@ -34,11 +35,10 @@ const Navigation: React.FC = () => {
               <li className="nav-item" key={item.value}>
                 <Link
                   to={getNavLink(item)}
-                  className={`nav-link text-nowrap ${
-                    isActive(item)
+                  className={`nav-link text-nowrap ${isActive(item)
                       ? "active bg-primary text-white"
                       : "text-dark"
-                  }`}
+                    }`}
                   style={{ borderRadius: "8px", fontWeight: 500 }}
                 >
                   {item.label}
