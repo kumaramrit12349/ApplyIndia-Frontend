@@ -33,6 +33,7 @@ import AboutUs from "./pages/legal/AboutUs";
 import FeedbackPage from "./pages/feedback/FeedbackPage";
 import ForgotPasswordPopup from "./components/ForgotPasswordPopup";
 import ResetPasswordPopup from "./components/ResetPasswordPopup";
+import ProfilePage from "./pages/ProfilePage";
 import { ToastContainer, toast } from "react-toastify";
 import { checkAuthStatus, logoutUser } from "./services/authApi";
 
@@ -60,6 +61,8 @@ const AppLayout: React.FC = () => {
   const [familyName, setFamilyName] = useState<string | undefined>(undefined);
   const [userEmail, setUserEmail] = useState<string | undefined>(undefined);
   const [isAdmin, setIsAdmin] = useState<boolean | undefined>(undefined);
+  const [userState, setUserState] = useState<string | undefined>(undefined);
+  const [userCategory, setUserCategory] = useState<string | undefined>(undefined);
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -73,11 +76,15 @@ const AppLayout: React.FC = () => {
         setFamilyName(user.family_name);
         setUserEmail(user.email);
         setIsAdmin(user.isAdmin);
+        setUserState(user.state);
+        setUserCategory(user.category);
       } else {
         setGivenName(undefined);
         setFamilyName(undefined);
         setUserEmail(undefined);
         setIsAdmin(undefined);
+        setUserState(undefined);
+        setUserCategory(undefined);
       }
       setCheckingAuth(false);
 
@@ -107,6 +114,8 @@ const AppLayout: React.FC = () => {
       setFamilyName(user.family_name);
       setUserEmail(user.email);
       setIsAdmin(user.isAdmin);
+      setUserState(user.state);
+      setUserCategory(user.category);
     }
 
     setShowAuthPopup(false);
@@ -135,6 +144,8 @@ const AppLayout: React.FC = () => {
     setFamilyName(undefined);
     setUserEmail(undefined);
     setIsAdmin(undefined);
+    setUserState(undefined);
+    setUserCategory(undefined);
     // if (!timerRef.current) {
     //   timerRef.current = setInterval(
     //     () => setShowAuthPopup(true),
@@ -178,6 +189,8 @@ const AppLayout: React.FC = () => {
         familyName={familyName}
         userEmail={userEmail}
         isAdmin={isAdmin}
+        state={userState}
+        category={userCategory}
         onLogout={handleLogout}
         onShowAuthPopup={() => setShowAuthPopup(true)}
       />
@@ -258,6 +271,19 @@ const AppLayout: React.FC = () => {
 
           {/* feedback page */}
           <Route path="/feedback" element={<FeedbackPage />} />
+
+          {/* Profile page – protected */}
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute
+                isAuthenticated={isAuthenticated}
+                checkingAuth={checkingAuth}
+              >
+                <ProfilePage />
+              </ProtectedRoute>
+            }
+          />
 
           {/* Catch‑all: wrong URL → home */}
           <Route path="*" element={<Navigate to="/" replace />} />

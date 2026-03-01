@@ -7,7 +7,14 @@ export interface AuthStatus {
     given_name?: string;
     family_name?: string;
     email?: string;
+    gender?: string;
+    dob?: string;
+    category?: string;
+    state?: string;
+    qualification?: string;
+    specialization?: string;
     isAdmin?: boolean;
+    sub?: string;
   };
 }
 
@@ -128,6 +135,39 @@ export const resetPassword = async (
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     throw new Error(err.message || "Failed to reset password");
+  }
+  return res.json();
+};
+
+export const fetchProfile = async (): Promise<AuthStatus> => {
+  try {
+    const res = await fetch(`${BASE_URL}${AUTH_API.GET_PROFILE}`, {
+      credentials: "include",
+    });
+
+    if (!res.ok) return { isAuthenticated: false };
+
+    const data = await res.json();
+    return {
+      isAuthenticated: true,
+      user: data.user,
+    };
+  } catch {
+    return { isAuthenticated: false };
+  }
+};
+
+export const updateProfile = async (data: any) => {
+  const res = await fetch(`${BASE_URL}${AUTH_API.UPDATE_PROFILE}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(data),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || "Failed to update profile");
   }
   return res.json();
 };

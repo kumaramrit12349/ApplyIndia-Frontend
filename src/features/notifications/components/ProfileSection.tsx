@@ -7,6 +7,8 @@ interface ProfileSectionProps {
   familyName?: string;
   email?: string;
   isAdmin?: boolean;
+  state?: string;
+  category?: string;
   onLogout: () => void;
   onShowAuthPopup: () => void;
 }
@@ -17,6 +19,8 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({
   familyName,
   email,
   isAdmin,
+  state,
+  category,
   onLogout,
   onShowAuthPopup,
 }) => {
@@ -136,6 +140,12 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({
               <div>
                 <div className="fw-semibold">{fullName}</div>
                 {email && <div className="text-muted small">{email}</div>}
+                {(state || category) && (
+                  <div className="text-muted extra-small mt-1" style={{ fontSize: '0.75rem' }}>
+                    {state && <span>{state} </span>}
+                    {category && <span>• {category}</span>}
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -154,6 +164,17 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({
                 Dashboard
               </button>
             )}
+
+            {/* Profile */}
+            <button
+              className="btn btn-outline-primary text-start px-3 py-2"
+              onClick={() => {
+                setOpen(false);
+                navigate("/profile");
+              }}
+            >
+              Profile
+            </button>
 
             {/* Logout */}
             <button

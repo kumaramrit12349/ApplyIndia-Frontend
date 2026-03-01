@@ -10,6 +10,8 @@ interface NavbarProps {
   familyName?: string;
   userEmail?: string;
   isAdmin?: boolean;
+  state?: string;
+  category?: string;
   onLogout: () => void;
   onShowAuthPopup: () => void;
 }
@@ -20,6 +22,8 @@ const Navbar: React.FC<NavbarProps> = ({
   familyName,
   userEmail,
   isAdmin,
+  state,
+  category,
   onLogout,
   onShowAuthPopup,
 }) => {
@@ -49,6 +53,8 @@ const Navbar: React.FC<NavbarProps> = ({
             familyName={familyName}
             email={userEmail}
             isAdmin={isAdmin}
+            state={state}
+            category={category}
             onLogout={onLogout}
             onShowAuthPopup={onShowAuthPopup}
           />

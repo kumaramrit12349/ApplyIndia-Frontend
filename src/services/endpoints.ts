@@ -37,4 +37,6 @@ export const AUTH_API = {
   CHECK_AUTH_STATUS: "/auth/me",
   FORGOT_PASSWORD: "/auth/forgot-password",
   RESET_PASSWORD: "/auth/reset-password",
+  UPDATE_PROFILE: "/auth/profile",
+  GET_PROFILE: "/auth/profile",
 };

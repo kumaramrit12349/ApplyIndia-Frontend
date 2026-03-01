@@ -51,6 +51,17 @@ export const INDIAN_STATES = [
   { value: "WB", label: "West Bengal" },
 ] as const;
 
+export const EDUCATIONAL_QUALIFICATIONS = [
+  { value: "10th", label: "10th (Matriculation)" },
+  { value: "12th", label: "12th (Intermediate)" },
+  { value: "ITI", label: "ITI" },
+  { value: "Diploma", label: "Diploma" },
+  { value: "Graduate", label: "Graduate (B.A, B.Sc, B.Com, B.Tech, etc.)" },
+  { value: "Post Graduate", label: "Post Graduate (M.A, M.Sc, M.Com, M.Tech, MBA, etc.)" },
+  { value: "PhD", label: "PhD / Doctorate" },
+  { value: "Other", label: "Other" },
+] as const;
+
 // *********** Url structure for categories *************
 // /jobs/ssc-gd-constable
 // /jobs/bihar-police-si
