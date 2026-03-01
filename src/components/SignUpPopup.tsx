@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { loginUser, signUpUser } from "../services/authApi";
-import { PUBLIC_API } from "../services/endpoints";
 
 // const SSO_PROVIDERS = [
 //   {
@@ -54,6 +54,7 @@ interface AuthPopupProps {
   onClose: () => void;
   onAuthSuccess?: () => void;
   onRequireVerification?: (email: string) => void;
+  onForgotPassword?: () => void;
 }
 
 const AuthPopup: React.FC<AuthPopupProps> = ({
@@ -61,6 +62,7 @@ const AuthPopup: React.FC<AuthPopupProps> = ({
   onClose,
   onAuthSuccess,
   onRequireVerification,
+  onForgotPassword,
 }) => {
   const [tab, setTab] = useState<AuthTab>("login");
   const [form, setForm] = useState({
@@ -72,6 +74,7 @@ const AuthPopup: React.FC<AuthPopupProps> = ({
   });
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const swapTab = (next: AuthTab) => {
     setTab(next);
@@ -142,9 +145,9 @@ const AuthPopup: React.FC<AuthPopupProps> = ({
   //   window.open(providerUrl, "_blank", "noopener");
   // };
 
-  const handleForgotPassword = () => {
-    window.open(`${PUBLIC_API.FORGOT_PASSWORD}`, "_blank");
-  };
+  // const handleForgotPassword = () => {
+  //   window.open(`${PUBLIC_API.FORGOT_PASSWORD}`, "_blank");
+  // };
 
   return (
     <Modal
@@ -265,20 +268,30 @@ const AuthPopup: React.FC<AuthPopupProps> = ({
             <label className="form-label fw-semibold" htmlFor="password">
               Password
             </label>
-            <input
-              id="password"
-              className="form-control bg-body-tertiary"
-              style={{ borderRadius: 10, fontSize: "1.08em" }}
-              placeholder="Enter Password"
-              name="password"
-              value={form.password}
-              onChange={handleInput}
-              type="password"
-              required
-              autoComplete={
-                tab === "login" ? "current-password" : "new-password"
-              }
-            />
+            <div className="position-relative">
+              <input
+                id="password"
+                className="form-control bg-body-tertiary"
+                style={{ borderRadius: 10, fontSize: "1.08em", paddingRight: "40px" }}
+                placeholder="Enter Password"
+                name="password"
+                value={form.password}
+                onChange={handleInput}
+                type={showPassword ? "text" : "password"}
+                required
+                autoComplete={
+                  tab === "login" ? "current-password" : "new-password"
+                }
+              />
+              <button
+                type="button"
+                className="btn position-absolute end-0 top-50 translate-middle-y border-0 bg-transparent text-muted"
+                onClick={() => setShowPassword(!showPassword)}
+                style={{ zIndex: 10 }}
+              >
+                {showPassword ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
+              </button>
+            </div>
           </div>
 
           {/* First and Last Name (Register only) */}
@@ -344,18 +357,18 @@ const AuthPopup: React.FC<AuthPopupProps> = ({
           )}
 
           {/* Forgot Password & Submit */}
-          {/* <div className="d-flex align-items-center justify-content-between mb-3">
+          <div className="d-flex align-items-center justify-content-end mb-3">
             {tab === "login" && (
               <a
                 className="link-primary fw-semibold"
                 style={{ fontSize: "0.98em", cursor: "pointer" }}
-                onClick={handleForgotPassword}
+                onClick={onForgotPassword}
               >
-                Forgot Password
+                Forgot Password?
               </a>
             )}
             {tab === "register" && <span />}
-          </div> */}
+          </div>
 
           <Button
             type="submit"
@@ -374,8 +387,8 @@ const AuthPopup: React.FC<AuthPopupProps> = ({
                 ? "Signing In..."
                 : "Signing Up..."
               : tab === "login"
-              ? "Sign In"
-              : "Sign Up"}
+                ? "Sign In"
+                : "Sign Up"}
           </Button>
         </form>
 

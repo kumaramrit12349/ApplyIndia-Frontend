@@ -99,3 +99,35 @@ export const checkAuthStatus = async (): Promise<AuthStatus> => {
     return { isAuthenticated: false };
   }
 };
+
+export const forgotPassword = async (email: string) => {
+  const res = await fetch(`${BASE_URL}${AUTH_API.FORGOT_PASSWORD}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || "Failed to send reset code");
+  }
+  return res.json();
+};
+
+export const resetPassword = async (
+  email: string,
+  code: string,
+  password: string
+) => {
+  const res = await fetch(`${BASE_URL}${AUTH_API.RESET_PASSWORD}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, code, newPassword: password }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || "Failed to reset password");
+  }
+  return res.json();
+};

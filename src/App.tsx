@@ -31,7 +31,9 @@ import TermsAndConditions from "./pages/legal/TermsAndConditions";
 import Disclaimer from "./pages/legal/Disclaimer";
 import AboutUs from "./pages/legal/AboutUs";
 import FeedbackPage from "./pages/feedback/FeedbackPage";
-import { ToastContainer } from "react-toastify";
+import ForgotPasswordPopup from "./components/ForgotPasswordPopup";
+import ResetPasswordPopup from "./components/ResetPasswordPopup";
+import { ToastContainer, toast } from "react-toastify";
 import { checkAuthStatus, logoutUser } from "./services/authApi";
 
 // const POPUP_INTERVAL = 300 * 1000;
@@ -49,7 +51,10 @@ const AppLayout: React.FC = () => {
 
   const [showAuthPopup, setShowAuthPopup] = useState(false);
   const [showVerifyPopup, setShowVerifyPopup] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [showResetPassword, setShowResetPassword] = useState(false);
   const [pendingEmail, setPendingEmail] = useState<string>("");
+  const [resetEmail, setResetEmail] = useState<string>("");
 
   const [givenName, setGivenName] = useState<string | undefined>(undefined);
   const [familyName, setFamilyName] = useState<string | undefined>(undefined);
@@ -136,6 +141,23 @@ const AppLayout: React.FC = () => {
     //     POPUP_INTERVAL
     //   );
     // }
+  };
+
+  const handleForgotPassword = () => {
+    setShowAuthPopup(false);
+    setShowForgotPassword(true);
+  };
+
+  const handleCodeSent = (email: string) => {
+    setResetEmail(email);
+    setShowForgotPassword(false);
+    setShowResetPassword(true);
+  };
+
+  const handleResetSuccess = () => {
+    setShowResetPassword(false);
+    setShowAuthPopup(true);
+    toast.success("Password reset successful. Please log in with your new password.");
   };
 
   if (checkingAuth) {
@@ -257,6 +279,7 @@ const AppLayout: React.FC = () => {
         onClose={() => setShowAuthPopup(false)}
         onAuthSuccess={handleAuthSuccess}
         onRequireVerification={handleRequireVerification}
+        onForgotPassword={handleForgotPassword}
       />
 
       <VerifyAccountPopup
@@ -264,6 +287,19 @@ const AppLayout: React.FC = () => {
         email={pendingEmail}
         onClose={() => setShowVerifyPopup(false)}
         onVerified={handleAuthSuccess}
+      />
+
+      <ForgotPasswordPopup
+        show={showForgotPassword}
+        onClose={() => setShowForgotPassword(false)}
+        onCodeSent={handleCodeSent}
+      />
+
+      <ResetPasswordPopup
+        show={showResetPassword}
+        email={resetEmail}
+        onClose={() => setShowResetPassword(false)}
+        onSuccess={handleResetSuccess}
       />
     </div>
   );

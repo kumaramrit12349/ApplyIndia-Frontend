@@ -35,4 +35,6 @@ export const AUTH_API = {
   VERIFY_ACCOUNT: "/auth/confirm",
   RESEND_VERIFICATION_CODE: "/auth/resend",
   CHECK_AUTH_STATUS: "/auth/me",
+  FORGOT_PASSWORD: "/auth/forgot-password",
+  RESET_PASSWORD: "/auth/reset-password",
 };
