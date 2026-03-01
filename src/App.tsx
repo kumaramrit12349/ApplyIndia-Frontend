@@ -24,6 +24,7 @@ import VerifyAccountPopup from "./components/VerifyAccount";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import CategoryView from "./features/notifications/components/CategoryView";
 import UserNotificationDetailPage from "./features/notifications/components/UserNotificationDetailPage";
+import JobBanner from "./components/JobBanner/JobBanner";
 import PrivacyPolicy from "./pages/legal/PrivacyPolicy";
 import TermsAndConditions from "./pages/legal/TermsAndConditions";
 import Disclaimer from "./pages/legal/Disclaimer";
@@ -37,9 +38,9 @@ import { checkAuthStatus, logoutUser } from "./services/authApi";
 const AppLayout: React.FC = () => {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith("/admin");
-  const hideSearchBar =
-    matchPath("/notification/:id", location.pathname) !== null ||
-    matchPath("/admin/review/:id", location.pathname) !== null;
+  const showSearchBarBanner =
+    location.pathname === "/" ||
+    matchPath("/notification/category/:category", location.pathname) !== null;
 
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [checkingAuth, setCheckingAuth] = useState(true);
@@ -158,7 +159,8 @@ const AppLayout: React.FC = () => {
       />
 
       {!isAdminRoute && <Navigation />}
-      {!hideSearchBar && !isAdminRoute && <SearchBar />}
+      {showSearchBarBanner && <SearchBar />}
+      {!isAdminRoute && <JobBanner />}
 
       <main className="flex-grow-1">
         <Routes>

@@ -3,6 +3,7 @@ export const PUBLIC_API = {
     HOME: "/public/notification/home",
     CATEGORY: (category: string) => `/public/notification/category/${category}`,
     BY_ID: (id: string) => `/public/notification/getById/${id}`,
+    LATEST: "/public/notification/latest",
   },
   FEEDBACK: {
     SUBMIT: "/public/feedback",

@@ -8,6 +8,11 @@ export const fetchHomePageNotifications = () => {
   return apiFetch<any>(PUBLIC_API.HOME.HOME);
 };
 
+// Fetch latest notifications
+export const fetchLatestNotifications = () => {
+  return apiFetch<any>(PUBLIC_API.HOME.LATEST);
+};
+
 
 // fetch notification by Category
 export async function fetchNotificationsByCategory(
