@@ -23,6 +23,7 @@ import SignUpPopup from "./components/SignUpPopup";
 import VerifyAccountPopup from "./components/VerifyAccount";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import CategoryView from "./features/notifications/components/CategoryView";
+import StateView from "./features/notifications/components/StateView";
 import UserNotificationDetailPage from "./features/notifications/components/UserNotificationDetailPage";
 import JobBanner from "./components/JobBanner/JobBanner";
 import PrivacyPolicy from "./pages/legal/PrivacyPolicy";
@@ -40,7 +41,8 @@ const AppLayout: React.FC = () => {
   const isAdminRoute = location.pathname.startsWith("/admin");
   const showSearchBarBanner =
     location.pathname === "/" ||
-    matchPath("/notification/category/:category", location.pathname) !== null;
+    matchPath("/notification/category/:category", location.pathname) !== null ||
+    matchPath("/notification/state/:state", location.pathname) !== null;
 
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [checkingAuth, setCheckingAuth] = useState(true);
@@ -216,6 +218,10 @@ const AppLayout: React.FC = () => {
           <Route
             path="/notification/category/:category"
             element={<CategoryView />}
+          />
+          <Route
+            path="/notification/state/:state"
+            element={<StateView />}
           />
           <Route
             path="/notification/:slug/:id"

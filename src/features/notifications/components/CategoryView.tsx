@@ -53,9 +53,10 @@ const CategoryView: React.FC = () => {
         searchValue
       );
 
-      setItems(prev =>
-        isFirst ? res.data : [...prev, ...res.data]
-      );
+      setItems(prev => {
+        const newData = Array.isArray(res.data) ? res.data : [];
+        return isFirst ? newData : [...prev, ...newData]
+      });
 
       setLastKey(res.lastEvaluatedKey);
       setHasMore(Boolean(res.lastEvaluatedKey));

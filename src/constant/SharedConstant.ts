@@ -5,10 +5,50 @@ export const NOTIFICATION_CATEGORIES = [
   { value: "all", label: "Home" },
   { value: "job", label: "Job" }, // is_admit_card, is_syllabus, is_answer_key, is_result
   { value: "entrance-exam", label: "Entrance Exam" }, // is_admit_card, is_syllabus, is_answer_key, is_result
-  { value: "admission", label: "Admission" }, 
-  { value: "scholarship", label: "Scholarship" }, 
-  { value: "sarkari-yojana", label: "Sarkari Yojana" }, 
-  { value: "documents", label: "Documents" }, 
+  { value: "admission", label: "Admission" },
+  { value: "scholarship", label: "Scholarship" },
+  { value: "sarkari-yojana", label: "Sarkari Yojana" },
+  { value: "documents", label: "Documents" },
+] as const;
+
+export const INDIAN_STATES = [
+  { value: "CT", label: "Central" },
+  { value: "AN", label: "Andaman and Nicobar Islands" },
+  { value: "AP", label: "Andhra Pradesh" },
+  { value: "AR", label: "Arunachal Pradesh" },
+  { value: "AS", label: "Assam" },
+  { value: "BR", label: "Bihar" },
+  { value: "CH", label: "Chandigarh" },
+  { value: "CG", label: "Chhattisgarh" },
+  { value: "DN", label: "Dadra and Nagar Haveli and Daman and Diu" },
+  { value: "DL", label: "Delhi" },
+  { value: "GA", label: "Goa" },
+  { value: "GJ", label: "Gujarat" },
+  { value: "HR", label: "Haryana" },
+  { value: "HP", label: "Himachal Pradesh" },
+  { value: "JK", label: "Jammu and Kashmir" },
+  { value: "JH", label: "Jharkhand" },
+  { value: "KA", label: "Karnataka" },
+  { value: "KL", label: "Kerala" },
+  { value: "LA", label: "Ladakh" },
+  { value: "LD", label: "Lakshadweep" },
+  { value: "MP", label: "Madhya Pradesh" },
+  { value: "MH", label: "Maharashtra" },
+  { value: "MN", label: "Manipur" },
+  { value: "ML", label: "Meghalaya" },
+  { value: "MZ", label: "Mizoram" },
+  { value: "NL", label: "Nagaland" },
+  { value: "OR", label: "Odisha" },
+  { value: "PY", label: "Puducherry" },
+  { value: "PB", label: "Punjab" },
+  { value: "RJ", label: "Rajasthan" },
+  { value: "SK", label: "Sikkim" },
+  { value: "TN", label: "Tamil Nadu" },
+  { value: "TG", label: "Telangana" },
+  { value: "TR", label: "Tripura" },
+  { value: "UP", label: "Uttar Pradesh" },
+  { value: "UK", label: "Uttarakhand" },
+  { value: "WB", label: "West Bengal" },
 ] as const;
 
 // *********** Url structure for categories *************
@@ -34,6 +74,7 @@ export const NOTIFICATION_COLUMNS = {
   SK: "sk", // not required in ui
   TITLE: "title",
   CATEGORY: "category",
+  STATE: "state",
   DEPARTMENT: "department",
   TOTAL_VACANCIES: "total_vacancies",
 

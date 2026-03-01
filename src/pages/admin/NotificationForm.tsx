@@ -4,7 +4,7 @@ import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
 import ConfirmModal from "../../components/ConfirmModal/ConfirmModal";
 import Toast from "../../components/Toast/Toast";
-import { NOTIFICATION_CATEGORIES } from "../../constant/SharedConstant";
+import { NOTIFICATION_CATEGORIES, INDIAN_STATES } from "../../constant/SharedConstant";
 import type { INotification } from "../../interface/NotificationInterface";
 import { epochToDateInput, toEpoch } from "../../utils/utils";
 
@@ -177,6 +177,24 @@ const NotificationForm: React.FC<Props> = ({
             {NOTIFICATION_CATEGORIES.map((c) => (
               <option key={c.value} value={c.value}>
                 {c.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="mb-3">
+          <label className="form-label">State Valid For *</label>
+          <select
+            name="state"
+            className="form-select"
+            value={(form as any).state || ""}
+            onChange={handleRootChange}
+            required
+          >
+            <option value="">Select State</option>
+            {INDIAN_STATES.map((s) => (
+              <option key={s.value} value={s.value}>
+                {s.label}
               </option>
             ))}
           </select>

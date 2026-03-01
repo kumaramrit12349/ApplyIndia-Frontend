@@ -22,8 +22,8 @@ const ListView: React.FC<ListViewProps> = ({
   const displayedItems = showAllItems
     ? items
     : showAll
-    ? items
-    : items.slice(0, 5);
+      ? items
+      : items.slice(0, 5);
 
   // Use a normalized path for category (lowercase, hyphens, e.g.: "Admit Cards" -> "admit-card")
   const getCategoryRoute = (category: string) => {

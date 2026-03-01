@@ -2,8 +2,10 @@ export const PUBLIC_API = {
   HOME: {
     HOME: "/public/notification/home",
     CATEGORY: (category: string) => `/public/notification/category/${category}`,
+    STATE: (state: string) => `/public/notification/state/${state}`,
     BY_ID: (id: string) => `/public/notification/getById/${id}`,
     LATEST: "/public/notification/latest",
+    FILTERS: "/public/notification/filters",
   },
   FEEDBACK: {
     SUBMIT: "/public/feedback",

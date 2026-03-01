@@ -1,9 +1,16 @@
 import type { INotification } from "../interface/NotificationInterface";
+import { INDIAN_STATES } from "../constant/SharedConstant";
 
 export const formatCategoryTitle = (category: string): string => {
   return (
     category?.replace(/-/g, " ")?.replace(/\b\w/g, (l) => l.toUpperCase()) || ""
   );
+};
+
+export const formatStateName = (stateCode?: string): string => {
+  if (!stateCode) return "Central";
+  const stateObj = INDIAN_STATES.find(s => s.value.toLowerCase() === stateCode.toLowerCase());
+  return stateObj ? stateObj.label : stateCode.replace(/-/g, " ")?.replace(/\b\w/g, (l) => l.toUpperCase());
 };
 
 export const getId = (id: string): string => {
@@ -25,6 +32,7 @@ export const emptyNotificationForm: INotification = {
   sk: "",
   title: "",
   category: "",
+  state: "",
   department: "",
   total_vacancies: 0,
 

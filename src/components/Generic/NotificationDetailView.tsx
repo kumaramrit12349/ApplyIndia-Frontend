@@ -13,7 +13,7 @@ import {
   BsYoutube,
 } from "react-icons/bs";
 import { FcViewDetails } from "react-icons/fc";
-import { formatCategoryTitle, getId } from "../../utils/utils";
+import { formatCategoryTitle, formatStateName, getId } from "../../utils/utils";
 import type { INotification } from "../../interface/NotificationInterface";
 
 /* ---------------- Helpers ---------------- */
@@ -21,10 +21,10 @@ import type { INotification } from "../../interface/NotificationInterface";
 const formatDate = (d?: string) =>
   d
     ? new Date(d).toLocaleDateString("en-IN", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-      })
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    })
     : "Not Released";
 
 const formatDateTime = (d?: number | string | null) => {
@@ -114,18 +114,16 @@ const LabelValue = ({
   return (
     <div className="d-flex flex-wrap mb-2 align-items-start">
       <span
-        className={`me-2 fw-semibold ${
-          highlight ? "text-danger" : "text-dark"
-        }`}
+        className={`me-2 fw-semibold ${highlight ? "text-danger" : "text-dark"
+          }`}
         style={{ fontSize: "0.95rem", whiteSpace: "nowrap" }}
       >
         {label}
       </span>
 
       <span
-        className={`${
-          highlight ? "text-danger fw-semibold" : "text-secondary"
-        }`}
+        className={`${highlight ? "text-danger fw-semibold" : "text-secondary"
+          }`}
         style={{
           fontSize: "0.95rem",
           wordBreak: "break-word",
@@ -228,6 +226,11 @@ export default function NotificationDetailView({
                   value={notification.department}
                 />
                 <LabelValue
+                  label="State / Region:"
+                  value={formatStateName(notification.state)}
+                  highlight
+                />
+                <LabelValue
                   label="Total Vacancies:"
                   value={notification.total_vacancies}
                 />
@@ -279,9 +282,8 @@ export default function NotificationDetailView({
               <Card title="Eligibility" icon={<BsFillPersonFill />}>
                 <LabelValue
                   label="Age:"
-                  value={`${notification.eligibility?.min_age ?? "—"} - ${
-                    notification.eligibility?.max_age ?? "—"
-                  } Years`}
+                  value={`${notification.eligibility?.min_age ?? "—"} - ${notification.eligibility?.max_age ?? "—"
+                    } Years`}
                 />
                 <LabelValue
                   label="Qualification:"

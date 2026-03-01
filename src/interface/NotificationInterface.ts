@@ -9,6 +9,7 @@ export interface INotification {
   /* Basic Info */
   title: string;
   category: string;
+  state: string;
   department: string;
   total_vacancies: number;
 
