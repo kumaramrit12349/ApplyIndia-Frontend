@@ -40,3 +40,12 @@ export const AUTH_API = {
   UPDATE_PROFILE: "/auth/profile",
   GET_PROFILE: "/auth/profile",
 };
+
+export const USER_ACTIVITY_API = {
+  TRACK: "/api/user-activity/track",
+  LIST: "/api/user-activity/list",
+  CHECK: (notificationSk: string) =>
+    `/api/user-activity/check/${encodeURIComponent(notificationSk)}`,
+  REMOVE: (notificationSk: string) =>
+    `/api/user-activity/remove/${encodeURIComponent(notificationSk)}`,
+};

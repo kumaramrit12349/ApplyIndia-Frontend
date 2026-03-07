@@ -27,25 +27,32 @@ export async function apiFetch<T>(
   return response.json() as Promise<T>;
 }
 
+interface PrivateFetchOptions extends RequestInit {
+  redirectOn401?: boolean;
+}
+
 /* ===============================
    PRIVATE / AUTH API FETCH
 ================================ */
 export async function privateFetch<T>(
   url: string,
-  options: RequestInit = {},
+  options: PrivateFetchOptions = {},
 ): Promise<T> {
+  const { redirectOn401 = true, ...fetchOptions } = options;
   const finalUrl = url.startsWith("/") ? url : `/${url}`;
   const res = await fetch(`${BASE_URL}${finalUrl}`, {
-    ...options,
+    ...fetchOptions,
     credentials: "include",
     headers: {
       "Content-Type": "application/json",
-      ...options.headers,
+      ...fetchOptions.headers,
     },
   });
   if (res.status === 401 || res.status === 403) {
-    // GLOBAL REDIRECT
-    window.location.href = "/";
+    if (redirectOn401) {
+      // GLOBAL REDIRECT
+      window.location.href = "/";
+    }
     throw new Error("AUTH_REDIRECT");
   }
   if (!res.ok) {

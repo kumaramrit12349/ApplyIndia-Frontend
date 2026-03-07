@@ -1,0 +1,54 @@
+/* ============================================
+   My Dashboard — Premium Styles
+   ============================================ */
+
+.dashboard-title {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Stat Cards */
+.dashboard-stat-card {
+    border-radius: 16px;
+    padding: 20px 16px;
+    text-align: center;
+    color: #fff;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    user-select: none;
+}
+
+.dashboard-stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.dashboard-stat-emoji {
+    font-size: 28px;
+    margin-bottom: 4px;
+}
+
+.dashboard-stat-count {
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1.1;
+}
+
+.dashboard-stat-label {
+    font-size: 0.8rem;
+    font-weight: 500;
+    opacity: 0.9;
+    margin-top: 2px;
+}
+
+/* Activity Cards */
+.dashboard-activity-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dashboard-activity-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}

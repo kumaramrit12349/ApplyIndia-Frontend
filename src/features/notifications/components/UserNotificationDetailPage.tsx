@@ -3,7 +3,15 @@ import { useParams } from "react-router-dom";
 import NotificationDetailView from "../../../components/Generic/NotificationDetailView";
 import { getNotificationById } from "../../../services/public/notiifcationApi";
 
-const UserNotificationDetailPage: React.FC = () => {
+interface UserNotificationDetailPageProps {
+  isAuthenticated?: boolean;
+  onShowAuthPopup?: () => void;
+}
+
+const UserNotificationDetailPage: React.FC<UserNotificationDetailPageProps> = ({
+  isAuthenticated = false,
+  onShowAuthPopup,
+}) => {
   const { id } = useParams<{
     id: string;
   }>();
@@ -41,9 +49,14 @@ const UserNotificationDetailPage: React.FC = () => {
   }
   return (
     <div className="container mt-5 mb-5">
-      <NotificationDetailView notification={notification} />
+      <NotificationDetailView
+        notification={notification}
+        isAuthenticated={isAuthenticated}
+        onShowAuthPopup={onShowAuthPopup}
+      />
     </div>
   );
 };
 
 export default UserNotificationDetailPage;
+

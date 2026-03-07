@@ -34,6 +34,7 @@ import FeedbackPage from "./pages/feedback/FeedbackPage";
 import ForgotPasswordPopup from "./components/ForgotPasswordPopup";
 import ResetPasswordPopup from "./components/ResetPasswordPopup";
 import ProfilePage from "./pages/ProfilePage";
+import MyDashboard from "./pages/MyDashboard";
 import { ToastContainer, toast } from "react-toastify";
 import { checkAuthStatus, logoutUser } from "./services/authApi";
 
@@ -62,6 +63,15 @@ const AppLayout: React.FC = () => {
   const [userEmail, setUserEmail] = useState<string | undefined>(undefined);
   const [isAdmin, setIsAdmin] = useState<boolean | undefined>(undefined);
   const [userState, setUserState] = useState<string | undefined>(undefined);
+
+  // Global event listener for forcing auth popup
+  useEffect(() => {
+    const handleOpenAuthPopup = () => {
+      setShowAuthPopup(true);
+    };
+    window.addEventListener("openAuthPopup", handleOpenAuthPopup);
+    return () => window.removeEventListener("openAuthPopup", handleOpenAuthPopup);
+  }, []);
   const [userCategory, setUserCategory] = useState<string | undefined>(undefined);
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -260,7 +270,25 @@ const AppLayout: React.FC = () => {
           />
           <Route
             path="/notification/:slug/:id"
-            element={<UserNotificationDetailPage />}
+            element={
+              <UserNotificationDetailPage
+                isAuthenticated={isAuthenticated}
+                onShowAuthPopup={() => setShowAuthPopup(true)}
+              />
+            }
+          />
+
+          {/* User dashboard – protected */}
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute
+                isAuthenticated={isAuthenticated}
+                checkingAuth={checkingAuth}
+              >
+                <MyDashboard />
+              </ProtectedRoute>
+            }
           />
 
           {/* Legal pages */}

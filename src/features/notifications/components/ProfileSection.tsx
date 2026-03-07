@@ -161,9 +161,20 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({
                   navigate("/admin/dashboard");
                 }}
               >
-                Dashboard
+                Admin Dashboard
               </button>
             )}
+
+            {/* My Dashboard – for all logged in users */}
+            <button
+              className="btn btn-outline-primary text-start px-3 py-2"
+              onClick={() => {
+                setOpen(false);
+                navigate("/dashboard");
+              }}
+            >
+              📋 My Dashboard
+            </button>
 
             {/* Profile */}
             <button

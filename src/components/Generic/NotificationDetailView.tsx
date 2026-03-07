@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   BsCalendar,
   BsFillPersonFill,
@@ -11,10 +11,19 @@ import {
   BsGlobe,
   BsCheckCircle,
   BsYoutube,
+  BsCheckCircleFill,
+  BsLockFill,
 } from "react-icons/bs";
 import { FcViewDetails } from "react-icons/fc";
 import { formatCategoryTitle, formatStateName, getId } from "../../utils/utils";
 import type { INotification } from "../../interface/NotificationInterface";
+import CongratulationsPopup from "../CongratulationsPopup";
+import {
+  trackActivity,
+  checkActivityForNotification,
+  type UserActivityStatus,
+} from "../../services/private/userActivityApi";
+import { toast } from "react-toastify";
 
 /* ---------------- Helpers ---------------- */
 
@@ -72,6 +81,51 @@ const getGroupedFees = (fee?: INotification["fee"]) => {
 
   return Object.entries(map);
 };
+
+/* ---------------- Tracking Steps Config ---------------- */
+
+const TRACKING_STEPS: {
+  status: UserActivityStatus;
+  label: string;
+  emoji: string;
+  congratsTitle: string;
+  congratsMessage: string;
+}[] = [
+    {
+      status: 1,
+      label: "Mark as Applied",
+      emoji: "📝",
+      congratsTitle: "🎉 Application Submitted!",
+      congratsMessage:
+        "You've taken the first step towards your dream job! Stay focused and keep going!",
+    },
+    {
+      status: 2,
+      label: "Admit Card Downloaded",
+      emoji: "🎫",
+      congratsTitle: "🎉 Admit Card Ready!",
+      congratsMessage:
+        "Great progress! Your admit card is secured. Prepare well for the exam!",
+    },
+    {
+      status: 3,
+      label: "Result Downloaded",
+      emoji: "📊",
+      congratsTitle: "🎉 Result Checked!",
+      congratsMessage:
+        "Awesome! You've checked your result. Keep pushing towards the finish line!",
+    },
+    {
+      status: 4,
+      label: "Selected / Joined",
+      emoji: "🏆",
+      congratsTitle: "🏆 You Made It!",
+      congratsMessage:
+        "Incredible achievement! You've been selected! This is the start of something amazing!",
+    },
+  ];
+
+const STATUS_ORDER: UserActivityStatus[] = [1, 2, 3, 4];
 
 /* ---------------- UI Components ---------------- */
 
@@ -141,14 +195,81 @@ const LabelValue = ({
 export default function NotificationDetailView({
   notification,
   isAdmin = false,
+  isAuthenticated = false,
+  onShowAuthPopup,
   onApprove,
   approving,
 }: {
   notification: INotification;
   isAdmin?: boolean;
+  isAuthenticated?: boolean;
+  onShowAuthPopup?: () => void;
   onApprove?: () => void;
   approving?: boolean;
 }) {
+  const [currentStatus, setCurrentStatus] = useState<UserActivityStatus | null>(null);
+  const [trackingLoading, setTrackingLoading] = useState<UserActivityStatus | null>(null);
+  const [showCongrats, setShowCongrats] = useState(false);
+  const [congratsConfig, setCongratsConfig] = useState({ title: "", message: "" });
+
+  // Fetch existing activity on mount (only if authenticated)
+  useEffect(() => {
+    if (isAuthenticated && notification?.sk) {
+      checkActivityForNotification(notification.sk)
+        .then((res) => {
+          if (res.tracked && res.data) {
+            setCurrentStatus(res.data.status);
+          }
+        })
+        .catch(() => {
+          // silently fail – user may just not have tracked yet
+        });
+    }
+  }, [isAuthenticated, notification?.sk]);
+
+  const handleTrackAction = async (step: (typeof TRACKING_STEPS)[number]) => {
+    if (!isAuthenticated) {
+      toast.info("🔒 Please login to track your progress!", {
+        autoClose: 3000,
+      });
+      if (onShowAuthPopup) onShowAuthPopup();
+      return;
+    }
+
+    setTrackingLoading(step.status);
+    try {
+      await trackActivity(
+        notification.sk,
+        notification.title,
+        notification.category,
+        step.status
+      );
+      setCurrentStatus(step.status);
+      setCongratsConfig({
+        title: step.congratsTitle,
+        message: step.congratsMessage,
+      });
+      setShowCongrats(true);
+    } catch (error: any) {
+      const msg = error?.message || "Failed to track activity";
+      if (msg.includes("Invalid status transition")) {
+        toast.warning("Complete the previous step first!");
+      } else {
+        toast.error(msg);
+      }
+    } finally {
+      setTrackingLoading(null);
+    }
+  };
+
+  const getStepState = (stepIndex: number) => {
+    if (!currentStatus) return stepIndex === 0 ? "active" : "locked";
+    const currentIndex = STATUS_ORDER.indexOf(currentStatus);
+    if (stepIndex <= currentIndex) return "completed";
+    if (stepIndex === currentIndex + 1) return "active";
+    return "locked";
+  };
+
   if (!notification) return null;
 
   return (
@@ -212,6 +333,156 @@ export default function NotificationDetailView({
               </div>
             )}
           </div>
+
+          {/* ============ TRACK YOUR PROGRESS ============ */}
+          {!isAdmin && (
+            <div className="card border-0 shadow-sm rounded-4 mb-4" id="track-progress-section">
+              <div className="card-body p-4">
+                <h5 className="fw-bold mb-3 d-flex align-items-center gap-2">
+                  🚀 Track Your Progress
+                </h5>
+                <p className="text-muted small mb-2">
+                  Follow your journey step by step — each milestone unlocks the next!
+                </p>
+                <div className="alert alert-info py-2 px-3 mb-4 d-flex align-items-center gap-2" style={{ fontSize: "0.80rem" }}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
+                    <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0z" />
+                  </svg>
+                  <span><strong>Note:</strong> You can track and remove an application a maximum of <strong>2 times</strong>.</span>
+                </div>
+
+                {/* Progress bar */}
+                <div className="d-flex align-items-center mb-4 px-2" style={{ gap: 0 }}>
+                  {TRACKING_STEPS.map((step, i) => {
+                    const state = getStepState(i);
+                    return (
+                      <React.Fragment key={step.status}>
+                        <div
+                          className="d-flex flex-column align-items-center"
+                          style={{ flex: "0 0 auto", zIndex: 1 }}
+                        >
+                          <div
+                            style={{
+                              width: 36,
+                              height: 36,
+                              borderRadius: "50%",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              fontSize: 16,
+                              fontWeight: 700,
+                              background:
+                                state === "completed"
+                                  ? "linear-gradient(135deg, #28a745, #20c997)"
+                                  : state === "active"
+                                    ? "linear-gradient(135deg, #667eea, #764ba2)"
+                                    : "#e9ecef",
+                              color: state === "locked" ? "#adb5bd" : "#fff",
+                              transition: "all 0.3s ease",
+                              boxShadow:
+                                state === "completed"
+                                  ? "0 2px 8px rgba(40,167,69,0.3)"
+                                  : state === "active"
+                                    ? "0 2px 8px rgba(102,126,234,0.3)"
+                                    : "none",
+                            }}
+                          >
+                            {state === "completed" ? "✓" : i + 1}
+                          </div>
+                          <span
+                            className="mt-1 text-center"
+                            style={{
+                              fontSize: "0.65rem",
+                              fontWeight: state === "active" ? 600 : 400,
+                              color:
+                                state === "completed"
+                                  ? "#28a745"
+                                  : state === "active"
+                                    ? "#764ba2"
+                                    : "#adb5bd",
+                              maxWidth: 70,
+                              lineHeight: 1.2,
+                            }}
+                          >
+                            {step.label}
+                          </span>
+                        </div>
+                        {i < TRACKING_STEPS.length - 1 && (
+                          <div
+                            style={{
+                              flex: 1,
+                              height: 3,
+                              background:
+                                getStepState(i) === "completed"
+                                  ? "linear-gradient(90deg, #28a745, #20c997)"
+                                  : "#e9ecef",
+                              marginTop: -18,
+                              transition: "background 0.3s ease",
+                            }}
+                          />
+                        )}
+                      </React.Fragment>
+                    );
+                  })}
+                </div>
+
+                {/* Action buttons */}
+                <div className="row g-2">
+                  {TRACKING_STEPS.map((step, i) => {
+                    const state = getStepState(i);
+                    const isLoading = trackingLoading === step.status;
+                    return (
+                      <div key={step.status} className="col-6 col-md-3">
+                        <button
+                          id={`track-btn-${step.status}`}
+                          className={`btn w-100 d-flex flex-column align-items-center justify-content-center gap-1 ${state === "completed"
+                            ? "btn-success"
+                            : state === "active"
+                              ? "btn-primary"
+                              : "btn-outline-secondary"
+                            }`}
+                          style={{
+                            minHeight: 70,
+                            fontSize: "0.8rem",
+                            fontWeight: 600,
+                            borderRadius: 12,
+                            opacity: state === "locked" ? 0.5 : 1,
+                            cursor: state === "locked" ? "not-allowed" : "pointer",
+                            transition: "all 0.2s ease",
+                          }}
+                          disabled={state === "locked" || state === "completed" || isLoading}
+                          onClick={() => handleTrackAction(step)}
+                        >
+                          {isLoading ? (
+                            <div
+                              className="spinner-border spinner-border-sm"
+                              role="status"
+                            >
+                              <span className="visually-hidden">Loading...</span>
+                            </div>
+                          ) : (
+                            <>
+                              <span style={{ fontSize: 20 }}>
+                                {state === "completed" ? (
+                                  <BsCheckCircleFill />
+                                ) : state === "locked" ? (
+                                  <BsLockFill />
+                                ) : (
+                                  step.emoji
+                                )}
+                              </span>
+                              <span>{step.label}</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* ---------------- Info Cards ---------------- */}
           <div className="row g-4 mb-4">
@@ -452,6 +723,15 @@ export default function NotificationDetailView({
           )}
         </div>
       </div>
+
+      {/* ---- Congratulations Popup ---- */}
+      <CongratulationsPopup
+        show={showCongrats}
+        onClose={() => setShowCongrats(false)}
+        title={congratsConfig.title}
+        message={congratsConfig.message}
+      />
     </main>
   );
 }
+
