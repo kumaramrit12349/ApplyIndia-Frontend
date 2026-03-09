@@ -28,6 +28,9 @@ export const PRIVATE_API = {
     ADD_COMMENT: (id: string) => `api/notification/comment/${id}`,
     GET_COMMENTS: (id: string) => `api/notification/comments/${id}`,
   },
+  FEEDBACK: {
+    VIEW: "api/feedback/view",
+  },
 };
 
 export const AUTH_API = {

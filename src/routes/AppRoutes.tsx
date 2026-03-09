@@ -6,6 +6,7 @@ import EditNotificationPage from "../pages/admin/EditNotificationPage";
 import ReviewNotificationPage from "../pages/admin/ReviewNotificationPage";
 import CategoryView from "../features/notifications/components/CategoryView";
 import UserNotificationDetailPage from "../features/notifications/components/UserNotificationDetailPage";
+import AdminFeedbackPage from "../pages/admin/AdminFeedbackPage";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         />
         <Route path="/admin/edit/:id" element={<EditNotificationPage />} />
         <Route path="/admin/review/:id" element={<ReviewNotificationPage />} />
+        <Route path="/admin/feedback" element={<AdminFeedbackPage />} />
 
         {/* Infinite scroll per category */}
         <Route

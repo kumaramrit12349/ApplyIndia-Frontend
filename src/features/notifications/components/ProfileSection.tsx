@@ -186,6 +186,19 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({
               </button>
             )}
 
+            {/* Admin Feedback - Strictly Admin Role */}
+            {adminRole === 'admin' && (
+              <button
+                className="btn btn-outline-primary text-start px-3 py-2"
+                onClick={() => {
+                  setOpen(false);
+                  navigate("/admin/feedback");
+                }}
+              >
+                📥 User Feedback
+              </button>
+            )}
+
             {/* My Dashboard – for all logged in users */}
             <button
               className="btn btn-outline-primary text-start px-3 py-2"

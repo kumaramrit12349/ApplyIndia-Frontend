@@ -15,6 +15,7 @@ import DashboardPage from "./pages/admin/DashboardPage";
 import AddNotificationPage from "./pages/admin/AddNotificationPage";
 import EditNotificationPage from "./pages/admin/EditNotificationPage";
 import ReviewNotificationPage from "./pages/admin/ReviewNotificationPage";
+import AdminFeedbackPage from "./pages/admin/AdminFeedbackPage";
 import Navbar from "./components/Navbar/Navbar";
 import Navigation from "./components/Navigation/Navigation";
 import SearchBar from "./components/SearchBar/SearchBar";
@@ -261,6 +262,26 @@ const AppLayout: React.FC = () => {
                 checkingAuth={checkingAuth}
               >
                 <ReviewNotificationPage adminRole={adminRole} />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/feedback"
+            element={
+              <ProtectedRoute
+                isAuthenticated={isAuthenticated}
+                checkingAuth={checkingAuth}
+              >
+                <AdminFeedbackPage
+                  isAuthenticated={isAuthenticated}
+                  givenName={givenName}
+                  familyName={familyName}
+                  email={userEmail}
+                  isAdmin={isAdmin}
+                  adminRole={adminRole}
+                  onLogout={handleLogout}
+                  onShowAuthPopup={() => setShowAuthPopup(true)}
+                />
               </ProtectedRoute>
             }
           />
