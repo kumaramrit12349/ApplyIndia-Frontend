@@ -27,7 +27,6 @@ const Navigation: React.FC = () => {
     availableStates.includes(state.value.toLowerCase())
   );
 
-  // Note: we purposely do NOT include ?searchValue= here, to ensure search is cleared on category navigation
   const getCategoryNavLink = (item: (typeof NOTIFICATION_CATEGORIES)[number]) =>
     item.value === "all" ? "/" : `/notification/category/${item.value}`;
 
@@ -46,28 +45,16 @@ const Navigation: React.FC = () => {
   };
 
   return (
-    <nav
-      className="bg-light"
-      style={{
-        position: "sticky",
-        top: "56px",
-        zIndex: 1040,
-        borderBottom: "1px solid #dee2e6",
-      }}
-    >
+    <nav className="ai-navigation">
       <div className="container">
         {/* Categories Row */}
-        <div className="overflow-auto border-bottom mb-1 pb-1">
-          <ul className="nav nav-pills py-2 flex-nowrap m-0" style={{ gap: '0.5rem' }}>
+        <div className="ai-nav-scroll border-bottom">
+          <ul className="ai-pill-list">
             {NOTIFICATION_CATEGORIES.map((item) => (
-              <li className="nav-item" key={`cat-${item.value}`}>
+              <li key={`cat-${item.value}`}>
                 <Link
                   to={getCategoryNavLink(item)}
-                  className={`nav-link text-nowrap px-3 py-1 ${isCategoryActive(item)
-                    ? "active bg-primary text-white"
-                    : "text-dark bg-white border"
-                    }`}
-                  style={{ borderRadius: "20px", fontSize: "0.9rem", fontWeight: 500 }}
+                  className={`ai-pill ${isCategoryActive(item) ? "active" : ""}`}
                 >
                   {item.label}
                 </Link>
@@ -76,19 +63,15 @@ const Navigation: React.FC = () => {
           </ul>
         </div>
 
-        {/* States Row - Wrapping, no scroll */}
+        {/* States Row */}
         {visibleStates.length > 0 && (
-          <div className="pb-2 pt-1">
-            <ul className="nav nav-pills d-flex flex-wrap m-0 gap-2">
+          <div className="pb-1 pt-1">
+            <ul className="ai-pill-list" style={{ flexWrap: "wrap" }}>
               {visibleStates.map((item) => (
-                <li className="nav-item" key={`state-${item.value}`}>
+                <li key={`state-${item.value}`}>
                   <Link
                     to={getStateNavLink(item)}
-                    className={`nav-link px-3 py-1 ${isStateActive(item)
-                      ? "active bg-secondary text-white"
-                      : "text-muted bg-white border"
-                      }`}
-                    style={{ borderRadius: "20px", fontSize: "0.85rem" }}
+                    className={`ai-pill state-pill ${isStateActive(item) ? "active" : ""}`}
                   >
                     {item.label}
                   </Link>

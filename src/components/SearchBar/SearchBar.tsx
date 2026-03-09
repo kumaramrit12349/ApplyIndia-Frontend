@@ -29,7 +29,6 @@ const SearchBar: React.FC<SearchBarProps> = ({
   const [filter, setFilter] = useState(currentFilter);
   const [availableStates, setAvailableStates] = useState<string[]>([]);
 
-  // Sync state with URL changes (e.g. Navigation clicks, forward/back, reload)
   useEffect(() => {
     setFilter(currentFilter);
     setQuery(urlSearchValue);
@@ -59,7 +58,6 @@ const SearchBar: React.FC<SearchBarProps> = ({
 
   const handleSearch = () => {
     if (onSearch) onSearch(query, filter);
-    // Route should update, including search query in state
     const route = getNavigateRoute(filter);
     if (filter !== "all") {
       navigate(`${route}?searchValue=${encodeURIComponent(query)}`);
@@ -71,36 +69,30 @@ const SearchBar: React.FC<SearchBarProps> = ({
   const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const val = e.target.value;
     setFilter(val);
-    setQuery(""); // <- This resets the search input immediately on dropdown change
-    // Also navigate to exactly the new filter route EXCEPT without search param
+    setQuery("");
     navigate(getNavigateRoute(val));
   };
 
-  // Handle input change: if cleared, remove searchValue from URL immediately
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setQuery(value);
-
     if (value === "") {
       navigate(getNavigateRoute(filter));
     }
   };
 
-  // Handle (X) button clear
   const handleClearSearch = () => {
     setQuery("");
     navigate(getNavigateRoute(filter));
   };
 
   return (
-    <div className="bg-light py-3 border-bottom">
+    <div className="ai-search-section">
       <div className="container">
         <div className="row justify-content-center">
           <div className="col-lg-10">
-            <div className="input-group shadow-sm">
+            <div className="ai-search-group">
               <select
-                className="form-select"
-                style={{ maxWidth: "180px" }}
                 value={filter}
                 onChange={handleFilterChange}
               >
@@ -123,7 +115,6 @@ const SearchBar: React.FC<SearchBarProps> = ({
               </select>
               <input
                 type="text"
-                className="form-control"
                 value={query}
                 placeholder={placeholder}
                 onChange={handleInputChange}
@@ -131,20 +122,24 @@ const SearchBar: React.FC<SearchBarProps> = ({
               />
               {query && (
                 <button
-                  className="btn btn-outline-secondary"
+                  className="ai-search-clear"
                   type="button"
                   onClick={handleClearSearch}
                   tabIndex={-1}
-                  style={{ zIndex: 2 }}
                   aria-label="Clear search"
                 >
                   &#x2715;
                 </button>
               )}
               <button
-                className="btn btn-primary px-4"
+                className="ai-search-btn"
                 onClick={handleSearch}
                 type="button"
+                disabled={!query.trim()}
+                style={{
+                  opacity: !query.trim() ? 0.6 : 1,
+                  cursor: !query.trim() ? 'not-allowed' : 'pointer'
+                }}
               >
                 Search
               </button>

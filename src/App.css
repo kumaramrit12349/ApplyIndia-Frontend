@@ -5,266 +5,12 @@
   padding: 0;
 }
 
-html, body, #root {
+html,
+body,
+#root {
   height: 100%;
-  font-family: Arial, sans-serif;
+  font-family: 'Outfit', Arial, sans-serif;
 }
-
-/* ============ HEADER (NAV + SEARCH) ============ */
-.header {
-  position: sticky; /* stick whole header */
-  top: 0;
-  z-index: 1000;
-  background-color: white;
-  width: 100%;
-}
-
-/* NAVBAR PART */
-.navbar {
-  background-color: #1e3a8a;
-  color: white;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 2rem;
-  font-weight: bold;
-  font-size: 1.25rem;
-}
-
-.navbar-left {
-  flex: 1;
-}
-
-.navbar-right {
-  display: flex;
-  align-items: center;
-  font-size: 1.5rem;
-  cursor: pointer;
-}
-
-
-/* === Logo Section === */
-.navbar-left {
-  display: flex;
-  align-items: center;
-  gap: 10px;           /* space between logo and text */
-}
-
-/* Logo image */
-.navbar-logo {
-  height: 40px;        /* adjust the size */
-  width: auto;         /* keeps original aspect ratio */
-}
-
-/* Logo text */
-.navbar-title {
-  font-size: 20px;
-  font-weight: bold;
-  color:white;         /* theme color */
-}
-
-/* Optional — responsive size */
-@media (max-width: 768px) {
-  .navbar-logo {
-    height: 30px;
-  }
-  .navbar-title {
-    font-size: 16px;
-  }
-}
-
-
-
-/* SEARCH BAR */
-.search-bar-container {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  max-width: 400px; /* max width for desktop */
-  margin: 10px auto; /* centered */
-  border: 1px solid #ccc;
-  border-radius: 25px;
-  overflow: hidden;
-  background-color: #fff;
-}
-
-.search-input {
-  flex: 1;
-  border: none;
-  padding: 8px 15px;
-  font-size: 1rem;
-  outline: none;
-}
-
-.search-btn {
-  border: none;
-  background-color: #007bff;
-  color: white;
-  padding: 8px 15px;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: background-color 0.2s ease;
-}
-
-.search-btn:hover {
-  background-color: #0056b3;
-}
-
-/* ==================== */
-/* MOBILE / SMALL SCREEN */
-@media (max-width: 480px) {
-  .search-bar-container {
-    max-width: 100%; /* take full width */
-  }
-
-  .search-input {
-    padding: 6px 10px;
-    font-size: 0.9rem;
-  }
-
-  .search-btn {
-    padding: 6px 10px;
-    font-size: 0.9rem;
-  }
-}
-
-
-
-
-
-
-/* MAIN NAVBAR */
-
-.main-navbar  {
-  margin-left: 20px;
-}
-
-/* SUB NAVBAR */
-.sub-navbar {
-  background-color: #f8f9fa;
-  border-bottom: 1px solid #ddd;
-  overflow-x: auto; /* allows horizontal scroll on small screens */
-  white-space: nowrap; /* prevents items from wrapping */
-  padding: 8px 0;
-}
-
-.sub-nav-list {
-  display: flex;
-  margin: 0;
-  padding: 0 20px;
-  list-style: none;
-  flex-wrap: nowrap; /* keep items in single row */
-  gap: 20px;
-}
-
-.sub-nav-item {
-  cursor: pointer;
-  padding: 5px 10px;
-  border-radius: 4px;
-  transition: background-color 0.2s ease, color 0.2s ease;
-  flex-shrink: 0; /* prevents shrinking on small screens */
-}
-
-.sub-nav-item:hover {
-  background-color: #007bff;
-  color: white;
-}
-
-/* ====================== */
-/* Responsive tweaks */
-@media (max-width: 600px) {
-  .sub-nav-list {
-    padding: 0 10px;
-    gap: 10px;
-  }
-
-  .sub-nav-item {
-    padding: 4px 8px;
-    font-size: 0.9rem;
-  }
-}
-
-
-
-
-
-/* ===== USER PROFILE DROPDOWN ===== */
-
-/* User profile icon */
-.navbar-right {
-  position: relative;
-  font-size: 1.5rem;
-  cursor: pointer;
-}
-
-/* Dropdown container */
-.profile-dropdown {
-  position: absolute;
-  right: 0;
-  top: 100%;
-  background: #ffffff;
-  color: #0f172a;
-  width: 220px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  border-radius: 8px;
-  padding: 0.5rem;
-  margin-top: 0.5rem;
-  z-index: 1100;
-}
-
-/* Profile header inside dropdown */
-.profile-header {
-  display: flex;
-  align-items: center;
-  padding: 0.5rem;
-}
-
-.profile-avatar {
-  font-size: 1rem;
-  margin-right: 0.5rem;
-}
-
-.profile-info {
-  font-size: 0.81rem;
-}
-
-.profile-name {
-  font-weight: 300;
-}
-
-.profile-email {
-  color: #64748b;
-  font-size: 0.8rem;
-}
-
-/* Profile menu list */
-.profile-menu {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  font-size: 20px;
-}
-
-.profile-menu li {
-  padding: 0.5rem;
-  cursor: pointer;
-  border-radius: 6px;
-  transition: background 0.3s;
-}
-
-.profile-menu li:hover {
-  background: #f1f5f9;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .navbar-right {
-    font-size: 1.25rem;
-  }
-}
-
-
-
 
 
 /* ============ CARDS GRID ============ */
@@ -359,7 +105,8 @@ html, body, #root {
   }
 
   .search-bar input {
-    width: 90%; /* full width on mobile */
+    width: 90%;
+    /* full width on mobile */
   }
 }
 
@@ -420,6 +167,7 @@ html, body, #root {
 .prev {
   left: 10px;
 }
+
 .next {
   right: 10px;
 }
@@ -448,6 +196,7 @@ html, body, #root {
   from {
     opacity: 0.4;
   }
+
   to {
     opacity: 1;
   }
@@ -459,6 +208,7 @@ html, body, #root {
     font-size: 14px;
     padding: 6px 10px;
   }
+
   .prev,
   .next {
     font-size: 18px;
@@ -488,5 +238,3 @@ html, body, #root {
     border-radius: 0;
   }
 }
-
-
