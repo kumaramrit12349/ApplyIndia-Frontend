@@ -1,9 +1,10 @@
 import { privateFetch } from "../client";
 import { USER_ACTIVITY_API } from "../endpoints";
 
-export type UserActivityStatus = 1 | 2 | 3 | 4;
+export type UserActivityStatus = 0 | 1 | 2 | 3 | 4;
 
 export const ACTIVITY_STATUS_MAP: Record<UserActivityStatus, string> = {
+    0: "WISHLISTED",
     1: "APPLIED",
     2: "ADMIT_CARD",
     3: "RESULT",

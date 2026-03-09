@@ -1,14 +1,20 @@
 import React, { useState, useEffect } from "react";
 import type { HomePageNotification } from "../../../types/notification";
 import { makeSlug } from "../../../utils/utils";
-import { trackActivity, checkActivityForNotification, type UserActivityStatus } from "../../../services/private/userActivityApi";
+import { trackActivity, checkActivityForNotification, removeActivity, type UserActivityStatus } from "../../../services/private/userActivityApi";
 import { toast } from "react-toastify";
+import { BsHeart, BsHeartFill } from "react-icons/bs";
 import ConfirmationModal from "../../../components/Generic/ConfirmationModal";
 import CongratulationsPopup from "../../../components/CongratulationsPopup";
 
 const STATUS_ORDER: UserActivityStatus[] = [1, 2, 3, 4];
 
 const STATUS_CONFIG: Record<UserActivityStatus, { label: string; actionText: string; emoji: string; congratsTitle: string; congratsMessage: string }> = {
+  0: {
+    label: "Wishlisted", actionText: "Wishlist", emoji: "❤️",
+    congratsTitle: "Added to Wishlist!",
+    congratsMessage: "You can find this application in your dashboard.",
+  },
   1: {
     label: "Applied", actionText: "Mark as Applied", emoji: "📝",
     congratsTitle: "🎉 Application Submitted!",
@@ -56,7 +62,7 @@ const TrackButton = ({ notification, category }: { notification: HomePageNotific
   }, [fullSk]);
 
   const getNextStatus = (): UserActivityStatus | null => {
-    if (!currentStatus) return 1;
+    if (currentStatus === null || currentStatus === 0) return 1;
     const currentIndex = STATUS_ORDER.indexOf(currentStatus);
     if (currentIndex >= STATUS_ORDER.length - 1) return null;
     return STATUS_ORDER[currentIndex + 1];
@@ -99,6 +105,35 @@ const TrackButton = ({ notification, category }: { notification: HomePageNotific
     }
   };
 
+  const handleWishlistClick = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    setLoading(true);
+    try {
+      if (!fullSk) throw new Error("Missing notification ID");
+      if (currentStatus === 0) {
+        await removeActivity(fullSk);
+        setCurrentStatus(null);
+        toast.success("Removed from wishlist");
+      } else {
+        await trackActivity(fullSk, notification.title, category, 0);
+        setCurrentStatus(0);
+        toast.success("Added to wishlist!");
+      }
+    } catch (error: any) {
+      const msg = error?.message || "";
+      if (msg.includes("401") || msg.includes("User not authenticated") || msg.includes("Failed to fetch") || msg.includes("AUTH_REDIRECT")) {
+        toast.info("🔒 Please login to add to wishlist");
+        window.dispatchEvent(new Event("openAuthPopup"));
+      } else {
+        toast.error("Failed to update wishlist.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (!hasChecked && !currentStatus) {
     return (
       <button className="ai-btn-track ai-btn-track-outline placeholder-wave" style={{ opacity: 0.5, width: 115 }}>
@@ -117,7 +152,7 @@ const TrackButton = ({ notification, category }: { notification: HomePageNotific
   }
 
   return (
-    <>
+    <div className="d-flex gap-2">
       <button
         onClick={handleClick}
         disabled={loading || !nextStatus}
@@ -127,12 +162,29 @@ const TrackButton = ({ notification, category }: { notification: HomePageNotific
           <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
         ) : !nextStatus ? (
           "✓ All Steps Complete"
-        ) : currentStatus ? (
+        ) : (currentStatus && currentStatus !== 0) ? (
           `${STATUS_CONFIG[nextStatus].emoji} ${STATUS_CONFIG[nextStatus].actionText}`
         ) : (
           "📝 Mark as Applied"
         )}
       </button>
+
+      {(!currentStatus || currentStatus === 0) && (
+        <button
+          onClick={handleWishlistClick}
+          disabled={loading}
+          className={`ai-btn-wishlist ${currentStatus === 0 ? 'active' : ''}`}
+          title={currentStatus === 0 ? "Remove from Wishlist" : "Add to Wishlist"}
+        >
+          {loading ? (
+            <span className="spinner-border spinner-border-sm text-danger" role="status" aria-hidden="true" style={{ width: 14, height: 14 }}></span>
+          ) : currentStatus === 0 ? (
+            <BsHeartFill size={20} />
+          ) : (
+            <BsHeart size={20} />
+          )}
+        </button>
+      )}
 
       {/* Limit Exceeded Popup */}
       {showLimitModal && (
@@ -168,7 +220,7 @@ const TrackButton = ({ notification, category }: { notification: HomePageNotific
           />
         </div>
       )}
-    </>
+    </div>
   );
 };
 

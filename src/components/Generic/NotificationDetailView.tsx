@@ -13,6 +13,8 @@ import {
   BsYoutube,
   BsCheckCircleFill,
   BsLockFill,
+  BsHeart,
+  BsHeartFill,
 } from "react-icons/bs";
 import { FcViewDetails } from "react-icons/fc";
 import { formatCategoryTitle, formatStateName, getId } from "../../utils/utils";
@@ -21,6 +23,7 @@ import CongratulationsPopup from "../CongratulationsPopup";
 import {
   trackActivity,
   checkActivityForNotification,
+  removeActivity,
   type UserActivityStatus,
 } from "../../services/private/userActivityApi";
 import { toast } from "react-toastify";
@@ -211,6 +214,7 @@ export default function NotificationDetailView({
 }) {
   const [currentStatus, setCurrentStatus] = useState<UserActivityStatus | null>(null);
   const [trackingLoading, setTrackingLoading] = useState<UserActivityStatus | null>(null);
+  const [isWishlistedLoading, setIsWishlistedLoading] = useState(false);
   const [showCongrats, setShowCongrats] = useState(false);
   const [congratsConfig, setCongratsConfig] = useState({ title: "", message: "" });
 
@@ -264,8 +268,33 @@ export default function NotificationDetailView({
     }
   };
 
+  const handleWishlistToggle = async () => {
+    if (!isAuthenticated) {
+      toast.info("🔒 Please login to add to wishlist!", { autoClose: 3000 });
+      if (onShowAuthPopup) onShowAuthPopup();
+      return;
+    }
+
+    setIsWishlistedLoading(true);
+    try {
+      if (currentStatus === 0) {
+        await removeActivity(notification.sk);
+        setCurrentStatus(null);
+        toast.success("Removed from wishlist");
+      } else {
+        await trackActivity(notification.sk, notification.title, notification.category, 0);
+        setCurrentStatus(0);
+        toast.success("Added to wishlist!");
+      }
+    } catch (error: any) {
+      toast.error(error?.message || "Failed to update wishlist");
+    } finally {
+      setIsWishlistedLoading(false);
+    }
+  };
+
   const getStepState = (stepIndex: number) => {
-    if (!currentStatus) return stepIndex === 0 ? "active" : "locked";
+    if (!currentStatus || currentStatus === 0) return stepIndex === 0 ? "active" : "locked";
     const currentIndex = STATUS_ORDER.indexOf(currentStatus);
     if (stepIndex <= currentIndex) return "completed";
     if (stepIndex === currentIndex + 1) return "active";
@@ -322,6 +351,25 @@ export default function NotificationDetailView({
             >
               {notification.title}
             </h1>
+
+            {!isAdmin && (!currentStatus || currentStatus === 0) && (
+              <div className="d-flex justify-content-center mb-4">
+                <button
+                  className={`btn btn-sm ${currentStatus === 0 ? "btn-danger" : "btn-outline-danger"} d-flex align-items-center justify-content-center gap-2`}
+                  onClick={handleWishlistToggle}
+                  disabled={isWishlistedLoading}
+                  style={{ borderRadius: 20, padding: "0.4rem 1.2rem", fontWeight: 600, minWidth: 150 }}
+                >
+                  {isWishlistedLoading ? (
+                    <span className="spinner-border spinner-border-sm" />
+                  ) : currentStatus === 0 ? (
+                    <><BsHeartFill /> Wishlisted</>
+                  ) : (
+                    <><BsHeart /> Add to Wishlist</>
+                  )}
+                </button>
+              </div>
+            )}
 
             {notification.details?.short_description && (
               <div className="bg-light border rounded-3 p-3 text-start mx-auto">

@@ -814,6 +814,42 @@
   box-shadow: none !important;
 }
 
+.ai-btn-wishlist {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: #a4b0be;
+  transition: all var(--transition-smooth);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.ai-btn-wishlist:hover:not(:disabled) {
+  background: rgba(255, 71, 87, 0.08);
+  color: #ff4757;
+  transform: scale(1.1);
+}
+
+.ai-btn-wishlist.active {
+  color: #ff4757;
+}
+
+.ai-btn-wishlist.active:hover:not(:disabled) {
+  background: rgba(255, 71, 87, 0.12);
+  transform: scale(1.15);
+}
+
+.ai-btn-wishlist:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+
 /* ========================================
    MODERN FOOTER (.ai-footer)
    ======================================== */
@@ -945,6 +981,7 @@
     justify-content: center;
   }
 }
+
 /* ========================================
    MODERN FORM INPUTS (.ai-form)
    ======================================== */

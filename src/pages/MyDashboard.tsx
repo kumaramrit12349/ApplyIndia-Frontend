@@ -15,6 +15,12 @@ const STATUS_CONFIG: Record<
     UserActivityStatus,
     { label: string; emoji: string; color: string; bg: string }
 > = {
+    0: {
+        label: "Wishlisted",
+        emoji: "❤️",
+        color: "#dc3545",
+        bg: "linear-gradient(135deg, #ff758c, #ff7eb3)",
+    },
     1: {
         label: "Applied",
         emoji: "📝",
@@ -41,7 +47,7 @@ const STATUS_CONFIG: Record<
     },
 };
 
-const STATUS_ORDER: UserActivityStatus[] = [1, 2, 3, 4];
+const STATUS_ORDER: UserActivityStatus[] = [0, 1, 2, 3, 4];
 
 function getNotificationId(sk: string): string {
     // SK pattern: "Notification#<ID>#META"
