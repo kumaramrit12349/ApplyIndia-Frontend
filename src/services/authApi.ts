@@ -14,6 +14,7 @@ export interface AuthStatus {
     qualification?: string;
     specialization?: string;
     isAdmin?: boolean;
+    adminRole?: 'creator' | 'reviewer' | 'admin' | null;
     sub?: string;
   };
 }

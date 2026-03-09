@@ -54,3 +54,21 @@ export const unarchiveNotification = (id: string) => {
     method: "PATCH",
   });
 };
+
+// Add review comment (always requests changes)
+export const addReviewComment = (
+  id: string,
+  commentText: string,
+) => {
+  return privateFetch<any>(PRIVATE_API.NOTIFICATION.ADD_COMMENT(id), {
+    method: "POST",
+    body: JSON.stringify({
+      comment_text: commentText,
+    }),
+  });
+};
+
+// Get review comments
+export const getReviewComments = (id: string) => {
+  return privateFetch<any>(PRIVATE_API.NOTIFICATION.GET_COMMENTS(id));
+};

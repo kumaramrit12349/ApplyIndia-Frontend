@@ -10,12 +10,46 @@ import {
   unarchiveNotification,
 } from "../../services/private/notificationApi";
 
-const DashboardPage: React.FC = () => {
+/* ============ Role helpers ============ */
+type AdminRole = "creator" | "reviewer" | "admin";
+
+const can = (role: AdminRole | undefined, action: string): boolean => {
+  if (!role) return false;
+  const perms: Record<string, AdminRole[]> = {
+    create: ["creator", "admin"],
+    edit: ["creator", "admin"],
+    approve: ["reviewer", "admin"],
+    archive: ["admin"],
+    unarchive: ["admin"],
+  };
+  return (perms[action] || []).includes(role);
+};
+
+const ROLE_COLORS: Record<string, string> = {
+  admin: "linear-gradient(135deg, #667eea, #764ba2)",
+  reviewer: "linear-gradient(135deg, #f093fb, #f5576c)",
+  creator: "linear-gradient(135deg, #4facfe, #00f2fe)",
+};
+
+const STATUS_BADGE: Record<string, { bg: string; label: string }> = {
+  approved: { bg: "#28a745", label: "Approved" },
+  pending: { bg: "#ffc107", label: "Pending" },
+  changes_requested: { bg: "#fd7e14", label: "Changes Requested" },
+  archived: { bg: "#6c757d", label: "Archived" },
+};
+
+/* ============ Component ============ */
+
+interface DashboardPageProps {
+  adminRole?: string;
+}
+
+const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
+  const role = (adminRole as AdminRole) || undefined;
   const [notifications, setNotifications] = useState<any[]>([]);
-  const [tab, setTab] = useState<"pending" | "approved" | "archived">(
-    "pending"
-  );
-  const archived = notifications.filter((n) => n.is_archived);
+  const [tab, setTab] = useState<
+    "pending" | "approved" | "changes_requested" | "archived"
+  >("pending");
   const [loading, setLoading] = useState(false);
 
   const loadNotifications = async () => {
@@ -26,7 +60,6 @@ const DashboardPage: React.FC = () => {
     } catch (err: any) {
       if (err.message === "NOT_AUTHENTICATED") {
         console.warn("User not authenticated, redirecting to login");
-        // optional: navigate("/auth/signin");
       } else {
         console.error("Failed to load notifications:", err);
       }
@@ -40,7 +73,7 @@ const DashboardPage: React.FC = () => {
     loadNotifications();
   }, []);
 
-  // Modal state
+  /* Modal/Toast state */
   const [modal, setModal] = useState<{
     show: boolean;
     title: string;
@@ -52,30 +85,23 @@ const DashboardPage: React.FC = () => {
     show: false,
     title: "",
     message: "",
-    onConfirm: () => {},
+    onConfirm: () => { },
     confirmText: "Confirm",
     confirmVariant: "primary",
   });
 
-  // Toast state
   const [toast, setToast] = useState<{
     show: boolean;
     message: string;
     type: "success" | "error" | "info" | "warning";
-  }>({
-    show: false,
-    message: "",
-    type: "success",
-  });
+  }>({ show: false, message: "", type: "success" });
 
   const showToast = (
     message: string,
     type: "success" | "error" | "info" | "warning"
-  ) => {
-    setToast({ show: true, message, type });
-  };
+  ) => setToast({ show: true, message, type });
 
-  // Updated handlers
+  /* Handlers */
   const handleApprove = (id: string) => {
     setModal({
       show: true,
@@ -84,7 +110,7 @@ const DashboardPage: React.FC = () => {
       confirmText: "Approve",
       confirmVariant: "success",
       onConfirm: async () => {
-        setModal({ ...modal, show: false });
+        setModal((m) => ({ ...m, show: false }));
         try {
           await approveNotification(id);
           showToast("Notification approved successfully!", "success");
@@ -104,7 +130,7 @@ const DashboardPage: React.FC = () => {
       confirmText: "Archive",
       confirmVariant: "danger",
       onConfirm: async () => {
-        setModal({ ...modal, show: false });
+        setModal((m) => ({ ...m, show: false }));
         try {
           await deleteNotification(id);
           showToast("Notification archived successfully!", "success");
@@ -124,7 +150,7 @@ const DashboardPage: React.FC = () => {
       confirmText: "Restore",
       confirmVariant: "warning",
       onConfirm: async () => {
-        setModal({ ...modal, show: false });
+        setModal((m) => ({ ...m, show: false }));
         try {
           await unarchiveNotification(id);
           showToast("Notification restored successfully!", "success");
@@ -136,146 +162,254 @@ const DashboardPage: React.FC = () => {
     });
   };
 
-  const pending = notifications.filter((n) => !n.approved_at && !n.is_archived);
-  const approved = notifications.filter((n) => n.approved_at && !n.is_archived);
-  let displayList: any[] = [];
-  if (tab === "pending") displayList = pending;
-  else if (tab === "approved") displayList = approved;
-  else if (tab === "archived") displayList = archived;
+  /* Filter tabs */
+  const pending = notifications.filter(
+    (n) =>
+      !n.approved_at &&
+      !n.is_archived &&
+      n.review_status !== "changes_requested"
+  );
+  const changesRequested = notifications.filter(
+    (n) => n.review_status === "changes_requested" && !n.is_archived
+  );
+  const approved = notifications.filter(
+    (n) => n.approved_at && !n.is_archived
+  );
+  const archived = notifications.filter((n) => n.is_archived);
+
+  const tabConfig = [
+    { key: "pending" as const, label: "Pending", list: pending, icon: "⏳" },
+    {
+      key: "changes_requested" as const,
+      label: "Changes Requested",
+      list: changesRequested,
+      icon: "💬",
+    },
+    {
+      key: "approved" as const,
+      label: "Approved",
+      list: approved,
+      icon: "✅",
+    },
+    {
+      key: "archived" as const,
+      label: "Archived",
+      list: archived,
+      icon: "📦",
+    },
+  ];
+
+  const displayList =
+    tabConfig.find((t) => t.key === tab)?.list || [];
+
+  const getStatusInfo = (n: any) => {
+    if (n.is_archived) return STATUS_BADGE.archived;
+    if (n.approved_at) return STATUS_BADGE.approved;
+    if (n.review_status === "changes_requested")
+      return STATUS_BADGE.changes_requested;
+    return STATUS_BADGE.pending;
+  };
 
   return (
-    <div className="container mt-5">
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2>Admin Dashboard</h2>
-        <Link to="/admin/addNotification" className="btn btn-success">
-          + Add Notification
-        </Link>
+    <div className="container-fluid px-3 px-md-5 py-4">
+      {/* Header */}
+      <div
+        className="d-flex flex-wrap justify-content-between align-items-center mb-4 p-3 rounded-4"
+        style={{
+          background: ROLE_COLORS[role || "admin"] || ROLE_COLORS.admin,
+          color: "#fff",
+        }}
+      >
+        <div>
+          <h2 className="mb-1 fw-bold" style={{ fontSize: "1.5rem" }}>
+            🛡️ Admin Dashboard
+          </h2>
+          {role && (
+            <span
+              className="badge bg-white bg-opacity-25"
+              style={{ fontSize: "0.8rem" }}
+            >
+              Role:{" "}
+              {role.charAt(0).toUpperCase() + role.slice(1)}
+            </span>
+          )}
+        </div>
+        {can(role, "create") && (
+          <Link
+            to="/admin/addNotification"
+            className="btn btn-light fw-semibold shadow-sm"
+            style={{ borderRadius: 12 }}
+          >
+            + Add Notification
+          </Link>
+        )}
       </div>
 
-      <ul className="nav nav-tabs mb-4">
-        <li className="nav-item">
+      {/* Tabs */}
+      <div className="d-flex gap-2 flex-wrap mb-4">
+        {tabConfig.map((t) => (
           <button
-            className={`nav-link ${tab === "pending" ? "active" : ""}`}
-            onClick={() => setTab("pending")}
+            key={t.key}
+            className={`btn btn-sm px-3 py-2 fw-semibold ${tab === t.key
+                ? "btn-dark shadow-sm"
+                : "btn-outline-secondary"
+              }`}
+            style={{ borderRadius: 20, fontSize: "0.85rem" }}
+            onClick={() => setTab(t.key)}
           >
-            Pending ({pending.length})
+            {t.icon} {t.label}{" "}
+            <span
+              className="badge bg-white bg-opacity-25 text-dark ms-1"
+              style={{ fontSize: "0.7rem" }}
+            >
+              {t.list.length}
+            </span>
           </button>
-        </li>
-        <li className="nav-item">
-          <button
-            className={`nav-link ${tab === "approved" ? "active" : ""}`}
-            onClick={() => setTab("approved")}
-          >
-            Approved ({approved.length})
-          </button>
-        </li>
-        <li className="nav-item">
-          <button
-            className={`nav-link ${tab === "archived" ? "active" : ""}`}
-            onClick={() => setTab("archived")}
-          >
-            Archived ({archived.length})
-          </button>
-        </li>
-      </ul>
+        ))}
+      </div>
 
+      {/* Content */}
       {loading ? (
-        <div className="text-center">Loading...</div>
+        <div className="text-center py-5">
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      ) : displayList.length === 0 ? (
+        <div className="text-center py-5 text-muted">
+          <div style={{ fontSize: 48 }}>📭</div>
+          <p className="mt-2">No notifications in this tab</p>
+        </div>
       ) : (
-        <div className="table-responsive">
-          <table className="table table-striped table-bordered">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Title</th>
-                <th>Category</th>
-                <th>Created At</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {displayList.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="text-center">
-                    No notifications found
-                  </td>
-                </tr>
-              ) : (
-                displayList.map((n) => (
-                  <tr key={n.sk}>
-                    <td>{n.sk}</td>
-                    <td>{n.title}</td>
-                    <td>
-                      <span className="badge bg-info">{n.category}</span>
-                    </td>
-                    <td>{new Date(n.created_at).toLocaleString()}</td>
-                    <td>
-                      {n.approved_at ? (
-                        <span className="badge bg-success">Approved</span>
-                      ) : (
-                        <span className="badge bg-warning">Pending</span>
-                      )}
-                    </td>
-                    <td>
-                      {/* View button - always visible */}
+        <div className="row g-3">
+          {displayList.map((n: any) => {
+            const status = getStatusInfo(n);
+            return (
+              <div key={n.sk} className="col-12">
+                <div
+                  className="card border-0 shadow-sm rounded-3 overflow-hidden"
+                  style={{ transition: "box-shadow 0.2s" }}
+                >
+                  <div className="card-body p-3 d-flex flex-column flex-md-row align-items-md-center gap-3">
+                    {/* Left: Status indicator */}
+                    <div
+                      style={{
+                        width: 6,
+                        minHeight: 50,
+                        borderRadius: 3,
+                        background: status.bg,
+                        flexShrink: 0,
+                      }}
+                    />
+
+                    {/* Center: Info */}
+                    <div className="flex-grow-1">
+                      <h6 className="mb-1 fw-bold" style={{ fontSize: "0.95rem" }}>
+                        {n.title}
+                      </h6>
+                      <div className="d-flex flex-wrap gap-2 align-items-center">
+                        <span
+                          className="badge"
+                          style={{
+                            background:
+                              "linear-gradient(135deg, #667eea33, #764ba233)",
+                            color: "#764ba2",
+                            fontSize: "0.7rem",
+                          }}
+                        >
+                          {n.category}
+                        </span>
+                        <span
+                          className="badge"
+                          style={{
+                            background: status.bg,
+                            color: "#fff",
+                            fontSize: "0.7rem",
+                          }}
+                        >
+                          {status.label}
+                        </span>
+                        <span
+                          className="text-muted"
+                          style={{ fontSize: "0.75rem" }}
+                        >
+                          {new Date(n.created_at).toLocaleDateString("en-IN", {
+                            day: "numeric",
+                            month: "short",
+                            year: "numeric",
+                          })}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Right: Actions */}
+                    <div className="d-flex flex-wrap gap-2 flex-shrink-0">
                       <Link
                         to={`/admin/review/${getId(n.sk)}`}
-                        className="btn btn-sm btn-info me-2"
+                        className="btn btn-sm btn-outline-primary"
+                        style={{ borderRadius: 8, fontSize: "0.8rem" }}
                       >
-                        View
+                        👁️ View
                       </Link>
-                      {/* Edit button - hidden for archived */}
-                      {(
+
+                      {can(role, "edit") && !n.is_archived && (
                         <Link
                           to={`/admin/edit/${getId(n.sk)}`}
-                          className="btn btn-sm btn-secondary me-2"
+                          className="btn btn-sm btn-outline-secondary"
+                          style={{ borderRadius: 8, fontSize: "0.8rem" }}
                         >
-                          Edit
+                          ✏️ Edit
                         </Link>
                       )}
-                      {/* Approve button - only for pending, hidden for archived */}
-                      {!n.approved_at && !n.is_archived && (
+
+                      {can(role, "approve") &&
+                        !n.approved_at &&
+                        !n.is_archived && (
+                          <button
+                            className="btn btn-sm btn-success"
+                            style={{ borderRadius: 8, fontSize: "0.8rem" }}
+                            onClick={() => handleApprove(getId(n.sk))}
+                          >
+                            ✓ Approve
+                          </button>
+                        )}
+
+                      {can(role, "archive") && !n.is_archived && (
                         <button
-                          className="btn btn-sm btn-success me-2"
-                          onClick={() => handleApprove(getId(n.sk))}
+                          className="btn btn-sm btn-outline-danger"
+                          style={{ borderRadius: 8, fontSize: "0.8rem" }}
+                          onClick={() => handleDelete(getId(n.sk))}
                         >
-                          Approve
+                          🗄️ Archive
                         </button>
                       )}
 
-                      {/* Archive/Restore buttons */}
-                      {!n.is_archived ? (
+                      {can(role, "unarchive") && n.is_archived && (
                         <button
-                          className="btn btn-sm btn-danger"
-                          onClick={() => handleDelete(getId(n.sk))}
-                        >
-                          Archive
-                        </button>
-                      ) : (
-                        <button
-                          className="btn btn-sm btn-warning"
+                          className="btn btn-sm btn-outline-warning"
+                          style={{ borderRadius: 8, fontSize: "0.8rem" }}
                           onClick={() => handleUnarchive(getId(n.sk))}
                         >
-                          Restore
+                          ♻️ Restore
                         </button>
                       )}
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
-      {/* Toast Notification */}
+
+      {/* Toast */}
       <Toast
         show={toast.show}
         message={toast.message}
         type={toast.type}
         onClose={() => setToast({ ...toast, show: false })}
       />
-      {/* Confirmation Modal */}
+      {/* Modal */}
       <ConfirmModal
         show={modal.show}
         title={modal.title}

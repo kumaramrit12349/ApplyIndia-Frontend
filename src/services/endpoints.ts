@@ -25,6 +25,8 @@ export const PRIVATE_API = {
     ARCHIVE: (id: string) => `api/notification/delete/${id}`,
     UNARCHIVE: (id: string) =>
       `/api/notification/unarchive/${id}`,
+    ADD_COMMENT: (id: string) => `api/notification/comment/${id}`,
+    GET_COMMENTS: (id: string) => `api/notification/comments/${id}`,
   },
 };
 

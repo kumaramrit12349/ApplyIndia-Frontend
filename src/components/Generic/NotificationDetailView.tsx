@@ -195,6 +195,7 @@ const LabelValue = ({
 export default function NotificationDetailView({
   notification,
   isAdmin = false,
+  adminRole,
   isAuthenticated = false,
   onShowAuthPopup,
   onApprove,
@@ -202,6 +203,7 @@ export default function NotificationDetailView({
 }: {
   notification: INotification;
   isAdmin?: boolean;
+  adminRole?: string;
   isAuthenticated?: boolean;
   onShowAuthPopup?: () => void;
   onApprove?: () => void;
@@ -285,13 +287,17 @@ export default function NotificationDetailView({
               >
                 ← Dashboard
               </button>
-              <a
-                href={`/admin/edit/${getId(notification.sk)}`}
-                className="btn btn-warning btn-sm"
-              >
-                Edit
-              </a>
-              {!notification.approved_at && (
+              {/* Edit — Creator, Admin */}
+              {(!adminRole || adminRole === 'creator' || adminRole === 'admin') && (
+                <a
+                  href={`/admin/edit/${getId(notification.sk)}`}
+                  className="btn btn-warning btn-sm"
+                >
+                  Edit
+                </a>
+              )}
+              {/* Approve — Reviewer, Admin (only if not already approved) */}
+              {!notification.approved_at && onApprove && (
                 <button
                   className="btn btn-success btn-sm"
                   onClick={onApprove}

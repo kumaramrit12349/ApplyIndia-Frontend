@@ -7,6 +7,7 @@ interface ProfileSectionProps {
   familyName?: string;
   email?: string;
   isAdmin?: boolean;
+  adminRole?: string;
   state?: string;
   category?: string;
   onLogout: () => void;
@@ -19,6 +20,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({
   familyName,
   email,
   isAdmin,
+  adminRole,
   state,
   category,
   onLogout,
@@ -138,7 +140,26 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({
               </div>
 
               <div>
-                <div className="fw-semibold">{fullName}</div>
+                <div className="fw-semibold">
+                  {fullName}
+                  {adminRole && (
+                    <span
+                      className="badge ms-2"
+                      style={{
+                        fontSize: '0.65rem',
+                        background:
+                          adminRole === 'admin'
+                            ? 'linear-gradient(135deg, #667eea, #764ba2)'
+                            : adminRole === 'reviewer'
+                              ? 'linear-gradient(135deg, #f093fb, #f5576c)'
+                              : 'linear-gradient(135deg, #4facfe, #00f2fe)',
+                        color: '#fff',
+                      }}
+                    >
+                      {adminRole.charAt(0).toUpperCase() + adminRole.slice(1)}
+                    </span>
+                  )}
+                </div>
                 {email && <div className="text-muted small">{email}</div>}
                 {(state || category) && (
                   <div className="text-muted extra-small mt-1" style={{ fontSize: '0.75rem' }}>
@@ -152,8 +173,8 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({
 
           {/* Actions */}
           <div className="d-grid gap-2 m-2">
-            {/* Dashboard – only for admin & moderator */}
-            {(isAdmin) && (
+            {/* Dashboard – only for admin roles */}
+            {(isAdmin || adminRole) && (
               <button
                 className="btn btn-outline-primary text-start px-3 py-2"
                 onClick={() => {
@@ -161,7 +182,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({
                   navigate("/admin/dashboard");
                 }}
               >
-                Admin Dashboard
+                🛡️ Admin Dashboard
               </button>
             )}
 

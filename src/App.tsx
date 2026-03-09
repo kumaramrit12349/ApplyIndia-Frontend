@@ -62,6 +62,7 @@ const AppLayout: React.FC = () => {
   const [familyName, setFamilyName] = useState<string | undefined>(undefined);
   const [userEmail, setUserEmail] = useState<string | undefined>(undefined);
   const [isAdmin, setIsAdmin] = useState<boolean | undefined>(undefined);
+  const [adminRole, setAdminRole] = useState<string | undefined>(undefined);
   const [userState, setUserState] = useState<string | undefined>(undefined);
 
   // Global event listener for forcing auth popup
@@ -86,6 +87,7 @@ const AppLayout: React.FC = () => {
         setFamilyName(user.family_name);
         setUserEmail(user.email);
         setIsAdmin(user.isAdmin);
+        setAdminRole(user.adminRole || undefined);
         setUserState(user.state);
         setUserCategory(user.category);
       } else {
@@ -93,6 +95,7 @@ const AppLayout: React.FC = () => {
         setFamilyName(undefined);
         setUserEmail(undefined);
         setIsAdmin(undefined);
+        setAdminRole(undefined);
         setUserState(undefined);
         setUserCategory(undefined);
       }
@@ -124,6 +127,7 @@ const AppLayout: React.FC = () => {
       setFamilyName(user.family_name);
       setUserEmail(user.email);
       setIsAdmin(user.isAdmin);
+      setAdminRole(user.adminRole || undefined);
       setUserState(user.state);
       setUserCategory(user.category);
     }
@@ -154,6 +158,7 @@ const AppLayout: React.FC = () => {
     setFamilyName(undefined);
     setUserEmail(undefined);
     setIsAdmin(undefined);
+    setAdminRole(undefined);
     setUserState(undefined);
     setUserCategory(undefined);
     // if (!timerRef.current) {
@@ -199,6 +204,7 @@ const AppLayout: React.FC = () => {
         familyName={familyName}
         userEmail={userEmail}
         isAdmin={isAdmin}
+        adminRole={adminRole}
         state={userState}
         category={userCategory}
         onLogout={handleLogout}
@@ -221,7 +227,7 @@ const AppLayout: React.FC = () => {
                 isAuthenticated={isAuthenticated}
                 checkingAuth={checkingAuth}
               >
-                <DashboardPage />
+                <DashboardPage adminRole={adminRole} />
               </ProtectedRoute>
             }
           />
@@ -254,7 +260,7 @@ const AppLayout: React.FC = () => {
                 isAuthenticated={isAuthenticated}
                 checkingAuth={checkingAuth}
               >
-                <ReviewNotificationPage />
+                <ReviewNotificationPage adminRole={adminRole} />
               </ProtectedRoute>
             }
           />
