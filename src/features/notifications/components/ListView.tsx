@@ -39,33 +39,26 @@ const TrackButton = ({ notification, category }: { notification: HomePageNotific
   const [showCongrats, setShowCongrats] = useState(false);
   const [congratsConfig, setCongratsConfig] = useState({ title: "", message: "" });
 
-  // ensure SK is fully formatted as the DB expects
   const fullSk = notification.sk?.startsWith("Notification#")
     ? notification.sk
     : `Notification#${notification.sk}#META`;
 
   useEffect(() => {
     if (!fullSk) return;
-
-    // Attempt to fetch current status. If unauthenticated, it will fail silently.
     checkActivityForNotification(fullSk)
       .then((res) => {
         if (res.tracked && res.data) {
           setCurrentStatus(res.data.status);
         }
       })
-      .catch(() => {
-        // Silently fail for unauthenticated or first-time
-      })
-      .finally(() => {
-        setHasChecked(true);
-      });
+      .catch(() => { })
+      .finally(() => setHasChecked(true));
   }, [fullSk]);
 
   const getNextStatus = (): UserActivityStatus | null => {
     if (!currentStatus) return 1;
     const currentIndex = STATUS_ORDER.indexOf(currentStatus);
-    if (currentIndex >= STATUS_ORDER.length - 1) return null; // All done!
+    if (currentIndex >= STATUS_ORDER.length - 1) return null;
     return STATUS_ORDER[currentIndex + 1];
   };
 
@@ -75,7 +68,7 @@ const TrackButton = ({ notification, category }: { notification: HomePageNotific
     e.preventDefault();
     e.stopPropagation();
 
-    if (!nextStatus) return; // Completely done
+    if (!nextStatus) return;
 
     setLoading(true);
     try {
@@ -106,13 +99,21 @@ const TrackButton = ({ notification, category }: { notification: HomePageNotific
     }
   };
 
-  // Do not render anything until we've quickly verified the state, avoiding UI flashes
   if (!hasChecked && !currentStatus) {
     return (
-      <button className="btn btn-sm btn-outline-secondary placeholder-wave" style={{ borderRadius: "20px", fontSize: "0.75rem", padding: "4px 12px", width: "115px", opacity: 0.5 }}>
+      <button className="ai-btn-track ai-btn-track-outline placeholder-wave" style={{ opacity: 0.5, width: 115 }}>
         <span className="placeholder w-100"></span>
       </button>
     );
+  }
+
+  let btnClass = "ai-btn-track ";
+  if (!nextStatus) {
+    btnClass += "ai-btn-track-success";
+  } else if (currentStatus) {
+    btnClass += "ai-btn-track-primary";
+  } else {
+    btnClass += "ai-btn-track-outline";
   }
 
   return (
@@ -120,8 +121,7 @@ const TrackButton = ({ notification, category }: { notification: HomePageNotific
       <button
         onClick={handleClick}
         disabled={loading || !nextStatus}
-        className={`btn btn-sm ${!nextStatus ? "btn-success" : currentStatus ? "btn-primary" : "btn-outline-primary"}`}
-        style={{ borderRadius: "20px", fontSize: "0.75rem", padding: "4px 12px", zIndex: 10, position: "relative" }}
+        className={btnClass}
       >
         {loading ? (
           <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
@@ -176,7 +176,7 @@ interface ListViewProps {
   category: string;
   items: HomePageNotification[];
   loading?: boolean;
-  onItemClick?: (item: Notification) => void; // You can now ignore this if always opening links in new tab
+  onItemClick?: (item: Notification) => void;
   showSeeMore?: boolean;
   showAllItems?: boolean;
 }
@@ -195,31 +195,21 @@ const ListView: React.FC<ListViewProps> = ({
       ? items
       : items.slice(0, 5);
 
-  // Use a normalized path for category (lowercase, hyphens, e.g.: "Admit Cards" -> "admit-card")
   const getCategoryRoute = (category: string) => {
     return `/notification/category/${encodeURIComponent(category)}`;
   };
 
   return (
-    <div>
-      {/* Card Header */}
-      <div
-        className="card-header bg-primary text-white py-3"
-        style={{
-          borderTopLeftRadius: "0.6rem",
-          borderTopRightRadius: "0.6rem",
-        }}
-      >
-        <h5
-          className="mb-0 fw-semibold text-capitalize ms-2"
-          style={{ fontSize: "1.1rem" }}
-        >
+    <div className="ai-list-card">
+      <div className="ai-list-header">
+        <h5 className="ai-list-header-title">
           {category
             ?.replace(/[-]/g, " ")
             ?.replace(/\b\w/g, (l) => l?.toUpperCase())}
         </h5>
       </div>
-      <div className="card-body p-0">
+
+      <div className="ai-list-body">
         {loading ? (
           <div className="text-center py-5">
             <div className="spinner-border text-primary" role="status">
@@ -231,120 +221,77 @@ const ListView: React.FC<ListViewProps> = ({
             <p className="mb-0">No notifications available</p>
           </div>
         ) : (
-          <>
-            <ul className="list-group list-group-flush px-1 px-sm-2">
-              {displayedItems.map((item, index) => {
-                const itemUrl = `/notification/${makeSlug(item.title, item.sk)}`;
+          <div>
+            {displayedItems.map((item, index) => {
+              const itemUrl = `/notification/${makeSlug(item.title, item.sk)}`;
 
-                return (
-                  <div
-                    key={item.sk || index}
-                    onClick={() => window.open(itemUrl, "_blank")}
-                    className="list-group-item d-flex align-items-center gap-2 py-3 border-0"
-                    style={{
-                      cursor: "pointer",
-                      transition: "background 0.2s, box-shadow 0.2s",
-                      borderRadius: "0.6rem",
-                      marginBottom: "0.5rem",
-                      boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
-                      fontSize: "1.06rem",
-                      color: "inherit",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = "#f5f9fd";
-                      e.currentTarget.style.boxShadow = "0 2px 8px #d9e8fa";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = "";
-                      e.currentTarget.style.boxShadow =
-                        "0 1px 4px rgba(0,0,0,0.04)";
-                    }}
-                  >
-                    <div className="flex-grow-1">
-                      <span
-                        className="text-dark fw-medium"
-                        style={{ wordBreak: "break-word", fontSize: "1.08rem", display: "block", marginBottom: "4px" }}
-                      >
-                        {item.title}
-                      </span>
+              return (
+                <a
+                  key={item.sk || index}
+                  href={itemUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="ai-list-item"
+                >
+                  <div className="flex-grow-1">
+                    <span className="ai-list-item-title">
+                      {item.title}
+                    </span>
 
-                      {/* Mark as Applied Button Area */}
-                      <div className="mt-2" onClick={(e) => e.stopPropagation()}>
-                        <TrackButton
-                          notification={item}
-                          category={category}
-                        />
-                      </div>
-                    </div>
-                    <div className="ms-2 d-flex flex-column align-items-center justify-content-center">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        fill="currentColor"
-                        className="text-muted"
-                        viewBox="0 0 16 16"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"
-                        />
-                      </svg>
+                    <div className="mt-2" onClick={(e) => e.preventDefault()}>
+                      <TrackButton
+                        notification={item}
+                        category={category}
+                      />
                     </div>
                   </div>
-                );
-              })}
-            </ul>
-            {showSeeMore && !showAllItems && items.length > 5 && (
-              <div className="p-3 bg-light border-top">
-                {showAll ? (
-                  <button
-                    className="btn btn-outline-primary w-100"
-                    onClick={() => setShowAll(false)}
-                  >
+
+                  <div className="ai-list-chevron">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
+                      width="18"
+                      height="18"
                       fill="currentColor"
-                      className="me-2"
                       viewBox="0 0 16 16"
                     >
                       <path
                         fillRule="evenodd"
-                        d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708l6-6z"
+                        d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"
                       />
                     </svg>
-                    See Less
-                  </button>
-                ) : (
-                  <button
-                    className="btn btn-outline-primary w-100"
-                    onClick={() => {
-                      window.open(getCategoryRoute(category), "_blank");
-                    }}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      fill="currentColor"
-                      className="me-2"
-                      viewBox="0 0 16 16"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"
-                      />
-                    </svg>
-                    See More
-                  </button>
-                )}
-              </div>
-            )}
-          </>
+                  </div>
+                </a>
+              );
+            })}
+          </div>
         )}
       </div>
+
+      {showSeeMore && !showAllItems && items.length > 5 && !loading && (
+        <div className="ai-list-footer">
+          {showAll ? (
+            <button
+              className="ai-btn-seemore"
+              onClick={() => setShowAll(false)}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path fillRule="evenodd" d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708l6-6z" />
+              </svg>
+              See Less
+            </button>
+          ) : (
+            <button
+              className="ai-btn-seemore"
+              onClick={() => window.open(getCategoryRoute(category), "_blank")}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path fillRule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z" />
+              </svg>
+              See More
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 };

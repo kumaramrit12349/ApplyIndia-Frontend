@@ -166,7 +166,7 @@ export const APPLYINDIA_SOCIAL_LINKS = [
   },
   {
     name: "X",
-    icon: "https://img.icons8.com/ios-filled/28/000000/twitterx--v2.png",
+    icon: "https://img.icons8.com/ios-filled/28/FFFFFF/twitterx--v2.png",
     url: "https://x.com/ApplyIndia_",
   },
   {
