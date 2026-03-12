@@ -9,8 +9,11 @@ export const formatCategoryTitle = (category: string): string => {
 
 export const formatStateName = (stateCode?: string): string => {
   if (!stateCode) return "Central";
-  const stateObj = INDIAN_STATES.find(s => s.value.toLowerCase() === stateCode.toLowerCase());
-  return stateObj ? stateObj.label : stateCode.replace(/-/g, " ")?.replace(/\b\w/g, (l) => l.toUpperCase());
+  const lower = stateCode.toLowerCase().replace(/-/g, " ");
+  const stateObj = INDIAN_STATES.find(
+    (s) => s.value.toLowerCase() === lower || s.label.toLowerCase() === lower
+  );
+  return stateObj ? stateObj.label : lower.replace(/\b\w/g, (l) => l.toUpperCase());
 };
 
 export const getId = (id: string): string => {
@@ -96,14 +99,14 @@ export function epochToDateInput(epoch?: number): string {
 
 export function toEpoch(dateStr: string): number {
   if (!dateStr) {
-    throw new Error("Date string is required");
+    return 0;
   }
 
   // Expecting yyyy-MM-dd from <input type="date">
   const [year, month, day] = dateStr.split("-").map(Number);
 
   if (!year || !month || !day) {
-    throw new Error(`Invalid date format: ${dateStr}`);
+    return 0;
   }
 
   // Create date at UTC midnight

@@ -11,14 +11,19 @@ const AddNotificationPage: React.FC = () => {
   const handleCreate = async (values: Partial<INotification>) => {
     // 🔑 CREATE requires full payload
     await addNotification(values as INotification);
+  };
+
+  const handleSuccessRedirect = () => {
     navigate("/admin/dashboard");
   };
 
   return (
-    <div className="container bg-white rounded mt-5 p-4 shadow">
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2>Add New Notification</h2>
-        <Link to="/admin/dashboard" className="btn btn-secondary">
+    <div className="container py-5">
+      <div className="d-flex justify-content-between align-items-center mb-5 p-4 rounded-4 shadow-sm" style={{ background: 'linear-gradient(135deg, #667eea, #764ba2)' }}>
+        <h2 className="brand-name text-white mb-0 d-flex align-items-center gap-2" style={{fontSize: '1.75rem'}}>
+          ✨ Add New Notification
+        </h2>
+        <Link to="/admin/dashboard" className="btn btn-light fw-semibold text-decoration-none shadow-sm" style={{ borderRadius: 12 }}>
           ← Back to Dashboard
         </Link>
       </div>
@@ -27,6 +32,7 @@ const AddNotificationPage: React.FC = () => {
         mode="create"
         initialValues={emptyNotificationForm}
         onSubmit={handleCreate}
+        onSuccess={handleSuccessRedirect}
       />
     </div>
   );

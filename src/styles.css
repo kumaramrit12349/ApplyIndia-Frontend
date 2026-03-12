@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+
 /* ========================================
    DESIGN TOKENS & UTILITIES
    ======================================== */
@@ -27,12 +29,13 @@
   /* Transition */
   --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
 
-/* ========================================
-   GOOGLE FONT – Outfit
-   ======================================== */
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+  /* Form Specific */
+  --form-bg: rgba(255, 255, 255, 0.85);
+  --input-bg: rgba(255, 255, 255, 0.9);
+  --input-border: rgba(0, 0, 0, 0.1);
+  --input-focus: #667eea;
+}
 
 /* ========================================
    ANIMATIONS
@@ -799,6 +802,100 @@
 .ai-btn-track-outline:hover:not(:disabled) {
   background: rgba(102, 126, 234, 0.08);
   border-color: #4338ca;
+}
+
+/* ========================================
+   MODERN FORM STYLES
+   ======================================== */
+.ai-form-card {
+  background: var(--form-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  box-shadow: var(--glass-shadow);
+  padding: 2rem;
+  font-family: 'Outfit', sans-serif;
+}
+
+.ai-form-section-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid rgba(102, 126, 234, 0.1);
+  padding-bottom: 0.5rem;
+}
+
+.ai-form-label {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #4b5563;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.ai-input {
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 12px;
+  padding: 0.65rem 1rem;
+  font-size: 0.95rem;
+  color: #1a1a2e;
+  width: 100%;
+  transition: var(--transition-smooth);
+}
+
+.ai-input:focus {
+  outline: none;
+  border-color: var(--input-focus);
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+  background: #fff;
+}
+
+.ai-input::placeholder {
+  color: #9ca3af;
+}
+
+.ai-checkbox-group {
+  background: rgba(102, 126, 234, 0.05);
+  padding: 1rem;
+  border-radius: 12px;
+  border: 1px solid rgba(102, 126, 234, 0.1);
+}
+
+.ai-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.ai-btn-submit {
+  background: var(--accent-gradient);
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  padding: 0.8rem 2.5rem;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.ai-btn-submit:hover:not(:disabled) {
+  background: var(--accent-gradient-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.ai-btn-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .ai-btn-track-success {

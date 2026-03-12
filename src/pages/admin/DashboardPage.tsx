@@ -211,23 +211,23 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
   };
 
   return (
-    <div className="container-fluid px-3 px-md-5 py-4">
+    <div className="container-fluid px-2 px-md-5 py-3 py-md-4">
       {/* Header */}
       <div
-        className="d-flex flex-wrap justify-content-between align-items-center mb-4 p-3 rounded-4"
+        className="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3 mb-4 p-3 p-md-4 rounded-4"
         style={{
           background: ROLE_COLORS[role || "admin"] || ROLE_COLORS.admin,
           color: "#fff",
         }}
       >
         <div>
-          <h2 className="mb-1 fw-bold" style={{ fontSize: "1.5rem" }}>
+          <h2 className="mb-1 fw-bold" style={{ fontSize: "clamp(1.2rem, 4vw, 1.8rem)" }}>
             🛡️ Admin Dashboard
           </h2>
           {role && (
             <span
               className="badge bg-white bg-opacity-25"
-              style={{ fontSize: "0.8rem" }}
+              style={{ fontSize: "clamp(0.7rem, 2vw, 0.85rem)" }}
             >
               Role:{" "}
               {role.charAt(0).toUpperCase() + role.slice(1)}
@@ -237,8 +237,8 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
         {can(role, "create") && (
           <Link
             to="/admin/addNotification"
-            className="btn btn-light fw-semibold shadow-sm"
-            style={{ borderRadius: 12 }}
+            className="btn btn-light fw-semibold shadow-sm w-100 mt-3 mt-sm-0"
+            style={{ borderRadius: 12, maxWidth: '200px' }}
           >
             + Add Notification
           </Link>
@@ -246,16 +246,20 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
       </div>
 
       {/* Tabs */}
-      <div className="d-flex gap-2 flex-wrap mb-4">
+      <div className="d-flex gap-2 flex-wrap mb-4 justify-content-start">
         {tabConfig.map((t) => (
           <button
             key={t.key}
-            className={`btn btn-sm px-3 py-2 fw-semibold ${tab === t.key
-                ? "btn-dark shadow-sm"
-                : "btn-outline-secondary"
-              }`}
-            style={{ borderRadius: 20, fontSize: "0.85rem" }}
             onClick={() => setTab(t.key)}
+            className={`btn rounded-pill d-flex align-items-center gap-1 flex-grow-0 py-1 py-md-2 px-2 px-md-3 ${
+              tab === t.key
+                ? "btn-dark border-dark fw-semibold"
+                : "btn-outline-secondary"
+            }`}
+            style={{ 
+              transition: "all 0.2s ease",
+              fontSize: "clamp(0.75rem, 2.5vw, 0.9rem)"
+            }}
           >
             {t.icon} {t.label}{" "}
             <span
@@ -307,7 +311,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                       <h6 className="mb-1 fw-bold" style={{ fontSize: "0.95rem" }}>
                         {n.title}
                       </h6>
-                      <div className="d-flex flex-wrap gap-2 align-items-center">
+                      <div className="d-flex flex-column flex-md-row align-items-start align-items-md-center gap-3">
                         <span
                           className="badge"
                           style={{
@@ -343,11 +347,19 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                     </div>
 
                     {/* Right: Actions */}
-                    <div className="d-flex flex-wrap gap-2 flex-shrink-0">
+                    <div className="d-flex flex-row flex-md-column flex-lg-row flex-wrap gap-2 flex-shrink-0 mt-3 mt-md-0 w-100 w-md-auto align-items-start">
                       <Link
                         to={`/admin/review/${getId(n.sk)}`}
-                        className="btn btn-sm btn-outline-primary"
-                        style={{ borderRadius: 8, fontSize: "0.8rem" }}
+                        className="btn btn-sm d-flex align-items-center gap-1"
+                        style={{ 
+                          borderRadius: '8px', 
+                          fontSize: "0.8rem", 
+                          fontWeight: 500,
+                          backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                          color: '#667eea',
+                          border: 'none',
+                          padding: '0.4rem 0.8rem'
+                        }}
                       >
                         👁️ View
                       </Link>
@@ -355,8 +367,16 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                       {can(role, "edit") && !n.is_archived && (
                         <Link
                           to={`/admin/edit/${getId(n.sk)}`}
-                          className="btn btn-sm btn-outline-secondary"
-                          style={{ borderRadius: 8, fontSize: "0.8rem" }}
+                          className="btn btn-sm d-flex align-items-center gap-1"
+                          style={{ 
+                            borderRadius: '8px', 
+                            fontSize: "0.8rem", 
+                            fontWeight: 500,
+                            backgroundColor: 'rgba(108, 117, 125, 0.1)',
+                            color: '#6c757d',
+                            border: 'none',
+                            padding: '0.4rem 0.8rem'
+                          }}
                         >
                           ✏️ Edit
                         </Link>
@@ -366,8 +386,17 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                         !n.approved_at &&
                         !n.is_archived && (
                           <button
-                            className="btn btn-sm btn-success"
-                            style={{ borderRadius: 8, fontSize: "0.8rem" }}
+                            className="btn btn-sm d-flex align-items-center gap-1"
+                            style={{ 
+                              borderRadius: '8px', 
+                              fontSize: "0.8rem", 
+                              fontWeight: 600,
+                              background: 'linear-gradient(135deg, #28a745, #20c997)',
+                              color: '#fff',
+                              border: 'none',
+                              padding: '0.4rem 0.8rem',
+                              boxShadow: '0 2px 6px rgba(40,167,69,0.2)'
+                            }}
                             onClick={() => handleApprove(getId(n.sk))}
                           >
                             ✓ Approve
@@ -376,8 +405,16 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
 
                       {can(role, "archive") && !n.is_archived && (
                         <button
-                          className="btn btn-sm btn-outline-danger"
-                          style={{ borderRadius: 8, fontSize: "0.8rem" }}
+                          className="btn btn-sm d-flex align-items-center gap-1"
+                          style={{ 
+                            borderRadius: '8px', 
+                            fontSize: "0.8rem", 
+                            fontWeight: 500,
+                            backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                            color: '#dc3545',
+                            border: 'none',
+                            padding: '0.4rem 0.8rem'
+                          }}
                           onClick={() => handleDelete(getId(n.sk))}
                         >
                           🗄️ Archive
@@ -386,8 +423,16 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
 
                       {can(role, "unarchive") && n.is_archived && (
                         <button
-                          className="btn btn-sm btn-outline-warning"
-                          style={{ borderRadius: 8, fontSize: "0.8rem" }}
+                          className="btn btn-sm d-flex align-items-center gap-1"
+                          style={{ 
+                            borderRadius: '8px', 
+                            fontSize: "0.8rem", 
+                            fontWeight: 500,
+                            backgroundColor: 'rgba(255, 193, 7, 0.15)',
+                            color: '#d39e00',
+                            border: 'none',
+                            padding: '0.4rem 0.8rem'
+                          }}
                           onClick={() => handleUnarchive(getId(n.sk))}
                         >
                           ♻️ Restore

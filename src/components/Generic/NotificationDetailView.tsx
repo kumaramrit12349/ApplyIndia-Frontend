@@ -294,7 +294,7 @@ export default function NotificationDetailView({
   };
 
   const getStepState = (stepIndex: number) => {
-    if (!currentStatus || currentStatus === 0) return stepIndex === 0 ? "active" : "locked";
+    if (currentStatus === null || currentStatus === 0) return stepIndex === 0 ? "active" : "locked";
     const currentIndex = STATUS_ORDER.indexOf(currentStatus);
     if (stepIndex <= currentIndex) return "completed";
     if (stepIndex === currentIndex + 1) return "active";
@@ -305,38 +305,66 @@ export default function NotificationDetailView({
 
   return (
     <main className="container py-4">
+      {/* ---------------- Admin Bar ---------------- */}
+      {isAdmin && (
+        <div className="d-flex justify-content-end gap-2 mb-4 flex-wrap w-100 px-3 px-xl-0">
+          <button
+            className="btn btn-sm d-flex align-items-center gap-1"
+            onClick={() => window.history.back()}
+            style={{
+              borderRadius: '8px',
+              fontSize: "0.8rem",
+              fontWeight: 500,
+              backgroundColor: 'rgba(108, 117, 125, 0.1)',
+              color: '#6c757d',
+              border: 'none',
+              padding: '0.4rem 0.8rem'
+            }}
+          >
+            ← Dashboard
+          </button>
+          {/* Edit — Creator, Admin */}
+          {(!adminRole || adminRole === 'creator' || adminRole === 'admin') && (
+            <a
+              href={`/admin/edit/${getId(notification.sk)}`}
+              className="btn btn-sm d-flex align-items-center gap-1"
+              style={{
+                borderRadius: '8px',
+                fontSize: "0.8rem",
+                fontWeight: 500,
+                backgroundColor: 'rgba(255, 193, 7, 0.15)',
+                color: '#d39e00',
+                border: 'none',
+                padding: '0.4rem 0.8rem'
+              }}
+            >
+              ✏️ Edit
+            </a>
+          )}
+          {/* Approve — Reviewer, Admin (only if not already approved) */}
+          {!notification.approved_at && onApprove && (
+            <button
+              className="btn btn-sm d-flex align-items-center gap-1"
+              onClick={onApprove}
+              disabled={approving}
+              style={{
+                borderRadius: '8px',
+                fontSize: "0.8rem",
+                fontWeight: 600,
+                background: 'linear-gradient(135deg, #28a745, #20c997)',
+                color: '#fff',
+                border: 'none',
+                padding: '0.4rem 0.8rem',
+                boxShadow: '0 2px 6px rgba(40,167,69,0.2)'
+              }}
+            >
+              {approving ? "Approving..." : "✓ Approve"}
+            </button>
+          )}
+        </div>
+      )}
       <div className="row justify-content-center">
         <div className="col-12 col-lg-10 col-xl-9">
-          {/* ---------------- Admin Bar ---------------- */}
-          {isAdmin && (
-            <div className="d-flex justify-content-end gap-2 mb-4 flex-wrap">
-              <button
-                className="btn btn-outline-dark btn-sm"
-                onClick={() => window.history.back()}
-              >
-                ← Dashboard
-              </button>
-              {/* Edit — Creator, Admin */}
-              {(!adminRole || adminRole === 'creator' || adminRole === 'admin') && (
-                <a
-                  href={`/admin/edit/${getId(notification.sk)}`}
-                  className="btn btn-warning btn-sm"
-                >
-                  Edit
-                </a>
-              )}
-              {/* Approve — Reviewer, Admin (only if not already approved) */}
-              {!notification.approved_at && onApprove && (
-                <button
-                  className="btn btn-success btn-sm"
-                  onClick={onApprove}
-                  disabled={approving}
-                >
-                  {approving ? "Approving..." : "✓ Approve"}
-                </button>
-              )}
-            </div>
-          )}
 
           {/* ---------------- Title ---------------- */}
           <div className="text-center mb-4">
@@ -352,7 +380,7 @@ export default function NotificationDetailView({
               {notification.title}
             </h1>
 
-            {!isAdmin && (!currentStatus || currentStatus === 0) && (
+            {!isAdmin && (currentStatus === null || currentStatus === 0) && (
               <div className="d-flex justify-content-center mb-4">
                 <button
                   className={`btn btn-sm ${currentStatus === 0 ? "btn-danger" : "btn-outline-danger"} d-flex align-items-center justify-content-center gap-2`}
@@ -578,6 +606,15 @@ export default function NotificationDetailView({
                   value={formatDate(notification.exam_date)}
                 />
 
+                <LabelValue
+                  label="Admit Card Date:"
+                  value={formatDate((notification as any).admit_card_date)}
+                />
+                <LabelValue
+                  label="Result Date:"
+                  value={formatDate((notification as any).result_date)}
+                />
+
                 {notification.details?.important_date_details && (
                   <div className="mt-3 text-muted lh-lg">
                     <div
@@ -600,6 +637,18 @@ export default function NotificationDetailView({
                     value={fee}
                   />
                 ))}
+
+                {notification.fee?.other_fee_details && (
+                  <div className="mt-3 text-muted lh-lg">
+                    <span className="fw-semibold text-dark mb-1 d-block" style={{ fontSize: "0.95rem" }}>Other Fee Details:</span>
+                    <div
+                      style={{ wordBreak: "break-word" }}
+                      dangerouslySetInnerHTML={{
+                        __html: notification.fee.other_fee_details,
+                      }}
+                    />
+                  </div>
+                )}
               </Card>
             </div>
 
@@ -624,8 +673,45 @@ export default function NotificationDetailView({
                     notification.eligibility?.min_percentage,
                   )}
                 />
+
+                {notification.eligibility?.age_relaxation_details && (
+                  <div className="mt-3 text-muted lh-lg">
+                    <span className="fw-semibold text-dark mb-1 d-block" style={{ fontSize: "0.95rem" }}>Age Relaxation:</span>
+                    <div
+                      style={{ wordBreak: "break-word" }}
+                      dangerouslySetInnerHTML={{
+                        __html: notification.eligibility.age_relaxation_details,
+                      }}
+                    />
+                  </div>
+                )}
               </Card>
             </div>
+
+            {/* ---------------- Status Features -------------- */}
+            <div className="col-12 col-md-6">
+              <Card title="Status & Features" icon={<BsCheckCircle />}>
+                <div className="d-flex flex-column gap-2">
+                  <div className="d-flex align-items-center gap-2">
+                    {notification.has_admit_card ? <BsCheckCircleFill className="text-success" /> : <BsCheckCircle className="text-secondary opacity-50" />}
+                    <span className={notification.has_admit_card ? "fw-medium" : "text-muted"}>Admit Card Available</span>
+                  </div>
+                  <div className="d-flex align-items-center gap-2">
+                    {notification.has_result ? <BsCheckCircleFill className="text-success" /> : <BsCheckCircle className="text-secondary opacity-50" />}
+                    <span className={notification.has_result ? "fw-medium" : "text-muted"}>Result Available</span>
+                  </div>
+                  <div className="d-flex align-items-center gap-2">
+                    {notification.has_answer_key ? <BsCheckCircleFill className="text-success" /> : <BsCheckCircle className="text-secondary opacity-50" />}
+                    <span className={notification.has_answer_key ? "fw-medium" : "text-muted"}>Answer Key Available</span>
+                  </div>
+                  <div className="d-flex align-items-center gap-2">
+                    {notification.has_syllabus ? <BsCheckCircleFill className="text-success" /> : <BsCheckCircle className="text-secondary opacity-50" />}
+                    <span className={notification.has_syllabus ? "fw-medium" : "text-muted"}>Syllabus Available</span>
+                  </div>
+                </div>
+              </Card>
+            </div>
+
           </div>
 
           {/* ---------------- Important Links ---------------- */}
