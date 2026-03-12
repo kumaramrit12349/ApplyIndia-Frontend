@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { Link } from "react-router-dom";
 import ConfirmModal from "../../components/ConfirmModal/ConfirmModal";
 import Toast from "../../components/Toast/Toast";
@@ -38,6 +38,8 @@ const STATUS_BADGE: Record<string, { bg: string; label: string }> = {
   archived: { bg: "#6c757d", label: "Archived" },
 };
 
+const PAGE_SIZE = 20;
+
 /* ============ Component ============ */
 
 interface DashboardPageProps {
@@ -52,10 +54,20 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
   >("pending");
   const [loading, setLoading] = useState(false);
 
-  const loadNotifications = async () => {
+  /* Search & Filter state */
+  const [searchInput, setSearchInput] = useState("");
+  const [search, setSearch] = useState("");
+  const [timeRange, setTimeRange] = useState("all");
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  /* Infinite scroll state */
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const observer = useRef<IntersectionObserver | null>(null);
+
+  const loadNotifications = async (s?: string, t?: string) => {
     setLoading(true);
     try {
-      const res = await fetchNotifications();
+      const res = await fetchNotifications(s, t);
       setNotifications(res.notifications ?? []);
     } catch (err: any) {
       if (err.message === "NOT_AUTHENTICATED") {
@@ -70,8 +82,27 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
   };
 
   useEffect(() => {
-    loadNotifications();
-  }, []);
+    loadNotifications(search, timeRange);
+  }, [search, timeRange]);
+
+  /* Reset visible count on tab/search/time change */
+  useEffect(() => {
+    setVisibleCount(PAGE_SIZE);
+  }, [tab, search, timeRange]);
+
+  /* Debounced search */
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setSearchInput(val);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      setSearch(val);
+    }, 300);
+  };
+
+  const handleTimeRangeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setTimeRange(e.target.value);
+  };
 
   /* Modal/Toast state */
   const [modal, setModal] = useState<{
@@ -114,7 +145,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
         try {
           await approveNotification(id);
           showToast("Notification approved successfully!", "success");
-          loadNotifications();
+          loadNotifications(search, timeRange);
         } catch (err: any) {
           showToast(err.message || "Failed to approve notification", "error");
         }
@@ -134,7 +165,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
         try {
           await deleteNotification(id);
           showToast("Notification archived successfully!", "success");
-          loadNotifications();
+          loadNotifications(search, timeRange);
         } catch (err: any) {
           showToast(err.message || "Failed to archive notification", "error");
         }
@@ -154,7 +185,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
         try {
           await unarchiveNotification(id);
           showToast("Notification restored successfully!", "success");
-          loadNotifications();
+          loadNotifications(search, timeRange);
         } catch (err: any) {
           showToast(err.message || "Failed to restore notification", "error");
         }
@@ -199,8 +230,24 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
     },
   ];
 
-  const displayList =
-    tabConfig.find((t) => t.key === tab)?.list || [];
+  const fullList = tabConfig.find((t) => t.key === tab)?.list || [];
+  const displayList = fullList.slice(0, visibleCount);
+  const hasMore = visibleCount < fullList.length;
+
+  /* Intersection observer for infinite scroll */
+  const lastElementRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (loading) return;
+      if (observer.current) observer.current.disconnect();
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && hasMore) {
+          setVisibleCount((prev) => prev + PAGE_SIZE);
+        }
+      });
+      if (node) observer.current.observe(node);
+    },
+    [loading, hasMore]
+  );
 
   const getStatusInfo = (n: any) => {
     if (n.is_archived) return STATUS_BADGE.archived;
@@ -245,6 +292,51 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
         )}
       </div>
 
+      {/* Search & Filter Bar */}
+      <div className="d-flex flex-column flex-md-row gap-3 mb-4">
+        <div className="flex-grow-1 position-relative">
+          <span
+            className="position-absolute top-50 translate-middle-y"
+            style={{ left: 14, fontSize: '1rem', opacity: 0.5, pointerEvents: 'none' }}
+          >
+            🔍
+          </span>
+          <input
+            id="notification-search"
+            type="text"
+            className="form-control shadow-sm"
+            placeholder="Search notifications by title..."
+            value={searchInput}
+            onChange={handleSearchChange}
+            style={{
+              borderRadius: 12,
+              paddingLeft: 40,
+              border: '1px solid rgba(0,0,0,0.1)',
+              height: 44,
+            }}
+          />
+        </div>
+        <div className="d-flex align-items-center gap-2">
+          <label htmlFor="timeFilter" className="fw-medium mb-0 text-nowrap" style={{ fontSize: '0.9rem' }}>
+            Filter:
+          </label>
+          <select
+            id="timeFilter"
+            className="form-select shadow-sm"
+            value={timeRange}
+            onChange={handleTimeRangeChange}
+            style={{ borderRadius: 12, border: '1px solid rgba(0,0,0,0.1)', height: 44, minWidth: 160 }}
+          >
+            <option value="all">All Time</option>
+            <option value="today">Today</option>
+            <option value="last_week">Last Week</option>
+            <option value="last_month">Last Month</option>
+            <option value="last_3_months">Last 3 Months</option>
+            <option value="last_6_months">Last 6 Months</option>
+          </select>
+        </div>
+      </div>
+
       {/* Tabs */}
       <div className="d-flex gap-2 flex-wrap mb-4 justify-content-start">
         {tabConfig.map((t) => (
@@ -282,14 +374,23 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
       ) : displayList.length === 0 ? (
         <div className="text-center py-5 text-muted">
           <div style={{ fontSize: 48 }}>📭</div>
-          <p className="mt-2">No notifications in this tab</p>
+          <p className="mt-2">
+            {search
+              ? `No notifications matching "${search}"`
+              : "No notifications in this tab"}
+          </p>
         </div>
       ) : (
         <div className="row g-3">
-          {displayList.map((n: any) => {
+          {displayList.map((n: any, index: number) => {
             const status = getStatusInfo(n);
+            const isLastElement = index === displayList.length - 1;
             return (
-              <div key={n.sk} className="col-12">
+              <div
+                key={n.sk}
+                className="col-12"
+                ref={isLastElement ? lastElementRef : null}
+              >
                 <div
                   className="card border-0 shadow-sm rounded-3 overflow-hidden"
                   style={{ transition: "box-shadow 0.2s" }}
@@ -382,6 +483,25 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                         </Link>
                       )}
 
+                      {/* Duplicate button */}
+                      {can(role, "create") && !n.is_archived && (
+                        <Link
+                          to={`/admin/addNotification?clone=${getId(n.sk)}`}
+                          className="btn btn-sm d-flex align-items-center gap-1"
+                          style={{
+                            borderRadius: '8px',
+                            fontSize: "0.8rem",
+                            fontWeight: 500,
+                            backgroundColor: 'rgba(23, 162, 184, 0.1)',
+                            color: '#17a2b8',
+                            border: 'none',
+                            padding: '0.4rem 0.8rem'
+                          }}
+                        >
+                          📋 Duplicate
+                        </Link>
+                      )}
+
                       {can(role, "approve") &&
                         !n.approved_at &&
                         !n.is_archived && (
@@ -444,6 +564,22 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
               </div>
             );
           })}
+        </div>
+      )}
+
+      {/* Infinite scroll loading indicator */}
+      {hasMore && !loading && (
+        <div className="d-flex justify-content-center mt-4">
+          <div className="spinner-border text-primary spinner-border-sm" role="status">
+            <span className="visually-hidden">Loading more...</span>
+          </div>
+        </div>
+      )}
+
+      {/* End of list */}
+      {!hasMore && fullList.length > PAGE_SIZE && !loading && (
+        <div className="text-center mt-4 text-muted small">
+          All {fullList.length} notifications loaded.
         </div>
       )}
 

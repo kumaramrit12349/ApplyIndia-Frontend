@@ -10,9 +10,12 @@ export const addNotification = (data: INotification) => {
   });
 };
 
-// Fetch all notifications (admin)
-export const fetchNotifications = () => {
-  return privateFetch<any>(PRIVATE_API.NOTIFICATION.LIST);
+// Fetch all notifications (admin) with optional search + time filter
+export const fetchNotifications = (search?: string, timeRange?: string) => {
+  return privateFetch<any>(PRIVATE_API.NOTIFICATION.LIST, {
+    method: "POST",
+    body: JSON.stringify({ search, timeRange }),
+  });
 };
 
 // Get notification by slug
