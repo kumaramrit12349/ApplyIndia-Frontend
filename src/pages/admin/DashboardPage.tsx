@@ -9,6 +9,7 @@ import {
   fetchNotifications,
   unarchiveNotification,
 } from "../../services/private/notificationApi";
+import { NOTIFICATION_CATEGORIES } from "../../constant/SharedConstant";
 
 /* ============ Role helpers ============ */
 type AdminRole = "creator" | "reviewer" | "admin";
@@ -58,16 +59,17 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
   const [timeRange, setTimeRange] = useState("all");
+  const [categoryFilter, setCategoryFilter] = useState("all");
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   /* Infinite scroll state */
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const observer = useRef<IntersectionObserver | null>(null);
 
-  const loadNotifications = async (s?: string, t?: string) => {
+  const loadNotifications = async (s?: string, t?: string, c?: string) => {
     setLoading(true);
     try {
-      const res = await fetchNotifications(s, t);
+      const res = await fetchNotifications(s, t, c);
       setNotifications(res.notifications ?? []);
     } catch (err: any) {
       if (err.message === "NOT_AUTHENTICATED") {
@@ -82,13 +84,13 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
   };
 
   useEffect(() => {
-    loadNotifications(search, timeRange);
-  }, [search, timeRange]);
+    loadNotifications(search, timeRange, categoryFilter);
+  }, [search, timeRange, categoryFilter]);
 
-  /* Reset visible count on tab/search/time change */
+  /* Reset visible count on tab/search/time/category change */
   useEffect(() => {
     setVisibleCount(PAGE_SIZE);
-  }, [tab, search, timeRange]);
+  }, [tab, search, timeRange, categoryFilter]);
 
   /* Debounced search */
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -145,7 +147,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
         try {
           await approveNotification(id);
           showToast("Notification approved successfully!", "success");
-          loadNotifications(search, timeRange);
+          loadNotifications(search, timeRange, categoryFilter);
         } catch (err: any) {
           showToast(err.message || "Failed to approve notification", "error");
         }
@@ -165,7 +167,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
         try {
           await deleteNotification(id);
           showToast("Notification archived successfully!", "success");
-          loadNotifications(search, timeRange);
+          loadNotifications(search, timeRange, categoryFilter);
         } catch (err: any) {
           showToast(err.message || "Failed to archive notification", "error");
         }
@@ -185,7 +187,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
         try {
           await unarchiveNotification(id);
           showToast("Notification restored successfully!", "success");
-          loadNotifications(search, timeRange);
+          loadNotifications(search, timeRange, categoryFilter);
         } catch (err: any) {
           showToast(err.message || "Failed to restore notification", "error");
         }
@@ -316,24 +318,47 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
             }}
           />
         </div>
-        <div className="d-flex align-items-center gap-2">
-          <label htmlFor="timeFilter" className="fw-medium mb-0 text-nowrap" style={{ fontSize: '0.9rem' }}>
-            Filter:
-          </label>
-          <select
-            id="timeFilter"
-            className="form-select shadow-sm"
-            value={timeRange}
-            onChange={handleTimeRangeChange}
-            style={{ borderRadius: 12, border: '1px solid rgba(0,0,0,0.1)', height: 44, minWidth: 160 }}
-          >
-            <option value="all">All Time</option>
-            <option value="today">Today</option>
-            <option value="last_week">Last Week</option>
-            <option value="last_month">Last Month</option>
-            <option value="last_3_months">Last 3 Months</option>
-            <option value="last_6_months">Last 6 Months</option>
-          </select>
+        <div className="d-flex flex-column flex-sm-row align-items-sm-center gap-2">
+          {/* Category Filter */}
+          <div className="d-flex align-items-center gap-2">
+            <label htmlFor="categoryFilter" className="fw-medium mb-0 text-nowrap" style={{ fontSize: '0.9rem' }}>
+              Category:
+            </label>
+            <select
+              id="categoryFilter"
+              className="form-select shadow-sm"
+              value={categoryFilter}
+              onChange={(e) => setCategoryFilter(e.target.value)}
+              style={{ borderRadius: 12, border: '1px solid rgba(0,0,0,0.1)', height: 44, minWidth: 160 }}
+            >
+              {NOTIFICATION_CATEGORIES.map((cat) => (
+                <option key={cat.value} value={cat.value}>
+                  {cat.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Time Filter */}
+          <div className="d-flex align-items-center gap-2">
+            <label htmlFor="timeFilter" className="fw-medium mb-0 text-nowrap" style={{ fontSize: '0.9rem' }}>
+              Time:
+            </label>
+            <select
+              id="timeFilter"
+              className="form-select shadow-sm"
+              value={timeRange}
+              onChange={handleTimeRangeChange}
+              style={{ borderRadius: 12, border: '1px solid rgba(0,0,0,0.1)', height: 44, minWidth: 160 }}
+            >
+              <option value="all">All Time</option>
+              <option value="today">Today</option>
+              <option value="last_week">Last Week</option>
+              <option value="last_month">Last Month</option>
+              <option value="last_3_months">Last 3 Months</option>
+              <option value="last_6_months">Last 6 Months</option>
+            </select>
+          </div>
         </div>
       </div>
 

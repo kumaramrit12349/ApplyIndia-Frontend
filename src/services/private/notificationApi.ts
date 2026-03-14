@@ -10,11 +10,11 @@ export const addNotification = (data: INotification) => {
   });
 };
 
-// Fetch all notifications (admin) with optional search + time filter
-export const fetchNotifications = (search?: string, timeRange?: string) => {
+// Fetch all notifications (admin) with optional search + time filter + category filter
+export const fetchNotifications = (search?: string, timeRange?: string, category?: string) => {
   return privateFetch<any>(PRIVATE_API.NOTIFICATION.LIST, {
     method: "POST",
-    body: JSON.stringify({ search, timeRange }),
+    body: JSON.stringify({ search, timeRange, category }),
   });
 };
 
