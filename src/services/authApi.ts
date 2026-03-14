@@ -172,3 +172,9 @@ export const updateProfile = async (data: any) => {
   }
   return res.json();
 };
+
+/**
+ * Returns the backend URL that initiates the Google OAuth redirect.
+ * When the user clicks "Continue with Google", redirect the browser to this URL.
+ */
+export const getGoogleSignInUrl = (): string => `${BASE_URL}/auth/google`;

@@ -1,7 +1,7 @@
 // App.tsx (only AppLayout shown; rest unchanged)
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -36,10 +36,11 @@ import ForgotPasswordPopup from "./components/ForgotPasswordPopup";
 import ResetPasswordPopup from "./components/ResetPasswordPopup";
 import ProfilePage from "./pages/ProfilePage";
 import MyDashboard from "./pages/MyDashboard";
+import GoogleCallbackPage from "./pages/GoogleCallbackPage";
 import { ToastContainer, toast } from "react-toastify";
 import { checkAuthStatus, logoutUser } from "./services/authApi";
 
-// const POPUP_INTERVAL = 300 * 1000;
+
 
 const AppLayout: React.FC = () => {
   const location = useLocation();
@@ -66,20 +67,31 @@ const AppLayout: React.FC = () => {
   const [adminRole, setAdminRole] = useState<string | undefined>(undefined);
   const [userState, setUserState] = useState<string | undefined>(undefined);
 
+  const [authPopupError, setAuthPopupError] = useState<string>("");
+  const [userCategory, setUserCategory] = useState<string | undefined>(undefined);
+
   // Global event listener for forcing auth popup
   useEffect(() => {
-    const handleOpenAuthPopup = () => {
-      setShowAuthPopup(true);
-    };
+    const handleOpenAuthPopup = () => setShowAuthPopup(true);
     window.addEventListener("openAuthPopup", handleOpenAuthPopup);
     return () => window.removeEventListener("openAuthPopup", handleOpenAuthPopup);
   }, []);
-  const [userCategory, setUserCategory] = useState<string | undefined>(undefined);
 
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  // Check auth status on first load
+  // Check auth status on first load; also handle Google OAuth error redirects
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const authError = params.get("auth_error");
+    if (authError) {
+      const displayMsg = authError.includes("Email already registered")
+        ? authError
+        : "This email is already registered. Please sign in with your email and password.";
+      setAuthPopupError(displayMsg);
+      setShowAuthPopup(true);
+      toast.error(displayMsg, { autoClose: 5000 });
+      // Clean up the query param without a full reload
+      window.history.replaceState({}, "", window.location.pathname);
+    }
+
     const verifyAuth = async () => {
       const { isAuthenticated, user } = await checkAuthStatus();
       setIsAuthenticated(isAuthenticated);
@@ -101,21 +113,9 @@ const AppLayout: React.FC = () => {
         setUserCategory(undefined);
       }
       setCheckingAuth(false);
-
-      // if (!isAuthenticated) {
-      //   setShowAuthPopup(true);
-      //   timerRef.current = setInterval(
-      //     () => setShowAuthPopup(true),
-      //     POPUP_INTERVAL
-      //   );
-      // }
     };
 
     verifyAuth();
-
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
   }, []);
 
   const handleAuthSuccess = async () => {
@@ -135,19 +135,11 @@ const AppLayout: React.FC = () => {
 
     setShowAuthPopup(false);
     setShowVerifyPopup(false);
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
-      timerRef.current = null;
-    }
   };
   const handleRequireVerification = (email: string) => {
     setPendingEmail(email);
     setShowAuthPopup(false);
     setShowVerifyPopup(true);
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
-      timerRef.current = null;
-    }
   };
 
   const handleLogout = async () => {
@@ -162,12 +154,6 @@ const AppLayout: React.FC = () => {
     setAdminRole(undefined);
     setUserState(undefined);
     setUserCategory(undefined);
-    // if (!timerRef.current) {
-    //   timerRef.current = setInterval(
-    //     () => setShowAuthPopup(true),
-    //     POPUP_INTERVAL
-    //   );
-    // }
   };
 
   const handleForgotPassword = () => {
@@ -318,6 +304,9 @@ const AppLayout: React.FC = () => {
             }
           />
 
+          {/* Google OAuth callback */}
+          <Route path="/auth/callback" element={<GoogleCallbackPage />} />
+
           {/* Legal pages */}
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/terms" element={<TermsAndConditions />} />
@@ -361,6 +350,7 @@ const AppLayout: React.FC = () => {
         onAuthSuccess={handleAuthSuccess}
         onRequireVerification={handleRequireVerification}
         onForgotPassword={handleForgotPassword}
+        initialError={authPopupError}
       />
 
       <VerifyAccountPopup
