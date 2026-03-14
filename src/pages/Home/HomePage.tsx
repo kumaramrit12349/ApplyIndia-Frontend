@@ -4,6 +4,7 @@ import { useLocation } from "react-router-dom";
 import InfiniteScroll from "react-infinite-scroll-component";
 import type { HomePageNotification } from "../../types/notification";
 import { fetchHomePageNotifications, fetchNotificationsByCategory } from "../../services/public/notiifcationApi";
+import SEO from "../../components/SEO/SEO";
 
 interface GroupedNotifications {
   [category: string]: HomePageNotification[];
@@ -102,6 +103,10 @@ const HomePage: React.FC = () => {
   if (searchValue) {
     return (
       <div className="container py-3 px-2 px-md-4">
+        <SEO 
+          title={`Search results for "${searchValue}"`} 
+          description={`Find government job notifications and results related to ${searchValue}.`} 
+        />
         <div className="row justify-content-center">
           <div className="col-12 col-md-10 col-lg-8">
             <h2 className="mb-3 text-center">
@@ -155,6 +160,9 @@ const HomePage: React.FC = () => {
 
   return (
     <div className="page">
+      <SEO 
+        title="Home" 
+      />
       <div className="container py-4">
         <div className="row g-4">
           {groupedLoading ? (

@@ -39,7 +39,7 @@ const STATUS_CONFIG: Record<UserActivityStatus, { label: string; actionText: str
 
 const TrackButton = ({ notification, category }: { notification: HomePageNotification; category: string }) => {
   const [loading, setLoading] = useState(false);
-  const [currentStatus, setCurrentStatus] = useState<UserActivityStatus | null>(null);
+  const [currentStatus, setCurrentStatus] = useState<UserActivityStatus | 0 | null>(null);
   const [showLimitModal, setShowLimitModal] = useState(false);
   const [hasChecked, setHasChecked] = useState(false);
   const [showCongrats, setShowCongrats] = useState(false);
@@ -162,14 +162,14 @@ const TrackButton = ({ notification, category }: { notification: HomePageNotific
           <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
         ) : !nextStatus ? (
           "✓ All Steps Complete"
-        ) : (currentStatus && currentStatus !== 0) ? (
+        ) : currentStatus ? (
           `${STATUS_CONFIG[nextStatus].emoji} ${STATUS_CONFIG[nextStatus].actionText}`
         ) : (
           "📝 Mark as Applied"
         )}
       </button>
 
-      {(!currentStatus || currentStatus === 0) && (
+      {!currentStatus && (
         <button
           onClick={handleWishlistClick}
           disabled={loading}

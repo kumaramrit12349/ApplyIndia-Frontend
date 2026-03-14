@@ -5,6 +5,7 @@ import ListView from "./ListView";
 import type { HomePageNotification } from "../../../types/notification";
 import { fetchNotificationsByState } from "../../../services/public/notiifcationApi";
 import { INDIAN_STATES } from "../../../constant/SharedConstant";
+import SEO from "../../../components/SEO/SEO";
 
 const PAGE_SIZE = 20;
 
@@ -75,6 +76,10 @@ const StateView: React.FC = () => {
 
     return (
         <div className="container py-3 px-2 px-md-4">
+            <SEO 
+                title={`${stateLabel} Jobs`} 
+                description={`Find all government job notifications in ${stateLabel}.`}
+            />
             <div className="row justify-content-center">
                 <div className="col-12 col-md-10 col-lg-8">
                     <h2 className="mb-3 text-center text-capitalize">

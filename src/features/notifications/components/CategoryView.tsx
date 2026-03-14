@@ -4,6 +4,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import ListView from "./ListView";
 import type { HomePageNotification } from "../../../types/notification";
 import { fetchNotificationsByCategory } from "../../../services/public/notiifcationApi";
+import SEO from "../../../components/SEO/SEO";
 
 const PAGE_SIZE = 20;
 
@@ -71,12 +72,18 @@ const CategoryView: React.FC = () => {
 
   /* ================= UI ================= */
 
+  const formattedCategory = decodedCategory.replace(/-/g, " ");
+
   return (
     <div className="container py-3 px-2 px-md-4">
+      <SEO 
+        title={`${formattedCategory} Jobs`} 
+        description={`Find all government job notifications in the ${formattedCategory} category.`}
+      />
       <div className="row justify-content-center">
         <div className="col-12 col-md-10 col-lg-8">
           <h2 className="mb-3 text-center text-capitalize">
-            {decodedCategory.replace(/-/g, " ")}
+            {formattedCategory}
             {searchValue && (
               <span className="text-muted ms-2">
                 (Search: "{searchValue}")

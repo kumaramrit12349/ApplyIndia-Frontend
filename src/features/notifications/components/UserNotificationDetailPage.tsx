@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import NotificationDetailView from "../../../components/Generic/NotificationDetailView";
 import { getNotificationById } from "../../../services/public/notiifcationApi";
+import SEO from "../../../components/SEO/SEO";
 
 interface UserNotificationDetailPageProps {
   isAuthenticated?: boolean;
@@ -43,12 +44,17 @@ const UserNotificationDetailPage: React.FC<UserNotificationDetailPageProps> = ({
   if (!notification) {
     return (
       <div className="container mt-5">
+        <SEO title="Notification Not Found" />
         <div className="alert alert-danger">Notification not found</div>
       </div>
     );
   }
   return (
     <div className="container mt-5 mb-5">
+      <SEO 
+        title={notification.title} 
+        description={notification.description?.substring(0, 150) + "..."}
+      />
       <NotificationDetailView
         notification={notification}
         isAuthenticated={isAuthenticated}
