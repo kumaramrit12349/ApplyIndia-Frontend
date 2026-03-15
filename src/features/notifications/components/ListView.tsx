@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import { BsHeart, BsHeartFill } from "react-icons/bs";
 import ConfirmationModal from "../../../components/Generic/ConfirmationModal";
 import CongratulationsPopup from "../../../components/CongratulationsPopup";
+import { useAuth } from "../../../context/AuthContext";
 
 const STATUS_ORDER: UserActivityStatus[] = [1, 2, 3, 4];
 
@@ -38,6 +39,7 @@ const STATUS_CONFIG: Record<UserActivityStatus, { label: string; actionText: str
 };
 
 const TrackButton = ({ notification, category }: { notification: HomePageNotification; category: string }) => {
+  const { isAuthenticated, onShowAuthPopup } = useAuth();
   const [loading, setLoading] = useState(false);
   const [currentStatus, setCurrentStatus] = useState<UserActivityStatus | 0 | null>(null);
   const [showLimitModal, setShowLimitModal] = useState(false);
@@ -49,8 +51,12 @@ const TrackButton = ({ notification, category }: { notification: HomePageNotific
     ? notification.sk
     : `Notification#${notification.sk}#META`;
 
+  // Only check existing activity when the user is authenticated
   useEffect(() => {
-    if (!fullSk) return;
+    if (!isAuthenticated || !fullSk) {
+      setHasChecked(true);
+      return;
+    }
     checkActivityForNotification(fullSk)
       .then((res) => {
         if (res.tracked && res.data) {
@@ -59,7 +65,7 @@ const TrackButton = ({ notification, category }: { notification: HomePageNotific
       })
       .catch(() => { })
       .finally(() => setHasChecked(true));
-  }, [fullSk]);
+  }, [isAuthenticated, fullSk]);
 
   const getNextStatus = (): UserActivityStatus | null => {
     if (currentStatus === null || currentStatus === 0) return 1;
@@ -76,6 +82,13 @@ const TrackButton = ({ notification, category }: { notification: HomePageNotific
 
     if (!nextStatus) return;
 
+    // Prompt login before attempting any API call
+    if (!isAuthenticated) {
+      toast.info("🔒 Please login to track your progress");
+      onShowAuthPopup();
+      return;
+    }
+
     setLoading(true);
     try {
       if (!fullSk) throw new Error("Missing notification ID");
@@ -90,10 +103,7 @@ const TrackButton = ({ notification, category }: { notification: HomePageNotific
       setShowCongrats(true);
     } catch (error: any) {
       const msg = error?.message || "";
-      if (msg.includes("401") || msg.includes("User not authenticated") || msg.includes("Failed to fetch") || msg.includes("AUTH_REDIRECT")) {
-        toast.info("🔒 Please login to track your progress");
-        window.dispatchEvent(new Event("openAuthPopup"));
-      } else if (msg.includes("ATTEMPT_LIMIT_REACHED")) {
+      if (msg.includes("ATTEMPT_LIMIT_REACHED")) {
         setShowLimitModal(true);
       } else if (msg.includes("Invalid status transition") || msg.includes("400")) {
         toast.info("Please complete the previous step first.");
@@ -109,6 +119,13 @@ const TrackButton = ({ notification, category }: { notification: HomePageNotific
     e.preventDefault();
     e.stopPropagation();
 
+    // Prompt login before attempting any API call
+    if (!isAuthenticated) {
+      toast.info("🔒 Please login to add to wishlist");
+      onShowAuthPopup();
+      return;
+    }
+
     setLoading(true);
     try {
       if (!fullSk) throw new Error("Missing notification ID");
@@ -122,13 +139,7 @@ const TrackButton = ({ notification, category }: { notification: HomePageNotific
         toast.success("Added to wishlist!");
       }
     } catch (error: any) {
-      const msg = error?.message || "";
-      if (msg.includes("401") || msg.includes("User not authenticated") || msg.includes("Failed to fetch") || msg.includes("AUTH_REDIRECT")) {
-        toast.info("🔒 Please login to add to wishlist");
-        window.dispatchEvent(new Event("openAuthPopup"));
-      } else {
-        toast.error("Failed to update wishlist.");
-      }
+      toast.error(error?.message || "Failed to update wishlist.");
     } finally {
       setLoading(false);
     }

@@ -39,6 +39,7 @@ import MyDashboard from "./pages/MyDashboard";
 import GoogleCallbackPage from "./pages/GoogleCallbackPage";
 import { ToastContainer, toast } from "react-toastify";
 import { checkAuthStatus, logoutUser } from "./services/authApi";
+import { AuthProvider } from "./context/AuthContext";
 
 
 
@@ -184,6 +185,7 @@ const AppLayout: React.FC = () => {
   }
 
   return (
+    <AuthProvider isAuthenticated={isAuthenticated} onShowAuthPopup={() => setShowAuthPopup(true)}>
     <div className="d-flex flex-column min-vh-100">
       <Navbar
         isAuthenticated={isAuthenticated}
@@ -373,6 +375,7 @@ const AppLayout: React.FC = () => {
         onSuccess={handleResetSuccess}
       />
     </div>
+    </AuthProvider>
   );
 };
 
