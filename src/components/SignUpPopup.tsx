@@ -109,11 +109,9 @@ const AuthPopup: React.FC<AuthPopupProps> = ({
     }
   };
 
-<<<<<<< HEAD
   const handleGoogleSignIn = () => {
     window.location.href = getGoogleSignInUrl();
   };
-=======
   // const handleSSO = (providerUrl: string) => {
   //   window.open(providerUrl, "_blank", "noopener");
   // };
@@ -121,7 +119,6 @@ const AuthPopup: React.FC<AuthPopupProps> = ({
   // const handleForgotPassword = () => {
   //   window.open(`${PUBLIC_API.FORGOT_PASSWORD}`, "_blank");
   // };
->>>>>>> 19750bf (resolved build issue.)
 
   return (
     <Modal
