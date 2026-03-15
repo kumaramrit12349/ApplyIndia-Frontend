@@ -1,45 +1,60 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { NOTIFICATION_CATEGORIES } from "../../constant/SharedConstant";
+import { NOTIFICATION_CATEGORIES, INDIAN_STATES } from "../../constant/SharedConstant";
+import { fetchAvailableFilters } from "../../services/public/notiifcationApi";
 
 const Navigation: React.FC = () => {
   const location = useLocation();
-  const match = location.pathname.match(/\/notification\/category\/([^/]+)/i);
-  const activeCategory = match ? decodeURIComponent(match[1]) : "all";
+  const categoryMatch = location.pathname.match(/\/notification\/category\/([^/]+)/i);
+  const activeCategory = categoryMatch ? decodeURIComponent(categoryMatch[1]) : "all";
 
-  const getNavLink = (item: (typeof NOTIFICATION_CATEGORIES)[number]) =>
+  const stateMatch = location.pathname.match(/\/notification\/state\/([^/]+)/i);
+  const activeState = stateMatch ? decodeURIComponent(stateMatch[1]) : null;
+
+  const [availableStates, setAvailableStates] = useState<string[]>([]);
+
+  useEffect(() => {
+    fetchAvailableFilters()
+      .then((res: any) => {
+        if (res.states) {
+          setAvailableStates(res.states.map((s: string) => s.toLowerCase()));
+        }
+      })
+      .catch((err) => console.error("Failed to load available filters", err));
+  }, []);
+
+  const visibleStates = INDIAN_STATES.filter(state =>
+    availableStates.includes(state.value.toLowerCase())
+  );
+
+  const getCategoryNavLink = (item: (typeof NOTIFICATION_CATEGORIES)[number]) =>
     item.value === "all" ? "/" : `/notification/category/${item.value}`;
 
-  const isActive = (item: (typeof NOTIFICATION_CATEGORIES)[number]) => {
+  const getStateNavLink = (item: (typeof INDIAN_STATES)[number]) =>
+    `/notification/state/${item.value}`;
+
+  const isCategoryActive = (item: (typeof NOTIFICATION_CATEGORIES)[number]) => {
     if (item.value === "all" && location.pathname === "/") return true;
-    if (activeCategory && item.value !== "all" && activeCategory === item.value)
+    if (activeCategory && !activeState && item.value !== "all" && activeCategory === item.value)
       return true;
     return false;
   };
 
+  const isStateActive = (item: (typeof INDIAN_STATES)[number]) => {
+    return activeState === item.value;
+  };
+
   return (
-    <nav
-      className="bg-light"
-      style={{
-        position: "sticky",
-        top: "56px",
-        zIndex: 1040,
-        borderBottom: "1px solid #dee2e6",
-      }}
-    >
+    <nav className="ai-navigation">
       <div className="container">
-        <div className="overflow-auto">
-          <ul className="nav nav-pills py-2 flex-nowrap m-0">
+        {/* Categories Row */}
+        <div className="ai-nav-scroll border-bottom">
+          <ul className="ai-pill-list">
             {NOTIFICATION_CATEGORIES.map((item) => (
-              <li className="nav-item" key={item.value}>
+              <li key={`cat-${item.value}`}>
                 <Link
-                  to={getNavLink(item)}
-                  className={`nav-link text-nowrap ${
-                    isActive(item)
-                      ? "active bg-primary text-white"
-                      : "text-dark"
-                  }`}
-                  style={{ borderRadius: "8px", fontWeight: 500 }}
+                  to={getCategoryNavLink(item)}
+                  className={`ai-pill ${isCategoryActive(item) ? "active" : ""}`}
                 >
                   {item.label}
                 </Link>
@@ -47,6 +62,24 @@ const Navigation: React.FC = () => {
             ))}
           </ul>
         </div>
+
+        {/* States Row */}
+        {visibleStates.length > 0 && (
+          <div className="pb-1 pt-1">
+            <ul className="ai-pill-list" style={{ flexWrap: "wrap" }}>
+              {visibleStates.map((item) => (
+                <li key={`state-${item.value}`}>
+                  <Link
+                    to={getStateNavLink(item)}
+                    className={`ai-pill state-pill ${isStateActive(item) ? "active" : ""}`}
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     </nav>
   );

@@ -1,10 +1,9 @@
-// components/NotificationForm/NotificationForm.tsx
 import React, { useMemo, useState } from "react";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
 import ConfirmModal from "../../components/ConfirmModal/ConfirmModal";
 import Toast from "../../components/Toast/Toast";
-import { NOTIFICATION_CATEGORIES } from "../../constant/SharedConstant";
+import { NOTIFICATION_CATEGORIES, INDIAN_STATES } from "../../constant/SharedConstant";
 import type { INotification } from "../../interface/NotificationInterface";
 import { epochToDateInput, toEpoch } from "../../utils/utils";
 
@@ -12,13 +11,33 @@ type Props = {
   mode: "create" | "edit";
   initialValues: INotification;
   onSubmit: (values: Partial<INotification>) => Promise<void>;
+  onSuccess: () => void;
 };
 
 const NotificationForm: React.FC<Props> = ({
   mode,
-  initialValues,
+  initialValues: rawInitialValues,
   onSubmit,
+  onSuccess,
 }) => {
+  const findStateCode = (stateNameOrCode?: string) => {
+    if (!stateNameOrCode) return "";
+    const lower = stateNameOrCode.toLowerCase().replace(/-/g, " ");
+    const exactCode = INDIAN_STATES.find(s => s.value.toLowerCase() === lower);
+    if (exactCode) return exactCode.value;
+    const byName = INDIAN_STATES.find(s => s.label.toLowerCase() === lower);
+    return byName ? byName.value : stateNameOrCode;
+  };
+
+  const initialValues: INotification = {
+    ...rawInitialValues,
+    state: findStateCode(rawInitialValues.state),
+    details: rawInitialValues.details || { short_description: "", long_description: "", important_date_details: "" },
+    fee: rawInitialValues.fee || { general_fee: 0, obc_fee: 0, sc_fee: 0, st_fee: 0, ph_fee: 0, other_fee_details: "" },
+    eligibility: rawInitialValues.eligibility || { min_age: 0, max_age: 0, qualification: "", specialization: "", min_percentage: 0, age_relaxation_details: "" },
+    links: rawInitialValues.links || { youtube_link: "", apply_online_url: "", notification_pdf_url: "", official_website_url: "", admit_card_url: "", answer_key_url: "", result_url: "", other_links: "" },
+  };
+
   const [form, setForm] = useState<INotification>(initialValues);
   const [saving, setSaving] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -75,7 +94,11 @@ const NotificationForm: React.FC<Props> = ({
   /* ---------------- Dirty Tracking ---------------- */
 
   const isDirty = useMemo(
-    () => JSON.stringify(form) !== JSON.stringify(initialValues),
+    () => {
+      // The state code was modified during initialization, so we compare against the coerced initialValues,
+      // NOT the rawInitialValues passed from DB.
+      return JSON.stringify(form) !== JSON.stringify(initialValues);
+    },
     [form, initialValues],
   );
 
@@ -135,6 +158,9 @@ const NotificationForm: React.FC<Props> = ({
             : "Notification updated successfully!",
         type: "success",
       });
+      setTimeout(() => {
+        onSuccess();
+      }, 1500);
     } catch (err: any) {
       setToast({
         show: true,
@@ -145,247 +171,226 @@ const NotificationForm: React.FC<Props> = ({
     }
   };
 
+  /* ---------------- UI Render Helpers ---------------- */
+
+  const renderSectionTitle = (title: string) => (
+    <div className="ai-form-section-title">{title}</div>
+  );
+
+  const renderInputField = (label: string, name: string, type: string = "text", required: boolean = false, placeholder: string = "") => (
+    <div className="mb-3">
+      <label className="ai-form-label">{label}{required && " *"}</label>
+      <input
+        className="ai-input"
+        type={type}
+        name={name}
+        value={(form as any)[name] || ""}
+        onChange={handleRootChange}
+        required={required}
+        placeholder={placeholder}
+      />
+    </div>
+  );
+
+  const renderTextArea = (label: string, value: string, onChange: (val: string) => void) => (
+    <div className="mb-4">
+      <label className="ai-form-label">{label}</label>
+      <div className="quill-wrapper" style={{background: 'rgba(255,255,255,0.7)', borderRadius: '12px', overflow: 'hidden', border: '1px solid rgba(0,0,0,0.1)'}}>
+        <ReactQuill
+          theme="snow"
+          value={value}
+          onChange={onChange}
+        />
+      </div>
+    </div>
+  );
+
   /* ---------------- UI ---------------- */
 
   return (
     <>
+      <div className="ai-form-card">
       <form onSubmit={handleSubmit}>
         {/* ================= BASIC ================= */}
-        <h5 className="mt-4">Basic Information</h5>
-
-        <div className="mb-3">
-          <label className="form-label">Title *</label>
-          <input
-            className="form-control"
-            name="title"
-            value={form.title}
-            onChange={handleRootChange}
-            required
-          />
-        </div>
-
-        <div className="mb-3">
-          <label className="form-label">Category *</label>
-          <select
-            name="category"
-            className="form-select"
-            value={form.category}
-            onChange={handleRootChange}
-            required
-          >
-            <option value="">Select</option>
-            {NOTIFICATION_CATEGORIES.map((c) => (
-              <option key={c.value} value={c.value}>
-                {c.label}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="mb-3">
-          <label className="form-label">Department</label>
-          <input
-            className="form-control"
-            name="department"
-            value={form.department}
-            onChange={handleRootChange}
-          />
-        </div>
-        <div className="mb-3">
-          <label className="form-label">Total Vacancies</label>
-          <input
-            type="text"
-            inputMode="numeric"
-            className="form-control"
-            value={totalVacanciesUI}
-            onChange={(e) => {
-              const value = e.target.value;
-              // allow clearing
-              if (value === "") {
-                setTotalVacanciesUI("");
-                setForm((p) => ({ ...p, total_vacancies: 0 }));
-                return;
-              }
-              // allow only non-negative integers
-              if (!/^[0-9]+$/.test(value)) return;
-              setTotalVacanciesUI(value);
-              setForm((p) => ({
-                ...p,
-                total_vacancies: Number(value),
-              }));
-            }}
-          />
-        </div>
-
-        {/* ================= DETAILS ================= */}
-        <h5 className="mt-4">Descriptions</h5>
-
-        <div className="mb-3">
-          <label className="form-label">Short Description</label>
-          <ReactQuill
-            theme="snow"
-            value={form.details.short_description}
-            onChange={(v) =>
-              handleNestedChange("details", "short_description", v)
-            }
-          />
-        </div>
-
-        <div className="mb-3">
-          <label className="form-label">Long Description</label>
-          <ReactQuill
-            theme="snow"
-            value={form.details.long_description}
-            onChange={(v) =>
-              handleNestedChange("details", "long_description", v)
-            }
-          />
-        </div>
-
-        {/* ================= IMPORTANT DATES ================= */}
-        <h5 className="mt-4">Important Dates</h5>
-
-        {[
-          { key: "start_date", label: "Start Date" },
-          { key: "last_date_to_apply", label: "Last Date to Apply" },
-          { key: "exam_date", label: "Exam Date" },
-          { key: "admit_card_date", label: "Admit Card Date" },
-          { key: "result_date", label: "Result Date" },
-        ].map(({ key, label }) => (
-          <div className="mb-3" key={key}>
-            <label className="form-label">{label}</label>
-            <input
-              type="date"
-              className="form-control"
-              value={epochToDateInput((form as any)[key])}
-              onChange={(e) =>
-                setForm((p) => ({
-                  ...p,
-                  [key]: toEpoch(e.target.value), // convert back to epoch
-                }))
-              }
-            />
+        {renderSectionTitle("Basic Information")}
+        <div className="ai-form-grid">
+          {renderInputField("Title", "title", "text", true, "e.g. SSC CGL 2026")}
+          
+          <div className="mb-3">
+            <label className="ai-form-label">Category *</label>
+            <select
+              name="category"
+              className="ai-input"
+              value={form.category}
+              onChange={handleRootChange}
+              required
+            >
+              <option value="">Select Category</option>
+              {NOTIFICATION_CATEGORIES.map((c) => (
+                <option key={c.value} value={c.value}>{c.label}</option>
+              ))}
+            </select>
           </div>
-        ))}
 
-        <div className="mb-3">
-          <label className="form-label">Important Date Details</label>
-          <ReactQuill
-            theme="snow"
-            value={form.details.important_date_details || ""}
-            onChange={(v) =>
-              handleNestedChange("details", "important_date_details", v)
-            }
-          />
-        </div>
+          <div className="mb-3">
+            <label className="ai-form-label">State Valid For *</label>
+            <select
+              name="state"
+              className="ai-input"
+              value={(form as any).state || ""}
+              onChange={handleRootChange}
+              required
+            >
+              <option value="">Select State</option>
+              {INDIAN_STATES.map((s) => (
+                <option key={s.value} value={s.value}>{s.label}</option>
+              ))}
+            </select>
+          </div>
 
-        {/* ================= STATUS FLAGS ================= */}
-        <h5 className="mt-4">Notification Status</h5>
-
-        <div className="row">
-          {[
-            ["has_admit_card", "Admit Card Available"],
-            ["has_result", "Result Available"],
-            ["has_answer_key", "Answer Key Available"],
-            ["has_syllabus", "Syllabus Available"],
-          ].map(([key, label]) => (
-            <div className="col-md-6 mb-3" key={key}>
-              <div className="form-check">
-                <input
-                  type="checkbox"
-                  className="form-check-input"
-                  id={key}
-                  checked={(form as any)[key] || false}
-                  onChange={(e) =>
-                    setForm((p) => ({
-                      ...p,
-                      [key]: e.target.checked,
-                    }))
-                  }
-                />
-                <label className="form-check-label" htmlFor={key}>
-                  {label}
-                </label>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* ================= FEES ================= */}
-        <h5 className="mt-4">Fees</h5>
-
-        {[
-          ["general_fee", "General Fee"],
-          ["obc_fee", "OBC Fee"],
-          ["sc_fee", "SC Fee"],
-          ["st_fee", "ST Fee"],
-          ["ph_fee", "PH Fee"],
-        ].map(([key, label]) => (
-          <div className="mb-3" key={key}>
-            <label className="form-label">{label}</label>
+          {renderInputField("Department", "department", "text", false, "e.g. Staff Selection Commission")}
+          
+          <div className="mb-3">
+            <label className="ai-form-label">Total Vacancies</label>
             <input
               type="text"
               inputMode="numeric"
-              className="form-control"
-              value={feeUI[key] ?? ""}
+              className="ai-input"
+              placeholder="e.g. 5000"
+              value={totalVacanciesUI}
               onChange={(e) => {
                 const value = e.target.value;
-                // allow clearing
                 if (value === "") {
-                  setFeeUI((p) => ({ ...p, [key]: "" }));
-                  handleNestedChange("fee", key, 0);
+                  setTotalVacanciesUI("");
+                  setForm((p) => ({ ...p, total_vacancies: 0 }));
                   return;
                 }
-                // allow only non-negative integers
                 if (!/^[0-9]+$/.test(value)) return;
-
-                setFeeUI((p) => ({ ...p, [key]: value }));
-                handleNestedChange("fee", key, Number(value));
+                setTotalVacanciesUI(value);
+                setForm((p) => ({ ...p, total_vacancies: Number(value) }));
               }}
             />
           </div>
-        ))}
-
-        <div className="mb-3">
-          <label className="form-label">Other Fee Details</label>
-          <ReactQuill
-            theme="snow"
-            value={form.fee.other_fee_details || ""}
-            onChange={(v) => handleNestedChange("fee", "other_fee_details", v)}
-          />
         </div>
 
-        {/* ================= ELIGIBILITY ================= */}
-        <h5 className="mt-4">Eligibility</h5>
+        {/* ================= DETAILS ================= */}
+        {renderSectionTitle("Descriptions")}
+        {renderTextArea("Short Description", form.details.short_description, (v) => handleNestedChange("details", "short_description", v))}
+        {renderTextArea("Long Description", form.details.long_description, (v) => handleNestedChange("details", "long_description", v))}
 
-        {[
-          ["min_age", "Minimum Age"],
-          ["max_age", "Maximum Age"],
-          ["qualification", "Qualification"],
-          ["specialization", "Specialization"],
-          ["min_percentage", "Minimum Percentage"],
-        ].map(([key, label]) => {
-          const isNumber = key.includes("age") || key.includes("percentage");
-
-          return (
+        {/* ================= IMPORTANT DATES ================= */}
+        {renderSectionTitle("Important Dates")}
+        <div className="ai-form-grid">
+          {[
+            { key: "start_date", label: "Start Date" },
+            { key: "last_date_to_apply", label: "Last Date to Apply" },
+            { key: "exam_date", label: "Exam Date" },
+            { key: "admit_card_date", label: "Admit Card Date" },
+            { key: "result_date", label: "Result Date" },
+          ].map(({ key, label }) => (
             <div className="mb-3" key={key}>
-              <label className="form-label">{label}</label>
+              <label className="ai-form-label">{label}</label>
+              <input
+                type="date"
+                className="ai-input"
+                value={epochToDateInput((form as any)[key])}
+                onChange={(e) => setForm((p) => ({ ...p, [key]: toEpoch(e.target.value) }))}
+              />
+            </div>
+          ))}
+        </div>
+        {renderTextArea("Important Date Details", form.details.important_date_details || "", (v) => handleNestedChange("details", "important_date_details", v))}
 
-              {isNumber ? (
+        {/* ================= STATUS FLAGS ================= */}
+        {renderSectionTitle("Notification Status Availability")}
+        <div className="ai-checkbox-group mb-5">
+          <div className="row">
+            {[
+              ["has_admit_card", "Admit Card Available"],
+              ["has_result", "Result Available"],
+              ["has_answer_key", "Answer Key Available"],
+              ["has_syllabus", "Syllabus Available"],
+            ].map(([key, label]) => (
+              <div className="col-md-6 mb-3" key={key}>
+                <div className="form-check d-flex align-items-center gap-2">
+                  <input
+                    type="checkbox"
+                    className="form-check-input mt-0"
+                    style={{width: '1.2rem', height: '1.2rem'}}
+                    id={key}
+                    checked={(form as any)[key] || false}
+                    onChange={(e) => setForm((p) => ({ ...p, [key]: e.target.checked }))}
+                  />
+                  <label className="form-check-label ai-form-label mb-0" htmlFor={key}>
+                    {label}
+                  </label>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ================= FEES ================= */}
+        {renderSectionTitle("Application Fees")}
+        <div className="ai-form-grid">
+          {[
+            ["general_fee", "General Fee (₹)"],
+            ["obc_fee", "OBC Fee (₹)"],
+            ["sc_fee", "SC Fee (₹)"],
+            ["st_fee", "ST Fee (₹)"],
+            ["ph_fee", "PH Fee (₹)"],
+          ].map(([key, label]) => (
+            <div className="mb-3" key={key}>
+              <label className="ai-form-label">{label}</label>
+              <input
+                type="text"
+                inputMode="numeric"
+                className="ai-input"
+                placeholder="0"
+                value={feeUI[key] ?? ""}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value === "") {
+                    setFeeUI((p) => ({ ...p, [key]: "" }));
+                    handleNestedChange("fee", key, 0);
+                    return;
+                  }
+                  if (!/^[0-9]+$/.test(value)) return;
+                  setFeeUI((p) => ({ ...p, [key]: value }));
+                  handleNestedChange("fee", key, Number(value));
+                }}
+              />
+            </div>
+          ))}
+        </div>
+        {renderTextArea("Other Fee Details", form.fee.other_fee_details || "", (v) => handleNestedChange("fee", "other_fee_details", v))}
+
+        {/* ================= ELIGIBILITY ================= */}
+        {renderSectionTitle("Eligibility Criteria")}
+        <div className="ai-form-grid">
+          {[
+            ["min_age", "Minimum Age", "number"],
+            ["max_age", "Maximum Age", "number"],
+            ["qualification", "Qualification", "text"],
+            ["specialization", "Specialization", "text"],
+            ["min_percentage", "Min. Percentage (%)", "number"],
+          ].map(([key, label, type]) => (
+            <div className="mb-3" key={key}>
+              <label className="ai-form-label">{label}</label>
+              {type === "number" ? (
                 <input
                   type="text"
                   inputMode="numeric"
-                  className="form-control"
+                  className="ai-input"
+                  placeholder="0"
                   value={eligibilityUI[key] ?? ""}
                   onChange={(e) => {
                     const value = e.target.value;
-                    // allow clearing
                     if (value === "") {
                       setEligibilityUI((p) => ({ ...p, [key]: "" }));
                       handleNestedChange("eligibility", key, 0);
                       return;
                     }
-                    // allow only non-negative integers
                     if (!/^[0-9]+$/.test(value)) return;
                     setEligibilityUI((p) => ({ ...p, [key]: value }));
                     handleNestedChange("eligibility", key, Number(value));
@@ -394,85 +399,76 @@ const NotificationForm: React.FC<Props> = ({
               ) : (
                 <input
                   type="text"
-                  className="form-control"
+                  className="ai-input"
+                  placeholder={`e.g. ${label}`}
                   value={(form.eligibility as any)[key]}
-                  onChange={(e) =>
-                    handleNestedChange("eligibility", key, e.target.value)
-                  }
+                  onChange={(e) => handleNestedChange("eligibility", key, e.target.value)}
                 />
               )}
             </div>
-          );
-        })}
-
-        <div className="mb-3">
-          <label className="form-label">Age Relaxation Details</label>
-          <ReactQuill
-            theme="snow"
-            value={form.eligibility.age_relaxation_details || ""}
-            onChange={(v) =>
-              handleNestedChange("eligibility", "age_relaxation_details", v)
-            }
-          />
+          ))}
         </div>
+        {renderTextArea("Age Relaxation Details", form.eligibility.age_relaxation_details || "", (v) => handleNestedChange("eligibility", "age_relaxation_details", v))}
 
         {/* ================= LINKS ================= */}
-        <h5 className="mt-4">Links</h5>
+        {renderSectionTitle("Important Links")}
+        <div className="ai-form-grid">
+          {[
+            "apply_online_url",
+            "notification_pdf_url",
+            "official_website_url",
+            "admit_card_url",
+            "answer_key_url",
+            "result_url",
+            "youtube_link",
+            "other_links",
+          ].map((key) => (
+            <div className="mb-3" key={key}>
+              <label className="ai-form-label">
+                {key.replace(/_/g, " ").toUpperCase()}
+              </label>
+              <input
+                type="url"
+                className="ai-input"
+                placeholder="https://..."
+                value={(form.links as any)[key] || ""}
+                onChange={(e) => handleNestedChange("links", key, e.target.value)}
+              />
+            </div>
+          ))}
+        </div>
 
-        {[
-          "apply_online_url",
-          "notification_pdf_url",
-          "official_website_url",
-          "admit_card_url",
-          "answer_key_url",
-          "result_url",
-          "youtube_link",
-          "other_links",
-        ].map((key) => (
-          <div className="mb-3" key={key}>
-            <label className="form-label">
-              {key.replace(/_/g, " ").toUpperCase()}
-            </label>
-            <input
-              type="url"
-              className="form-control"
-              value={(form.links as any)[key] || ""}
-              onChange={(e) => handleNestedChange("links", key, e.target.value)}
-            />
-          </div>
-        ))}
-
-        <button
-          type="submit"
-          className="btn btn-primary mt-4"
-          disabled={!isDirty || saving}
-        >
-          {saving
-            ? mode === "create"
-              ? "Creating..."
-              : "Updating..."
-            : mode === "create"
-              ? "Add Notification"
-              : "Update Notification"}
-        </button>
+        <div className="d-flex justify-content-center mt-5">
+          <button
+            type="submit"
+            className="ai-btn-submit"
+            disabled={!isDirty || saving}
+          >
+            {saving
+              ? mode === "create" ? "Creating..." : "Updating..."
+              : mode === "create" ? "Add Notification" : "Update Notification"}
+          </button>
+        </div>
       </form>
+    </div>
 
-      <ConfirmModal
-        show={showModal}
-        title={mode === "create" ? "Add Notification" : "Update Notification"}
-        message="Are you sure you want to proceed?"
-        confirmText={mode === "create" ? "Create" : "Update"}
-        confirmVariant="primary"
-        onConfirm={confirmSubmit}
-        onCancel={() => setShowModal(false)}
-      />
+    <ConfirmModal
+      show={showModal}
+      title={mode === "create" ? "Add Notification" : "Update Notification"}
+      message="Are you sure you want to proceed with these changes?"
+      confirmText={mode === "create" ? "Create Now" : "Save Changes"}
+      confirmVariant="primary"
+      confirmButtonClassName="ai-btn-submit text-white border-0 px-4"
+      onConfirm={confirmSubmit}
+      onCancel={() => setShowModal(false)}
+    />
 
-      <Toast
-        show={toast.show}
-        message={toast.message}
-        type={toast.type}
-        onClose={() => setToast((t) => ({ ...t, show: false }))}
-      />
+    <Toast
+      show={toast.show}
+      message={toast.message}
+      type={toast.type}
+      onClose={() => setToast((t) => ({ ...t, show: false }))}
+    />
     </>
   );
 };

@@ -8,6 +8,7 @@ interface ConfirmModalProps {
   onCancel: () => void;
   confirmText?: string;
   confirmVariant?: string;
+  confirmButtonClassName?: string;
 }
 
 const ConfirmModal: React.FC<ConfirmModalProps> = ({
@@ -18,6 +19,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
   onCancel,
   confirmText = "Confirm",
   confirmVariant = "primary",
+  confirmButtonClassName,
 }) => {
   if (!show) return null;
 
@@ -51,7 +53,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
               </button>
               <button
                 type="button"
-                className={`btn btn-${confirmVariant}`}
+                className={confirmButtonClassName || `btn btn-${confirmVariant}`}
                 onClick={onConfirm}
               >
                 {confirmText}

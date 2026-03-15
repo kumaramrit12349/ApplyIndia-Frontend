@@ -1,0 +1,122 @@
+.job-banner-container {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(90deg, #1e3a8a, #3b82f6);
+  color: white;
+  height: 40px;
+  overflow: hidden;
+  position: relative;
+  font-family: inherit;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 900; /* below navbar slightly */
+}
+
+.job-banner-label {
+  background-color: #ef4444; /* Bootstrap danger red */
+  color: white;
+  font-weight: bold;
+  padding: 0 1rem;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+  white-space: nowrap;
+  font-size: 0.9rem;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+}
+
+/* Arrow effect for the label */
+.job-banner-label::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: -10px;
+  border-width: 20px 0 20px 10px;
+  border-style: solid;
+  border-color: transparent transparent transparent #ef4444;
+}
+
+.job-banner-marquee {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  margin-left: 15px;
+}
+
+.job-banner-content {
+  display: flex;
+  align-items: center;
+  vertical-align: middle;
+  white-space: nowrap;
+  animation: marquee 40s linear infinite;
+  /* Make width strictly wrap its content so that 50% is exactly half */
+  width: max-content;
+}
+
+.job-banner-marquee:hover .job-banner-content {
+  animation-play-state: paused;
+}
+
+.job-banner-item {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: opacity 0.2s, color 0.2s;
+}
+
+.job-banner-item:hover {
+  text-decoration: underline;
+  opacity: 1;
+  color: #fca5a5; /* slight red/pink highlight on hover */
+}
+
+.job-banner-separator {
+  margin: 0 2rem;
+  color: rgba(255, 255, 255, 0.6);
+  display: inline-block;
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@media (max-width: 768px) {
+  .job-banner-container {
+    height: 35px;
+  }
+  
+  .job-banner-label {
+    padding: 0 0.5rem;
+    font-size: 0.8rem;
+  }
+  
+  .job-banner-label::after {
+    border-width: 17.5px 0 17.5px 10px;
+  }
+  
+  .job-banner-marquee {
+    margin-left: 10px;
+  }
+  
+  .job-banner-item {
+    font-size: 0.85rem;
+  }
+  
+  .job-banner-separator {
+    margin: 0 1.25rem;
+  }
+  
+  .job-banner-content {
+    animation-duration: 30s; /* slightly faster on mobile for tighter loop */
+  }
+}

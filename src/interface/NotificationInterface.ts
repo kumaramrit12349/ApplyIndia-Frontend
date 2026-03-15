@@ -9,6 +9,7 @@ export interface INotification {
   /* Basic Info */
   title: string;
   category: string;
+  state: string;
   department: string;
   total_vacancies: number;
 
@@ -37,6 +38,8 @@ export interface INotification {
   is_archived?: boolean;
   created_at?: number;
   modified_at?: number;
+  review_status?: 'pending' | 'changes_requested' | 'approved';
+  review_comments?: IReviewComment[];
 }
 
 export interface INotificationDetails {
@@ -72,4 +75,12 @@ export interface INotificationLinks {
   answer_key_url?: string;
   result_url?: string;
   other_links?: string;
+}
+
+export interface IReviewComment {
+  comment_id: string;
+  reviewer_sub: string;
+  reviewer_name: string;
+  comment_text: string;
+  created_at: number;
 }

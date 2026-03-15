@@ -7,14 +7,14 @@ import {
 
 const Footer: React.FC = () => {
   return (
-    <footer className="footer-bg text-light mt-auto" role="contentinfo">
+    <footer className="ai-footer mt-auto" role="contentinfo">
       <div className="container py-5">
         {/* ================= MAIN CONTENT ================= */}
-        <div className="row gy-4 align-items-start text-center text-md-start">
+        <div className="row gy-5 align-items-start text-center text-md-start">
           {/* ---------- About ---------- */}
-          <div className="col-12 col-md-4">
-            <h6 className="footer-title">About {WEBSITE_NAME}</h6>
-            <p className="footer-text">
+          <div className="col-12 col-lg-5 col-md-12 pe-md-5">
+            <h6 className="ai-footer-title">About {WEBSITE_NAME}</h6>
+            <p className="ai-footer-text">
               {WEBSITE_NAME} provides verified government job, entrance exam,
               admission, and scholarship notifications across India. We ensure
               timely, authentic updates sourced from official authorities to
@@ -23,9 +23,9 @@ const Footer: React.FC = () => {
           </div>
 
           {/* ---------- Legal ---------- */}
-          <div className="col-12 col-md-4">
-            <h6 className="footer-title">Legal</h6>
-            <ul className="list-unstyled footer-links mb-0">
+          <div className="col-12 col-lg-3 col-md-6">
+            <h6 className="ai-footer-title">Legal</h6>
+            <ul className="ai-footer-links">
               <li>
                 <Link to="/privacy">Privacy Policy</Link>
               </li>
@@ -41,12 +41,12 @@ const Footer: React.FC = () => {
             </ul>
           </div>
 
-          {/* ---------- Social ---------- */}
-          <div className="col-12 col-md-4">
-            <h6 className="footer-title">Connect With Us</h6>
+          {/* ---------- Connect With Us ---------- */}
+          <div className="col-12 col-lg-4 col-md-6">
+            <h6 className="ai-footer-title">Connect With Us</h6>
 
             <div
-              className="social-wrap d-flex gap-3 justify-content-center justify-content-md-start"
+              className="ai-footer-social justify-content-center justify-content-md-start mb-4"
               aria-label="Social media links"
             >
               {APPLYINDIA_SOCIAL_LINKS.map((item) => (
@@ -57,24 +57,23 @@ const Footer: React.FC = () => {
                   rel="noopener noreferrer"
                   aria-label={item.name}
                   title={item.name}
-                  className="social-icon"
+                  className="ai-social-icon"
                 >
                   <img
                     src={item.icon}
                     alt={item.name}
                     loading="lazy"
-                    width={20}
-                    height={20}
                   />
                 </a>
               ))}
             </div>
 
-            <div className="mt-3">
+            <div>
               <Link
                 to="/feedback"
-                className="btn btn-outline-light btn-sm"
+                className="btn btn-outline-light btn-sm rounded-pill px-4"
                 aria-label="Send feedback"
+                style={{ fontFamily: "'Outfit', sans-serif", letterSpacing: "0.5px" }}
               >
                 Send Feedback
               </Link>
@@ -83,11 +82,11 @@ const Footer: React.FC = () => {
         </div>
 
         {/* ================= DIVIDER ================= */}
-        <hr className="footer-divider my-4" />
+        <div className="ai-footer-divider"></div>
 
         {/* ================= BOTTOM ================= */}
-        <div className="text-center small footer-copyright">
-          © {new Date().getFullYear()} Apply India. All rights reserved.
+        <div className="ai-footer-bottom">
+          © {new Date().getFullYear()} {WEBSITE_NAME}. All rights reserved.
         </div>
       </div>
     </footer>

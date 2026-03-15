@@ -22,7 +22,6 @@ const FeedbackPage: React.FC = () => {
     if (res.success) {
       toast.success("Thank you! Your feedback has been sent.");
 
-      // ⏳ small delay so user sees toast
       setTimeout(() => {
         navigate("/");
       }, 1800);
@@ -34,23 +33,34 @@ const FeedbackPage: React.FC = () => {
   };
 
   return (
-    <div className="container px-3 px-md-4 py-4 py-md-5">
-      <div className="row justify-content-center">
+    <div className="container px-3 px-md-4 py-5" style={{ minHeight: "80vh", display: "flex", alignItems: "center" }}>
+      <div className="row justify-content-center w-100">
         <div className="col-12 col-sm-10 col-md-8 col-lg-6">
-          <div className="card shadow-sm border-0 rounded-4">
-            <div className="card-body p-4 p-md-5">
-              <h2 className="text-center mb-3">Send Feedback</h2>
-              <p className="text-center text-muted mb-4">
-                We value your feedback. Share your thoughts or suggestions with
-                us.
+          <div className="ai-glass-panel">
+            <div className="p-4 p-md-5">
+              <h2
+                className="text-center mb-3"
+                style={{
+                  fontFamily: "'Outfit', sans-serif",
+                  fontWeight: 700,
+                  background: "var(--accent-gradient)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent"
+                }}
+              >
+                Send Feedback
+              </h2>
+              <p className="text-center text-muted mb-4" style={{ fontSize: "0.95rem" }}>
+                We value your feedback. Share your thoughts or suggestions with us to help improve Apply India.
               </p>
+
               <form onSubmit={handleSubmit} noValidate>
                 {/* Name */}
-                <div className="mb-3">
-                  <label className="form-label fw-semibold">Name</label>
+                <div className="mb-4">
+                  <label className="ai-form-label">Name</label>
                   <input
                     type="text"
-                    className="form-control form-control-lg"
+                    className="ai-input"
                     placeholder="Your name"
                     value={form.name}
                     required
@@ -59,11 +69,11 @@ const FeedbackPage: React.FC = () => {
                 </div>
 
                 {/* Email */}
-                <div className="mb-3">
-                  <label className="form-label fw-semibold">Email</label>
+                <div className="mb-4">
+                  <label className="ai-form-label">Email Address</label>
                   <input
                     type="email"
-                    className="form-control form-control-lg"
+                    className="ai-input"
                     placeholder="you@example.com"
                     value={form.email}
                     required
@@ -75,11 +85,12 @@ const FeedbackPage: React.FC = () => {
 
                 {/* Message */}
                 <div className="mb-4">
-                  <label className="form-label fw-semibold">Message</label>
+                  <label className="ai-form-label">Message</label>
                   <textarea
-                    className="form-control form-control-lg"
-                    rows={4}
+                    className="ai-input"
+                    rows={5}
                     placeholder="Write your feedback here..."
+                    style={{ resize: "vertical", minHeight: "120px" }}
                     value={form.message}
                     required
                     onChange={(e) =>
@@ -89,13 +100,15 @@ const FeedbackPage: React.FC = () => {
                 </div>
 
                 {/* Submit */}
-                <button
-                  type="submit"
-                  className="btn btn-primary btn-lg w-100"
-                  disabled={loading}
-                >
-                  {loading ? "Sending..." : "Submit Feedback"}
-                </button>
+                <div className="mt-5">
+                  <button
+                    type="submit"
+                    className="ai-btn-gradient"
+                    disabled={loading}
+                  >
+                    {loading ? "Sending..." : "Submit Feedback"}
+                  </button>
+                </div>
               </form>
             </div>
           </div>

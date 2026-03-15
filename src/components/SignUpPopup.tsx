@@ -1,51 +1,8 @@
 import React, { useState } from "react";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
-import { loginUser, signUpUser } from "../services/authApi";
-import { PUBLIC_API } from "../services/endpoints";
-
-// const SSO_PROVIDERS = [
-//   {
-//     name: "Google",
-//     icon: "https://img.icons8.com/color/28/000000/google-logo.png",
-//     url: "https://accounts.google.com/signin",
-//   },
-//   {
-//     name: "Facebook",
-//     icon: "https://img.icons8.com/color/28/000000/facebook-new.png",
-//     url: "https://www.facebook.com/",
-//   },
-//   {
-//     name: "Telegram",
-//     icon: "https://img.icons8.com/color/28/000000/telegram-app.png",
-//     url: "https://t.me/",
-//   },
-//   {
-//     name: "WhatsApp",
-//     icon: "https://img.icons8.com/color/28/000000/whatsapp.png",
-//     url: "https://wa.me/",
-//   },
-//   {
-//     name: "YouTube",
-//     icon: "https://img.icons8.com/color/28/000000/youtube-play.png",
-//     url: "https://youtube.com/",
-//   },
-//   {
-//     name: "Instagram",
-//     icon: "https://img.icons8.com/color/28/000000/instagram-new.png",
-//     url: "https://instagram.com/",
-//   },
-//   {
-//     name: "X",
-//     icon: "https://img.icons8.com/ios-filled/28/000000/twitterx--v2.png",
-//     url: "https://x.com/",
-//   },
-//   {
-//     name: "LinkedIn",
-//     icon: "https://img.icons8.com/color/28/000000/linkedin.png",
-//     url: "https://www.linkedin.com/",
-//   },
-// ];
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { loginUser, signUpUser, getGoogleSignInUrl } from "../services/authApi";
 
 type AuthTab = "login" | "register";
 
@@ -54,6 +11,8 @@ interface AuthPopupProps {
   onClose: () => void;
   onAuthSuccess?: () => void;
   onRequireVerification?: (email: string) => void;
+  onForgotPassword?: () => void;
+  initialError?: string;
 }
 
 const AuthPopup: React.FC<AuthPopupProps> = ({
@@ -61,6 +20,8 @@ const AuthPopup: React.FC<AuthPopupProps> = ({
   onClose,
   onAuthSuccess,
   onRequireVerification,
+  onForgotPassword,
+  initialError,
 }) => {
   const [tab, setTab] = useState<AuthTab>("login");
   const [form, setForm] = useState({
@@ -72,6 +33,16 @@ const AuthPopup: React.FC<AuthPopupProps> = ({
   });
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
+  React.useEffect(() => {
+    if (initialError && show) {
+      setError(initialError);
+      setTab("login");
+    } else if (!show) {
+      setError("");
+    }
+  }, [initialError, show]);
 
   const swapTab = (next: AuthTab) => {
     setTab(next);
@@ -138,12 +109,8 @@ const AuthPopup: React.FC<AuthPopupProps> = ({
     }
   };
 
-  // const handleSSO = (providerUrl: string) => {
-  //   window.open(providerUrl, "_blank", "noopener");
-  // };
-
-  const handleForgotPassword = () => {
-    window.open(`${PUBLIC_API.FORGOT_PASSWORD}`, "_blank");
+  const handleGoogleSignIn = () => {
+    window.location.href = getGoogleSignInUrl();
   };
 
   return (
@@ -189,9 +156,8 @@ const AuthPopup: React.FC<AuthPopupProps> = ({
           )}
         </div>
 
-        {/* SSO Main Button */}
-        {/* ----------------------------will implement it letter------------------------------- */}
-        {/* <Button
+        {/* Google Sign-In Button */}
+        <Button
           variant="light"
           className="w-100 py-2 my-2 mb-1 d-flex align-items-center justify-content-center border"
           style={{
@@ -200,45 +166,22 @@ const AuthPopup: React.FC<AuthPopupProps> = ({
             fontSize: "1.08em",
             borderColor: "#eee",
           }}
-          onClick={() => handleSSO(SSO_PROVIDERS[0].url)}
+          onClick={handleGoogleSignIn}
         >
           <img
-            src={SSO_PROVIDERS[0].icon}
+            src="https://img.icons8.com/color/28/000000/google-logo.png"
             alt="Google"
             className="me-2"
             style={{ height: 28, width: 28 }}
           />
           Continue with Google
-        </Button> */}
+        </Button>
 
-        {/* SSO options row */}
-        {/* <div className="d-flex justify-content-center my-2" style={{ gap: 20 }}>
-          {SSO_PROVIDERS.slice(1).map((p) => (
-            <Button
-              key={p.name}
-              variant="light"
-              className="rounded-circle border"
-              style={{
-                width: 48,
-                height: 48,
-                padding: 0,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                background: "#fff",
-              }}
-              onClick={() => handleSSO(p.url)}
-              title={p.name}
-            >
-              <img
-                src={p.icon}
-                alt={p.name}
-                style={{ height: 28, width: 28 }}
-              />
-            </Button>
-          ))}
-        </div> */}
-        <hr className="my-3" />
+        <div className="d-flex align-items-center my-3">
+          <hr className="flex-grow-1" />
+          <span className="px-3 text-muted" style={{ fontSize: '0.85em' }}>or</span>
+          <hr className="flex-grow-1" />
+        </div>
 
         {/* FORM */}
         <form onSubmit={handleSubmit} autoComplete="on">
@@ -265,20 +208,30 @@ const AuthPopup: React.FC<AuthPopupProps> = ({
             <label className="form-label fw-semibold" htmlFor="password">
               Password
             </label>
-            <input
-              id="password"
-              className="form-control bg-body-tertiary"
-              style={{ borderRadius: 10, fontSize: "1.08em" }}
-              placeholder="Enter Password"
-              name="password"
-              value={form.password}
-              onChange={handleInput}
-              type="password"
-              required
-              autoComplete={
-                tab === "login" ? "current-password" : "new-password"
-              }
-            />
+            <div className="position-relative">
+              <input
+                id="password"
+                className="form-control bg-body-tertiary"
+                style={{ borderRadius: 10, fontSize: "1.08em", paddingRight: "40px" }}
+                placeholder="Enter Password"
+                name="password"
+                value={form.password}
+                onChange={handleInput}
+                type={showPassword ? "text" : "password"}
+                required
+                autoComplete={
+                  tab === "login" ? "current-password" : "new-password"
+                }
+              />
+              <button
+                type="button"
+                className="btn position-absolute end-0 top-50 translate-middle-y border-0 bg-transparent text-muted"
+                onClick={() => setShowPassword(!showPassword)}
+                style={{ zIndex: 10 }}
+              >
+                {showPassword ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
+              </button>
+            </div>
           </div>
 
           {/* First and Last Name (Register only) */}
@@ -344,18 +297,18 @@ const AuthPopup: React.FC<AuthPopupProps> = ({
           )}
 
           {/* Forgot Password & Submit */}
-          {/* <div className="d-flex align-items-center justify-content-between mb-3">
+          <div className="d-flex align-items-center justify-content-end mb-3">
             {tab === "login" && (
               <a
                 className="link-primary fw-semibold"
                 style={{ fontSize: "0.98em", cursor: "pointer" }}
-                onClick={handleForgotPassword}
+                onClick={onForgotPassword}
               >
-                Forgot Password
+                Forgot Password?
               </a>
             )}
             {tab === "register" && <span />}
-          </div> */}
+          </div>
 
           <Button
             type="submit"
@@ -374,8 +327,8 @@ const AuthPopup: React.FC<AuthPopupProps> = ({
                 ? "Signing In..."
                 : "Signing Up..."
               : tab === "login"
-              ? "Sign In"
-              : "Sign Up"}
+                ? "Sign In"
+                : "Sign Up"}
           </Button>
         </form>
 

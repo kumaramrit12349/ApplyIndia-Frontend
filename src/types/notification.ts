@@ -1,8 +1,9 @@
-import type { NOTIFICATION_CATEGORIES } from "../constant/SharedConstant";
+import type { NOTIFICATION_CATEGORIES, INDIAN_STATES } from "../constant/SharedConstant";
 
 export interface HomePageNotification {
   title: string;
   sk: string;
+  state?: string;
 }
 
 // types/notification.ts
@@ -15,6 +16,7 @@ export interface BaseInterface {
 export interface NotificationForm extends BaseInterface {
   title: string;
   category: string;
+  state: string;
   department: string;
   total_vacancies: number;
 
@@ -66,3 +68,6 @@ export type NotificationFormValues = Omit<
 
 export type NotificationCategory =
   (typeof NOTIFICATION_CATEGORIES)[number]["value"];
+
+export type NotificationState =
+  (typeof INDIAN_STATES)[number]["value"];

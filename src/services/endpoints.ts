@@ -2,7 +2,10 @@ export const PUBLIC_API = {
   HOME: {
     HOME: "/public/notification/home",
     CATEGORY: (category: string) => `/public/notification/category/${category}`,
+    STATE: (state: string) => `/public/notification/state/${state}`,
     BY_ID: (id: string) => `/public/notification/getById/${id}`,
+    LATEST: "/public/notification/latest",
+    FILTERS: "/public/notification/filters",
   },
   FEEDBACK: {
     SUBMIT: "/public/feedback",
@@ -22,6 +25,11 @@ export const PRIVATE_API = {
     ARCHIVE: (id: string) => `api/notification/delete/${id}`,
     UNARCHIVE: (id: string) =>
       `/api/notification/unarchive/${id}`,
+    ADD_COMMENT: (id: string) => `api/notification/comment/${id}`,
+    GET_COMMENTS: (id: string) => `api/notification/comments/${id}`,
+  },
+  FEEDBACK: {
+    VIEW: "api/feedback/view",
   },
 };
 
@@ -32,4 +40,17 @@ export const AUTH_API = {
   VERIFY_ACCOUNT: "/auth/confirm",
   RESEND_VERIFICATION_CODE: "/auth/resend",
   CHECK_AUTH_STATUS: "/auth/me",
+  FORGOT_PASSWORD: "/auth/forgot-password",
+  RESET_PASSWORD: "/auth/reset-password",
+  UPDATE_PROFILE: "/auth/profile",
+  GET_PROFILE: "/auth/profile",
+};
+
+export const USER_ACTIVITY_API = {
+  TRACK: "/api/user-activity/track",
+  LIST: "/api/user-activity/list",
+  CHECK: (notificationSk: string) =>
+    `/api/user-activity/check/${encodeURIComponent(notificationSk)}`,
+  REMOVE: (notificationSk: string) =>
+    `/api/user-activity/remove/${encodeURIComponent(notificationSk)}`,
 };

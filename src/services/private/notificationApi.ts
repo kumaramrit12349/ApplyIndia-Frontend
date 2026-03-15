@@ -10,9 +10,12 @@ export const addNotification = (data: INotification) => {
   });
 };
 
-// Fetch all notifications (admin)
-export const fetchNotifications = () => {
-  return privateFetch<any>(PRIVATE_API.NOTIFICATION.LIST);
+// Fetch all notifications (admin) with optional search + time filter + category filter
+export const fetchNotifications = (search?: string, timeRange?: string, category?: string) => {
+  return privateFetch<any>(PRIVATE_API.NOTIFICATION.LIST, {
+    method: "POST",
+    body: JSON.stringify({ search, timeRange, category }),
+  });
 };
 
 // Get notification by slug
@@ -53,4 +56,22 @@ export const unarchiveNotification = (id: string) => {
   return privateFetch(PRIVATE_API.NOTIFICATION.UNARCHIVE(id), {
     method: "PATCH",
   });
+};
+
+// Add review comment (always requests changes)
+export const addReviewComment = (
+  id: string,
+  commentText: string,
+) => {
+  return privateFetch<any>(PRIVATE_API.NOTIFICATION.ADD_COMMENT(id), {
+    method: "POST",
+    body: JSON.stringify({
+      comment_text: commentText,
+    }),
+  });
+};
+
+// Get review comments
+export const getReviewComments = (id: string) => {
+  return privateFetch<any>(PRIVATE_API.NOTIFICATION.GET_COMMENTS(id));
 };

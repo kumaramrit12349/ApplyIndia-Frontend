@@ -26,6 +26,9 @@ const EditNotificationPage: React.FC = () => {
   const handleUpdate = async (values: Partial<INotification>) => {
     if (!id) return;
     await updateNotification(id, values); // ✅ partial update
+  };
+  
+  const handleSuccessRedirect = () => {
     navigate("/admin/dashboard");
   };
 
@@ -38,10 +41,12 @@ const EditNotificationPage: React.FC = () => {
   }
 
   return (
-    <div className="container bg-white rounded mt-5 p-4 shadow mb-5">
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2>Edit Notification</h2>
-        <Link to="/admin/dashboard" className="btn btn-outline-secondary">
+    <div className="container py-5 mb-5">
+      <div className="d-flex justify-content-between align-items-center mb-5 p-4 rounded-4 shadow-sm" style={{ background: 'linear-gradient(135deg, #667eea, #764ba2)' }}>
+        <h2 className="brand-name text-white mb-0 d-flex align-items-center gap-2" style={{fontSize: '1.75rem'}}>
+          ✏️ Edit Notification
+        </h2>
+        <Link to="/admin/dashboard" className="btn btn-light fw-semibold text-decoration-none shadow-sm" style={{ borderRadius: 12 }}>
           ← Back to Dashboard
         </Link>
       </div>
@@ -50,6 +55,7 @@ const EditNotificationPage: React.FC = () => {
         mode="edit"
         initialValues={initialValues}
         onSubmit={handleUpdate}
+        onSuccess={handleSuccessRedirect}
       />
     </div>
   );

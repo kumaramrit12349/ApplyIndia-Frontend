@@ -7,7 +7,15 @@ export interface AuthStatus {
     given_name?: string;
     family_name?: string;
     email?: string;
+    gender?: string;
+    dob?: string;
+    category?: string;
+    state?: string;
+    qualification?: string;
+    specialization?: string;
     isAdmin?: boolean;
+    adminRole?: 'creator' | 'reviewer' | 'admin' | null;
+    sub?: string;
   };
 }
 
@@ -99,3 +107,74 @@ export const checkAuthStatus = async (): Promise<AuthStatus> => {
     return { isAuthenticated: false };
   }
 };
+
+export const forgotPassword = async (email: string) => {
+  const res = await fetch(`${BASE_URL}${AUTH_API.FORGOT_PASSWORD}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || "Failed to send reset code");
+  }
+  return res.json();
+};
+
+export const resetPassword = async (
+  email: string,
+  code: string,
+  password: string
+) => {
+  const res = await fetch(`${BASE_URL}${AUTH_API.RESET_PASSWORD}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, code, newPassword: password }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || "Failed to reset password");
+  }
+  return res.json();
+};
+
+export const fetchProfile = async (): Promise<AuthStatus> => {
+  try {
+    const res = await fetch(`${BASE_URL}${AUTH_API.GET_PROFILE}`, {
+      credentials: "include",
+    });
+
+    if (!res.ok) return { isAuthenticated: false };
+
+    const data = await res.json();
+    return {
+      isAuthenticated: true,
+      user: data.user,
+    };
+  } catch {
+    return { isAuthenticated: false };
+  }
+};
+
+export const updateProfile = async (data: any) => {
+  const res = await fetch(`${BASE_URL}${AUTH_API.UPDATE_PROFILE}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(data),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || "Failed to update profile");
+  }
+  return res.json();
+};
+
+/**
+ * Returns the backend URL that initiates the Google OAuth redirect.
+ * When the user clicks "Continue with Google", redirect the browser to this URL.
+ */
+export const getGoogleSignInUrl = (): string => `${BASE_URL}/auth/google`;
