@@ -39,6 +39,9 @@ const NotificationForm: React.FC<Props> = ({
   };
 
   const [form, setForm] = useState<INotification>(initialValues);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [submitAttempted, setSubmitAttempted] = useState(false);
   const [saving, setSaving] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [toast, setToast] = useState({
@@ -91,6 +94,41 @@ const NotificationForm: React.FC<Props> = ({
         : "",
   });
 
+  /* ---------------- Validation ---------------- */
+
+  const validateField = (name: string, value: any) => {
+    let error = "";
+    const requiredFields = ["title", "category", "state", "start_date", "last_date_to_apply"];
+    
+    if (requiredFields.includes(name)) {
+      if (typeof value === "string") {
+        if (!value.trim()) error = `${name.replace(/_/g, " ").charAt(0).toUpperCase() + name.replace(/_/g, " ").slice(1).replace("last date to apply", "Last date to apply")} is required`;
+      } else if (!value) {
+        error = `${name.replace(/_/g, " ").charAt(0).toUpperCase() + name.replace(/_/g, " ").slice(1)} is required`;
+      }
+    }
+
+    setErrors((prev) => {
+      const next = { ...prev };
+      if (error) next[name] = error;
+      else delete next[name];
+      return next;
+    });
+    return !error;
+  };
+
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+    if (!form.title?.trim()) newErrors.title = "Title is required";
+    if (!form.category) newErrors.category = "Category is required";
+    if (!form.state) newErrors.state = "State is required";
+    if (!form.start_date) newErrors.start_date = "Start date is required";
+    if (!form.last_date_to_apply) newErrors.last_date_to_apply = "Last date to apply is required";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   /* ---------------- Dirty Tracking ---------------- */
 
   const isDirty = useMemo(
@@ -101,6 +139,16 @@ const NotificationForm: React.FC<Props> = ({
     },
     [form, initialValues],
   );
+
+  const isFormValid = useMemo(() => {
+    return !!(
+      form.title?.trim() &&
+      form.category &&
+      form.state &&
+      form.start_date &&
+      form.last_date_to_apply
+    );
+  }, [form]);
 
   const buildPatchPayload = (): Partial<INotification> => {
     const diff: any = {};
@@ -118,10 +166,21 @@ const NotificationForm: React.FC<Props> = ({
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value, type } = e.target;
+    const finalValue = type === "number" ? (value === "" ? 0 : Number(value)) : value;
     setForm((prev) => ({
       ...prev,
-      [name]: type === "number" ? (value === "" ? 0 : Number(value)) : value,
+      [name]: finalValue,
     }));
+    
+    // Re-validate if touched or error exists
+    if (touched[name] || errors[name]) {
+      validateField(name, finalValue);
+    }
+  };
+
+  const handleBlur = (name: string) => {
+    setTouched((prev) => ({ ...prev, [name]: true }));
+    validateField(name, (form as any)[name]);
   };
 
   const handleNestedChange = (
@@ -140,6 +199,15 @@ const NotificationForm: React.FC<Props> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitAttempted(true);
+    if (!validateForm()) {
+      setToast({
+        show: true,
+        message: "Please fill in all required fields",
+        type: "error",
+      });
+      return;
+    }
     if (!isDirty) return;
     setShowModal(true);
   };
@@ -177,20 +245,28 @@ const NotificationForm: React.FC<Props> = ({
     <div className="ai-form-section-title">{title}</div>
   );
 
-  const renderInputField = (label: string, name: string, type: string = "text", required: boolean = false, placeholder: string = "") => (
-    <div className="mb-3">
-      <label className="ai-form-label">{label}{required && " *"}</label>
-      <input
-        className="ai-input"
-        type={type}
-        name={name}
-        value={(form as any)[name] || ""}
-        onChange={handleRootChange}
-        required={required}
-        placeholder={placeholder}
-      />
-    </div>
-  );
+  const renderInputField = (label: string, name: string, type: string = "text", required: boolean = false, placeholder: string = "") => {
+    const showError = (touched[name] || submitAttempted) && errors[name];
+    
+    return (
+      <div className="mb-3">
+        <label className="ai-form-label">
+          {label}
+          {required && <span className="ai-required-star">*</span>}
+        </label>
+        <input
+          className={`ai-input ${showError ? "ai-input--error" : ""}`}
+          type={type}
+          name={name}
+          value={(form as any)[name] || ""}
+          onChange={handleRootChange}
+          onBlur={() => handleBlur(name)}
+          placeholder={placeholder}
+        />
+        {showError && <span className="ai-error-msg">{errors[name]}</span>}
+      </div>
+    );
+  };
 
   const renderTextArea = (label: string, value: string, onChange: (val: string) => void) => (
     <div className="mb-4">
@@ -217,12 +293,13 @@ const NotificationForm: React.FC<Props> = ({
           {renderInputField("Title", "title", "text", true, "e.g. SSC CGL 2026")}
           
           <div className="mb-3">
-            <label className="ai-form-label">Category *</label>
+            <label className="ai-form-label">Category <span className="ai-required-star">*</span></label>
             <select
               name="category"
-              className="ai-input"
+              className={`ai-input ${(touched.category || submitAttempted) && errors.category ? "ai-input--error" : ""}`}
               value={form.category}
               onChange={handleRootChange}
+              onBlur={() => handleBlur("category")}
               required
             >
               <option value="">Select Category</option>
@@ -230,15 +307,17 @@ const NotificationForm: React.FC<Props> = ({
                 <option key={c.value} value={c.value}>{c.label}</option>
               ))}
             </select>
+            {(touched.category || submitAttempted) && errors.category && <span className="ai-error-msg">{errors.category}</span>}
           </div>
 
           <div className="mb-3">
-            <label className="ai-form-label">State Valid For *</label>
+            <label className="ai-form-label">State Valid For <span className="ai-required-star">*</span></label>
             <select
               name="state"
-              className="ai-input"
+              className={`ai-input ${(touched.state || submitAttempted) && errors.state ? "ai-input--error" : ""}`}
               value={(form as any).state || ""}
               onChange={handleRootChange}
+              onBlur={() => handleBlur("state")}
               required
             >
               <option value="">Select State</option>
@@ -246,6 +325,7 @@ const NotificationForm: React.FC<Props> = ({
                 <option key={s.value} value={s.value}>{s.label}</option>
               ))}
             </select>
+            {(touched.state || submitAttempted) && errors.state && <span className="ai-error-msg">{errors.state}</span>}
           </div>
 
           {renderInputField("Department", "department", "text", false, "e.g. Staff Selection Commission")}
@@ -262,12 +342,12 @@ const NotificationForm: React.FC<Props> = ({
                 const value = e.target.value;
                 if (value === "") {
                   setTotalVacanciesUI("");
-                  setForm((p) => ({ ...p, total_vacancies: 0 }));
+                  setForm((p: INotification) => ({ ...p, total_vacancies: 0 }));
                   return;
                 }
                 if (!/^[0-9]+$/.test(value)) return;
                 setTotalVacanciesUI(value);
-                setForm((p) => ({ ...p, total_vacancies: Number(value) }));
+                setForm((p: INotification) => ({ ...p, total_vacancies: Number(value) }));
               }}
             />
           </div>
@@ -282,20 +362,31 @@ const NotificationForm: React.FC<Props> = ({
         {renderSectionTitle("Important Dates")}
         <div className="ai-form-grid">
           {[
-            { key: "start_date", label: "Start Date" },
-            { key: "last_date_to_apply", label: "Last Date to Apply" },
-            { key: "exam_date", label: "Exam Date" },
-            { key: "admit_card_date", label: "Admit Card Date" },
-            { key: "result_date", label: "Result Date" },
-          ].map(({ key, label }) => (
+            { key: "start_date", label: "Start Date", required: true },
+            { key: "last_date_to_apply", label: "Last Date to Apply", required: true },
+            { key: "exam_date", label: "Exam Date", required: false },
+            { key: "admit_card_date", label: "Admit Card Date", required: false },
+            { key: "result_date", label: "Result Date", required: false },
+          ].map(({ key, label, required }) => (
             <div className="mb-3" key={key}>
-              <label className="ai-form-label">{label}</label>
+              <label className="ai-form-label">
+                {label}
+                {required && <span className="ai-required-star">*</span>}
+              </label>
               <input
                 type="date"
-                className="ai-input"
+                className={`ai-input ${(touched[key] || submitAttempted) && errors[key] ? "ai-input--error" : ""}`}
                 value={epochToDateInput((form as any)[key])}
-                onChange={(e) => setForm((p) => ({ ...p, [key]: toEpoch(e.target.value) }))}
+                onBlur={() => handleBlur(key)}
+                onChange={(e) => {
+                  const val = toEpoch(e.target.value);
+                  setForm((p: INotification) => ({ ...p, [key]: val }));
+                  if (touched[key] || errors[key] || submitAttempted) {
+                    validateField(key, val);
+                  }
+                }}
               />
+              {(touched[key] || submitAttempted) && errors[key] && <span className="ai-error-msg">{errors[key]}</span>}
             </div>
           ))}
         </div>
@@ -319,7 +410,7 @@ const NotificationForm: React.FC<Props> = ({
                     style={{width: '1.2rem', height: '1.2rem'}}
                     id={key}
                     checked={(form as any)[key] || false}
-                    onChange={(e) => setForm((p) => ({ ...p, [key]: e.target.checked }))}
+                    onChange={(e) => setForm((p: INotification) => ({ ...p, [key]: e.target.checked }))}
                   />
                   <label className="form-check-label ai-form-label mb-0" htmlFor={key}>
                     {label}
@@ -351,12 +442,12 @@ const NotificationForm: React.FC<Props> = ({
                 onChange={(e) => {
                   const value = e.target.value;
                   if (value === "") {
-                    setFeeUI((p) => ({ ...p, [key]: "" }));
+                    setFeeUI((p: Record<string, string>) => ({ ...p, [key]: "" }));
                     handleNestedChange("fee", key, 0);
                     return;
                   }
                   if (!/^[0-9]+$/.test(value)) return;
-                  setFeeUI((p) => ({ ...p, [key]: value }));
+                  setFeeUI((p: Record<string, string>) => ({ ...p, [key]: value }));
                   handleNestedChange("fee", key, Number(value));
                 }}
               />
@@ -387,12 +478,12 @@ const NotificationForm: React.FC<Props> = ({
                   onChange={(e) => {
                     const value = e.target.value;
                     if (value === "") {
-                      setEligibilityUI((p) => ({ ...p, [key]: "" }));
+                      setEligibilityUI((p: Record<string, string>) => ({ ...p, [key]: "" }));
                       handleNestedChange("eligibility", key, 0);
                       return;
                     }
                     if (!/^[0-9]+$/.test(value)) return;
-                    setEligibilityUI((p) => ({ ...p, [key]: value }));
+                    setEligibilityUI((p: Record<string, string>) => ({ ...p, [key]: value }));
                     handleNestedChange("eligibility", key, Number(value));
                   }}
                 />
@@ -442,7 +533,7 @@ const NotificationForm: React.FC<Props> = ({
           <button
             type="submit"
             className="ai-btn-submit"
-            disabled={!isDirty || saving}
+            disabled={!isDirty || !isFormValid || saving}
           >
             {saving
               ? mode === "create" ? "Creating..." : "Updating..."
@@ -467,7 +558,7 @@ const NotificationForm: React.FC<Props> = ({
       show={toast.show}
       message={toast.message}
       type={toast.type}
-      onClose={() => setToast((t) => ({ ...t, show: false }))}
+      onClose={() => setToast((t: { show: boolean; message: string; type: "success" | "error" }) => ({ ...t, show: false }))}
     />
     </>
   );

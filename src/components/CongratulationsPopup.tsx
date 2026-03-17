@@ -7,6 +7,7 @@ interface CongratulationsPopupProps {
     title?: string;
     message?: string;
     actionLabel?: string;
+    onAction?: () => void;
 }
 
 const CONFETTI_COLORS = [
@@ -22,6 +23,7 @@ const CongratulationsPopup: React.FC<CongratulationsPopupProps> = ({
     title = "🎉 Congratulations!",
     message = "You've taken the first step towards your dream!",
     actionLabel = "Continue",
+    onAction,
 }) => {
     const [confettiPieces, setConfettiPieces] = useState<
         { id: number; left: number; color: string; delay: number; size: number; type: string }[]
@@ -68,7 +70,7 @@ const CongratulationsPopup: React.FC<CongratulationsPopupProps> = ({
                 <div className="congrats-emoji">🏆</div>
                 <h2 className="congrats-title">{title}</h2>
                 <p className="congrats-message">{message}</p>
-                <button className="congrats-button" onClick={onClose}>
+                <button className="congrats-button" onClick={onAction || onClose}>
                     {actionLabel}
                 </button>
             </div>

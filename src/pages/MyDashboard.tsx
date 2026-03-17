@@ -9,6 +9,7 @@ import {
 import { formatCategoryTitle } from "../utils/utils";
 import { toast } from "react-toastify";
 import ConfirmationModal from "../components/Generic/ConfirmationModal";
+import SupportPopup from "../components/SupportPopup";
 import "./MyDashboard.css";
 
 const STATUS_CONFIG: Record<
@@ -68,6 +69,7 @@ const MyDashboard: React.FC = () => {
     const [filterStatus, setFilterStatus] = useState<UserActivityStatus | "ALL">("ALL");
     const [removingId, setRemovingId] = useState<string | null>(null);
     const [showConfirm, setShowConfirm] = useState(false);
+    const [showSupport, setShowSupport] = useState(false);
     const [skToRemove, setSkToRemove] = useState<string | null>(null);
 
     useEffect(() => {
@@ -98,8 +100,13 @@ const MyDashboard: React.FC = () => {
             await removeActivity(skToRemove);
             setActivities((prev) => prev.filter((a) => a.sk !== skToRemove));
             toast.success("Entry removed");
-        } catch {
-            toast.error("Failed to remove entry");
+        } catch (error: any) {
+            const msg = error?.message || "Failed to remove entry";
+            if (msg.includes("ATTEMPT_LIMIT_REACHED")) {
+                setShowSupport(true);
+            } else {
+                toast.error(msg);
+            }
         } finally {
             setRemovingId(null);
             setSkToRemove(null);
@@ -300,11 +307,13 @@ const MyDashboard: React.FC = () => {
                     <>
                         <p>Are you sure you want to remove this tracked application from your dashboard?</p>
                         <div className="alert alert-warning mt-3 py-2 px-3 mb-0" style={{ fontSize: "0.85rem" }}>
-                            <strong>Note:</strong> You can only remove and re-mark a notification a maximum of <strong>2 times</strong>. Reaching this limit will disable tracking for this notification.
+                            <strong>Note:</strong> You can only remove and re-mark a notification a maximum of <strong>3 times</strong>. Reaching this limit will disable tracking for this notification.
                         </div>
                     </>
                 }
             />
+
+            <SupportPopup show={showSupport} onClose={() => setShowSupport(false)} />
         </div>
     );
 };

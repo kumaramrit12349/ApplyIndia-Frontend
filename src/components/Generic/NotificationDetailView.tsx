@@ -20,6 +20,7 @@ import { FcViewDetails } from "react-icons/fc";
 import { formatCategoryTitle, formatStateName, getId } from "../../utils/utils";
 import type { INotification } from "../../interface/NotificationInterface";
 import CongratulationsPopup from "../CongratulationsPopup";
+import SupportPopup from "../SupportPopup";
 import {
   trackActivity,
   checkActivityForNotification,
@@ -172,6 +173,7 @@ export default function NotificationDetailView({
   const [trackingLoading, setTrackingLoading] = useState<UserActivityStatus | null>(null);
   const [isWishlistedLoading, setIsWishlistedLoading] = useState(false);
   const [showCongrats, setShowCongrats] = useState(false);
+  const [showSupport, setShowSupport] = useState(false);
   const [congratsConfig, setCongratsConfig] = useState({ title: "", message: "" });
 
   useEffect(() => {
@@ -200,7 +202,9 @@ export default function NotificationDetailView({
       setShowCongrats(true);
     } catch (error: any) {
       const msg = error?.message || "Failed to track activity";
-      if (msg.includes("Invalid status transition")) {
+      if (msg.includes("ATTEMPT_LIMIT_REACHED")) {
+        setShowSupport(true);
+      } else if (msg.includes("Invalid status transition")) {
         toast.warning("Complete the previous step first!");
       } else {
         toast.error(msg);
@@ -228,7 +232,12 @@ export default function NotificationDetailView({
         toast.success("Added to wishlist!");
       }
     } catch (error: any) {
-      toast.error(error?.message || "Failed to update wishlist");
+      const msg = error?.message || "Failed to update wishlist";
+      if (msg.includes("ATTEMPT_LIMIT_REACHED")) {
+        setShowSupport(true);
+      } else {
+        toast.error(msg);
+      }
     } finally {
       setIsWishlistedLoading(false);
     }
@@ -392,8 +401,23 @@ export default function NotificationDetailView({
                 <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
                 <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0z" />
               </svg>
-              <span>
-                <strong>Note:</strong> You can track and remove an application a maximum of <strong>2 times</strong>.
+              <span className="d-flex align-items-center flex-wrap gap-2">
+                <strong>Note:</strong> You can track an application a maximum of <strong>3 times</strong>. To remove it, go to your 
+                <button 
+                  onClick={() => window.open("/dashboard", "_blank")}
+                  style={{
+                    background: '#667eea',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px',
+                    padding: '2px 8px',
+                    fontSize: '0.85em',
+                    fontWeight: 600,
+                    cursor: 'pointer'
+                  }}
+                >
+                  Dashboard
+                </button>
               </span>
             </div>
 
@@ -617,6 +641,7 @@ export default function NotificationDetailView({
               <div className="ndv-card-icon ndv-card-icon--blue"><BsGear /></div>
               <h3 className="ndv-card-title">Admin Metadata</h3>
             </div>
+            <LabelValue label="Created By" value={notification.created_by || "Unknown"} />
             <LabelValue label="Created At" value={formatDateTime(notification.created_at)} />
             <LabelValue label="Modified At" value={formatDateTime(notification.modified_at)} />
             <LabelValue label="Approved By" value={notification.approved_by || "Pending"} />
@@ -634,6 +659,12 @@ export default function NotificationDetailView({
         onClose={() => setShowCongrats(false)}
         title={congratsConfig.title}
         message={congratsConfig.message}
+      />
+
+      {/* Support Popup for Limit Reached */}
+      <SupportPopup 
+        show={showSupport} 
+        onClose={() => setShowSupport(false)} 
       />
     </main>
   );
