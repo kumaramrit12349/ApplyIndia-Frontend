@@ -40,6 +40,7 @@ import GoogleCallbackPage from "./pages/GoogleCallbackPage";
 import { ToastContainer, toast } from "react-toastify";
 import { checkAuthStatus, logoutUser } from "./services/authApi";
 import { AuthProvider } from "./context/AuthContext";
+import ScrollToTop from "./components/ScrollToTop";
 
 
 
@@ -186,6 +187,7 @@ const AppLayout: React.FC = () => {
 
   return (
     <AuthProvider isAuthenticated={isAuthenticated} onShowAuthPopup={() => setShowAuthPopup(true)}>
+    <ScrollToTop />
     <div className="d-flex flex-column min-vh-100">
       <Navbar
         isAuthenticated={isAuthenticated}

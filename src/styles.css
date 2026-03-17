@@ -1416,3 +1416,47 @@
   border-color: #667eea;
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
 }
+
+/* ============ LEGAL CONTENT ============ */
+.legal-content {
+  color: #334155;
+  line-height: 1.8;
+  font-size: 1.05rem;
+}
+
+.legal-content h5 {
+  color: #1e3a8a;
+  font-weight: 700;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  font-family: 'Outfit', sans-serif;
+}
+
+.legal-content p {
+  margin-bottom: 1.25rem;
+}
+
+.legal-content ul {
+  margin-bottom: 1.5rem;
+  padding-left: 1.5rem;
+}
+
+.legal-content li {
+  margin-bottom: 0.5rem;
+}
+
+.legal-content a {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.legal-content a:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
+.legal-content strong {
+  color: #0f172a;
+}
