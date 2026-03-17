@@ -138,105 +138,107 @@ const ReviewNotificationPage: React.FC<ReviewNotificationPageProps> = ({
       />
 
       {/* ============ REVIEW COMMENTS SECTION ============ */}
-      <div className="row justify-content-center mt-4">
-        <div className="col-12 col-lg-10 col-xl-9">
-          <div className="card border-0 shadow-sm rounded-4">
-            <div className="card-header bg-light border-0 fw-semibold d-flex align-items-center gap-2">
-              💬 Review Comments
-              {comments.length > 0 && (
-                <span className="badge bg-secondary">{comments.length}</span>
-              )}
-            </div>
-            <div className="card-body">
-              {/* Comment input — Reviewer & Admin only */}
-              {canComment && (
-                <div className="mb-4">
-                  <textarea
-                    className="form-control mb-2"
-                    rows={3}
-                    placeholder="Add a review comment..."
-                    value={commentText}
-                    onChange={(e) => setCommentText(e.target.value)}
-                    disabled={submittingComment}
-                    style={{ borderRadius: 12 }}
-                  />
-                  <div className="d-flex gap-2 flex-wrap">
-                    <button
-                      className="btn btn-warning btn-sm"
-                      disabled={!commentText.trim() || submittingComment}
-                      onClick={() => handleAddComment()}
-                      style={{ borderRadius: 8 }}
-                    >
-                      {submittingComment ? (
-                        <span className="spinner-border spinner-border-sm me-1" />
-                      ) : (
-                        "💬"
-                      )}{" "}
-                      Add Comment & Request Changes
-                    </button>
+      {!notification.approved_at && (
+        <div className="row justify-content-center mt-4">
+          <div className="col-12 col-lg-10 col-xl-9">
+            <div className="card border-0 shadow-sm rounded-4">
+              <div className="card-header bg-light border-0 fw-semibold d-flex align-items-center gap-2">
+                💬 Review Comments
+                {comments.length > 0 && (
+                  <span className="badge bg-secondary">{comments.length}</span>
+                )}
+              </div>
+              <div className="card-body">
+                {/* Comment input — Reviewer & Admin only */}
+                {canComment && (
+                  <div className="mb-4">
+                    <textarea
+                      className="form-control mb-2"
+                      rows={3}
+                      placeholder="Add a review comment..."
+                      value={commentText}
+                      onChange={(e) => setCommentText(e.target.value)}
+                      disabled={submittingComment}
+                      style={{ borderRadius: 12 }}
+                    />
+                    <div className="d-flex gap-2 flex-wrap">
+                      <button
+                        className="btn btn-warning btn-sm"
+                        disabled={!commentText.trim() || submittingComment}
+                        onClick={() => handleAddComment()}
+                        style={{ borderRadius: 8 }}
+                      >
+                        {submittingComment ? (
+                          <span className="spinner-border spinner-border-sm me-1" />
+                        ) : (
+                          "💬"
+                        )}{" "}
+                        Add Comment & Request Changes
+                      </button>
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
 
-              {/* Comments list */}
-              {comments.length === 0 ? (
-                <div className="text-center text-muted py-3">
-                  <div style={{ fontSize: 32 }}>💭</div>
-                  <p className="mb-0 mt-1">No comments yet</p>
-                </div>
-              ) : (
-                <div className="d-flex flex-column gap-3">
-                  {comments.map((c) => (
-                    <div
-                      key={c.comment_id}
-                      className="p-3 rounded-3"
-                      style={{
-                        background: "#f8f9fa",
-                        borderLeft: "4px solid #667eea",
-                      }}
-                    >
-                      <div className="d-flex justify-content-between align-items-start mb-1">
-                        <div className="d-flex align-items-center gap-2">
-                          <div
-                            className="d-flex align-items-center justify-content-center"
-                            style={{
-                              width: 28,
-                              height: 28,
-                              borderRadius: "50%",
-                              background:
-                                "linear-gradient(135deg, #667eea, #764ba2)",
-                              color: "#fff",
-                              fontSize: 12,
-                              fontWeight: 600,
-                            }}
-                          >
-                            {c.reviewer_name?.[0]?.toUpperCase() || "R"}
+                {/* Comments list */}
+                {comments.length === 0 ? (
+                  <div className="text-center text-muted py-3">
+                    <div style={{ fontSize: 32 }}>💭</div>
+                    <p className="mb-0 mt-1">No comments yet</p>
+                  </div>
+                ) : (
+                  <div className="d-flex flex-column gap-3">
+                    {comments.map((c) => (
+                      <div
+                        key={c.comment_id}
+                        className="p-3 rounded-3"
+                        style={{
+                          background: "#f8f9fa",
+                          borderLeft: "4px solid #667eea",
+                        }}
+                      >
+                        <div className="d-flex justify-content-between align-items-start mb-1">
+                          <div className="d-flex align-items-center gap-2">
+                            <div
+                              className="d-flex align-items-center justify-content-center"
+                              style={{
+                                width: 28,
+                                height: 28,
+                                borderRadius: "50%",
+                                background:
+                                  "linear-gradient(135deg, #667eea, #764ba2)",
+                                color: "#fff",
+                                fontSize: 12,
+                                fontWeight: 600,
+                              }}
+                            >
+                              {c.reviewer_name?.[0]?.toUpperCase() || "R"}
+                            </div>
+                            <span className="fw-semibold" style={{ fontSize: "0.9rem" }}>
+                              {c.reviewer_name || "Reviewer"}
+                            </span>
                           </div>
-                          <span className="fw-semibold" style={{ fontSize: "0.9rem" }}>
-                            {c.reviewer_name || "Reviewer"}
+                          <span
+                            className="text-muted"
+                            style={{ fontSize: "0.75rem" }}
+                          >
+                            {new Date(c.created_at).toLocaleString("en-IN")}
                           </span>
                         </div>
-                        <span
-                          className="text-muted"
-                          style={{ fontSize: "0.75rem" }}
+                        <p
+                          className="mb-0 text-dark"
+                          style={{ fontSize: "0.9rem", lineHeight: 1.5 }}
                         >
-                          {new Date(c.created_at).toLocaleString("en-IN")}
-                        </span>
+                          {c.comment_text}
+                        </p>
                       </div>
-                      <p
-                        className="mb-0 text-dark"
-                        style={{ fontSize: "0.9rem", lineHeight: 1.5 }}
-                      >
-                        {c.comment_text}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              )}
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Toast */}
       <Toast
