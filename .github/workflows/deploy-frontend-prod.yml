@@ -1,44 +1,38 @@
-name: Deploy React Frontend (DEV)
+name: Deploy React Frontend (PROD)
 
 on:
   push:
     branches:
-      - devAWS
+      - main
 
 jobs:
   deploy:
-    name: Build & Deploy Frontend
+    name: Build & Deploy Frontend (PROD)
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout code
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2️⃣ Setup Node.js (Vite requires Node 20+)
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20.20.0
 
-      # 3️⃣ Clean install (important for Rollup)
       - name: Clean install dependencies
         run: |
           rm -rf node_modules package-lock.json
           npm install --include=optional
 
-      # 4️⃣ Force rebuild Rollup native binary (🔥 KEY FIX)
       - name: Rebuild Rollup
         run: npm rebuild rollup
 
-      # 5️⃣ Build React app with ENV
       - name: Build React app
         env:
-          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
+          VITE_API_BASE_URL: ${{ secrets.PROD_VITE_API_BASE_URL }}
           VITE_ENV: production
         run: npm run build
 
-      # 6️⃣ Configure AWS credentials
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -46,16 +40,14 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      # 7️⃣ Upload dist to S3
       - name: Upload dist to S3
         run: |
-          aws s3 sync dist s3://${{ secrets.S3_BUCKET_NAME }} \
+          aws s3 sync dist s3://${{ secrets.PROD_S3_BUCKET_NAME }} \
             --delete \
             --cache-control "max-age=31536000,public"
 
-      # 8️⃣ Invalidate CloudFront cache
       - name: Invalidate CloudFront cache
         run: |
           aws cloudfront create-invalidation \
-            --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
+            --distribution-id ${{ secrets.PROD_CLOUDFRONT_DISTRIBUTION_ID }} \
             --paths "/*"
