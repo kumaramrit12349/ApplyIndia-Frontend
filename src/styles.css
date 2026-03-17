@@ -1231,6 +1231,25 @@
   box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
 }
 
+.ai-input--error {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1) !important;
+}
+
+.ai-required-star {
+  color: #ef4444;
+  margin-left: 4px;
+  font-weight: bold;
+}
+
+.ai-error-msg {
+  color: #ef4444;
+  font-size: 0.8rem;
+  margin-top: 4px;
+  font-weight: 500;
+  display: block;
+}
+
 .ai-btn-gradient {
   background: var(--accent-gradient);
   color: #fff;
