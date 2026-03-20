@@ -3,7 +3,7 @@ name: Deploy React Frontend (PROD)
 on:
   push:
     branches:
-      - main
+      - prodAWS
 
 jobs:
   deploy:
