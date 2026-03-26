@@ -31,7 +31,7 @@ jobs:
         env:
           VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL_PROD }}
           VITE_ENV: prod
-        run: npm run build
+        run: npm run build:prod
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4

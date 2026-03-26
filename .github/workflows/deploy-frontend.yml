@@ -36,7 +36,7 @@ jobs:
         env:
           VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL_DEV }}
           VITE_ENV: dev
-        run: npm run build
+        run: npm run build:dev
 
       # 6️⃣ Configure AWS credentials
       - name: Configure AWS credentials
