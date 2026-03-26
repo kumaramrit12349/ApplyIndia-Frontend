@@ -1,5 +1,6 @@
+import { CONFIG } from "../config";
 import { AUTH_API } from "./endpoints";
-const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const BASE_URL = CONFIG.API_BASE_URL;
 
 export interface AuthStatus {
   isAuthenticated: boolean;

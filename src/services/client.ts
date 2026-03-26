@@ -1,4 +1,6 @@
-const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+import { CONFIG } from "../config";
+
+const BASE_URL = CONFIG.API_BASE_URL;
 
 if (!BASE_URL) {
   throw new Error("VITE_API_BASE_URL is not defined");
@@ -11,6 +13,8 @@ export async function apiFetch<T>(
   url: string,
   options: RequestInit = {},
 ): Promise<T> {
+  console.log("ENV:", import.meta.env.VITE_ENV);
+  console.log("API:", import.meta.env.VITE_API_BASE_URL);
   const response = await fetch(`${BASE_URL}${url}`, {
     headers: {
       "Content-Type": "application/json",
