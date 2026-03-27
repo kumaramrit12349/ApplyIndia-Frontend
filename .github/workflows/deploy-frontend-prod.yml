@@ -29,8 +29,8 @@ jobs:
 
       - name: Build React app
         env:
-          PROD_VITE_API_BASE_URL: ${{ secrets.PROD_VITE_API_BASE_URL }}
-          VITE_ENV: production
+          VITE_API_BASE_URL: ${{ secrets.PROD_VITE_API_BASE_URL }}
+          VITE_ENV: prod
         run: npm run build
 
       - name: Configure AWS credentials

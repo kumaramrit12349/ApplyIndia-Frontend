@@ -13,8 +13,6 @@ export async function apiFetch<T>(
   url: string,
   options: RequestInit = {},
 ): Promise<T> {
-  console.log("ENV:", import.meta.env.VITE_ENV);
-  console.log("API:", import.meta.env.VITE_API_BASE_URL);
   const response = await fetch(`${BASE_URL}${url}`, {
     headers: {
       "Content-Type": "application/json",
