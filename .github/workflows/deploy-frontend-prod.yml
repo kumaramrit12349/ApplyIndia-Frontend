@@ -29,7 +29,7 @@ jobs:
 
       - name: Build React app
         env:
-          VITE_API_BASE_URL: ${{ secrets.PROD_VITE_API_BASE_URL }}
+          PROD_VITE_API_BASE_URL: ${{ secrets.PROD_VITE_API_BASE_URL }}
           VITE_ENV: production
         run: npm run build
 
