@@ -41,6 +41,11 @@ const STATUS_BADGE: Record<string, { bg: string; label: string }> = {
 
 const PAGE_SIZE = 20;
 
+const getCategoryLabel = (val: string) => {
+  const cat = NOTIFICATION_CATEGORIES.find(c => c.value === val);
+  return cat ? cat.label : val;
+};
+
 /* ============ Component ============ */
 
 interface DashboardPageProps {
@@ -260,7 +265,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
   };
 
   return (
-    <div className="container-fluid px-2 px-md-5 py-3 py-md-4">
+    <div className="container-fluid px-3 px-lg-4 px-xxl-5 py-3 py-md-4">
       {/* Header */}
       <div
         className="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3 mb-4 p-3 p-md-4 rounded-4"
@@ -307,7 +312,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
             id="notification-search"
             type="text"
             className="form-control shadow-sm"
-            placeholder="Search notifications by title..."
+            placeholder="Search by title or notification ID..."
             value={searchInput}
             onChange={handleSearchChange}
             style={{
@@ -406,7 +411,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
           </p>
         </div>
       ) : (
-        <div className="row g-3">
+        <div className="row g-2">
           {displayList.map((n: any, index: number) => {
             const status = getStatusInfo(n);
             const isLastElement = index === displayList.length - 1;
@@ -420,24 +425,26 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                   className="card border-0 shadow-sm rounded-3 overflow-hidden"
                   style={{ transition: "box-shadow 0.2s" }}
                 >
-                  <div className="card-body p-3 d-flex flex-column flex-md-row align-items-md-center gap-3">
-                    {/* Left: Status indicator */}
-                    <div
-                      style={{
-                        width: 6,
-                        minHeight: 50,
-                        borderRadius: 3,
-                        background: status.bg,
-                        flexShrink: 0,
-                      }}
-                    />
-
+                  <div className="card-body px-3 py-2 d-flex flex-column flex-md-row align-items-md-center gap-2">
                     {/* Center: Info */}
                     <div className="flex-grow-1">
                       <h6 className="mb-1 fw-bold" style={{ fontSize: "0.95rem" }}>
                         {n.title}
                       </h6>
-                      <div className="d-flex flex-column flex-md-row align-items-start align-items-md-center gap-3">
+                      <div className="d-flex flex-wrap align-items-center gap-2 mt-1">
+                        <span
+                          className="badge border"
+                          style={{
+                            backgroundColor: "rgba(0,0,0,0.03)",
+                            color: "#555",
+                            fontSize: "0.7rem",
+                            fontFamily: "monospace",
+                            letterSpacing: "0.5px"
+                          }}
+                          title="Notification ID"
+                        >
+                          ID: {getId(n.sk)}
+                        </span>
                         <span
                           className="badge"
                           style={{
@@ -447,7 +454,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                             fontSize: "0.7rem",
                           }}
                         >
-                          {n.category}
+                          {getCategoryLabel(n.category)}
                         </span>
                         <span
                           className="badge"
@@ -460,8 +467,8 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                           {status.label}
                         </span>
                         <span
-                          className="text-muted"
-                          style={{ fontSize: "0.75rem" }}
+                          className="text-muted ms-auto ms-md-2"
+                          style={{ fontSize: "0.75rem", whiteSpace: "nowrap" }}
                         >
                           {new Date(n.created_at).toLocaleDateString("en-IN", {
                             day: "numeric",
