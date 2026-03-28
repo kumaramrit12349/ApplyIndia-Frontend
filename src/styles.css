@@ -100,13 +100,8 @@
   position: sticky;
   top: 0;
   z-index: 1050;
-  animation: navFadeIn 0.5s ease-out forwards;
+  animation: navFadeIn 0.5s ease-out;
   font-family: 'Outfit', sans-serif;
-  /* Fix for blurry text on some browsers/navigation */
-  transform: translateZ(0);
-  backface-visibility: hidden;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
 .ai-navbar .navbar-brand {
@@ -138,9 +133,6 @@
   font-weight: 600;
   font-size: 1.15rem;
   letter-spacing: 0.3px;
-  /* Ensure logo text stays sharp */
-  transform: translateZ(0);
-  -webkit-font-smoothing: antialiased;
 }
 
 /* ========================================
