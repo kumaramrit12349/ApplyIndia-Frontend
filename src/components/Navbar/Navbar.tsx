@@ -30,7 +30,7 @@ const Navbar: React.FC<NavbarProps> = ({
 }) => {
   return (
     <nav className="ai-navbar">
-      <div className="container-fluid d-flex align-items-center justify-content-between">
+      <div className="container d-flex align-items-center justify-content-between">
         {/* LEFT: Logo */}
         <Link className="navbar-brand" to="/">
           <span className="brand-name">{WEBSITE_NAME}</span>
