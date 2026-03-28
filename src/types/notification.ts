@@ -4,6 +4,7 @@ export interface HomePageNotification {
   title: string;
   sk: string;
   state?: string;
+  last_date_to_apply?: string;
 }
 
 // types/notification.ts

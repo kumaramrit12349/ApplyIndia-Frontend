@@ -100,8 +100,13 @@
   position: sticky;
   top: 0;
   z-index: 1050;
-  animation: navFadeIn 0.5s ease-out;
+  animation: navFadeIn 0.5s ease-out forwards;
   font-family: 'Outfit', sans-serif;
+  /* Fix for blurry text on some browsers/navigation */
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .ai-navbar .navbar-brand {
@@ -133,6 +138,9 @@
   font-weight: 600;
   font-size: 1.15rem;
   letter-spacing: 0.3px;
+  /* Ensure logo text stays sharp */
+  transform: translateZ(0);
+  -webkit-font-smoothing: antialiased;
 }
 
 /* ========================================
@@ -343,7 +351,7 @@
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   position: sticky;
-  top: 56px;
+  top: 66px;
   z-index: 1040;
   border-bottom: 1px solid rgba(0, 0, 0, 0.06);
   font-family: 'Outfit', sans-serif;
@@ -364,7 +372,7 @@
   display: flex;
   list-style: none;
   margin: 0;
-  padding: 10px 0;
+  padding: 14px 0;
   gap: 8px;
   flex-wrap: nowrap;
 }
@@ -610,7 +618,7 @@
   }
 
   .ai-navigation {
-    top: 48px;
+    top: 54px;
   }
 
   .ai-profile-dropdown {
