@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import Modal from "react-bootstrap/Modal";
-import Button from "react-bootstrap/Button";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { loginUser, signUpUser, getGoogleSignInUrl } from "../services/authApi";
 
@@ -133,7 +132,13 @@ const AuthPopup: React.FC<AuthPopupProps> = ({
       <Modal.Header closeButton className="border-0 pb-1">
         <Modal.Title
           className="w-100 fs-2"
-          style={{ fontWeight: 700, textAlign: "left" }}
+          style={{ 
+            fontWeight: 800, 
+            textAlign: "left",
+            background: "linear-gradient(135deg, #667eea, #764ba2)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent"
+          }}
         >
           {tab === "login" ? "Log in" : "Create Account"}
         </Modal.Title>
@@ -144,8 +149,8 @@ const AuthPopup: React.FC<AuthPopupProps> = ({
             <>
               <span className="text-muted">New user?</span>
               <a
-                className="link-primary fw-semibold"
-                style={{ cursor: "pointer" }}
+                className="fw-bold text-decoration-none"
+                style={{ cursor: "pointer", color: "#764ba2", transition: "color 0.2s" }}
                 onClick={() => swapTab("register")}
               >
                 Register Now
@@ -155,8 +160,8 @@ const AuthPopup: React.FC<AuthPopupProps> = ({
             <>
               <span className="text-muted">Already have an account?</span>
               <a
-                className="link-primary fw-semibold"
-                style={{ cursor: "pointer" }}
+                className="fw-bold text-decoration-none"
+                style={{ cursor: "pointer", color: "#764ba2", transition: "color 0.2s" }}
                 onClick={() => swapTab("login")}
               >
                 Log in
@@ -166,14 +171,15 @@ const AuthPopup: React.FC<AuthPopupProps> = ({
         </div>
 
         {/* Google Sign-In Button */}
-        <Button
-          variant="light"
-          className="w-100 py-2 my-2 mb-1 d-flex align-items-center justify-content-center border"
+        <button
+          type="button"
+          className="btn btn-light w-100 py-2 my-2 mb-1 d-flex align-items-center justify-content-center bg-white shadow-sm"
           style={{
             borderRadius: "12px",
             fontWeight: 600,
-            fontSize: "1.08em",
-            borderColor: "#eee",
+            fontSize: "1.08rem",
+            border: "1px solid #e0e0e0",
+            transition: "all 0.2s ease"
           }}
           onClick={handleGoogleSignIn}
         >
@@ -184,7 +190,7 @@ const AuthPopup: React.FC<AuthPopupProps> = ({
             style={{ height: 28, width: 28 }}
           />
           Continue with Google
-        </Button>
+        </button>
 
         <div className="d-flex align-items-center my-3">
           <hr className="flex-grow-1" />
@@ -306,11 +312,11 @@ const AuthPopup: React.FC<AuthPopupProps> = ({
           )}
 
           {/* Forgot Password & Submit */}
-          <div className="d-flex align-items-center justify-content-end mb-3">
+          <div className="d-flex align-items-center justify-content-end mb-3 mt-1">
             {tab === "login" && (
               <a
-                className="link-primary fw-semibold"
-                style={{ fontSize: "0.98em", cursor: "pointer" }}
+                className="fw-bold text-decoration-none"
+                style={{ fontSize: "0.95rem", cursor: "pointer", color: "#764ba2", transition: "color 0.2s" }}
                 onClick={onForgotPassword}
               >
                 Forgot Password?
@@ -319,17 +325,26 @@ const AuthPopup: React.FC<AuthPopupProps> = ({
             {tab === "register" && <span />}
           </div>
 
-          <Button
+          <button
             type="submit"
-            variant="primary"
-            className="w-100 py-2 fw-bold"
+            className="btn w-100 py-2 fw-bold text-white shadow-sm border-0"
             style={{
-              borderRadius: "13px",
-              fontSize: "1.25em",
-              letterSpacing: "0.02em",
+              borderRadius: "12px",
+              background: "linear-gradient(135deg, #667eea, #764ba2)",
+              fontSize: "1.15rem",
+              letterSpacing: "0.5px",
               marginTop: 2,
+              transition: "transform 0.2s ease, box-shadow 0.2s ease"
             }}
             disabled={loading}
+            onMouseOver={(e) => {
+              e.currentTarget.style.transform = "translateY(-1px)";
+              e.currentTarget.style.boxShadow = "0 4px 12px rgba(102, 126, 234, 0.4)";
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.boxShadow = "0 .125rem .25rem rgba(0,0,0,.075)";
+            }}
           >
             {loading
               ? tab === "login"
@@ -337,8 +352,8 @@ const AuthPopup: React.FC<AuthPopupProps> = ({
                 : "Signing Up..."
               : tab === "login"
                 ? "Sign In"
-                : "Sign Up"}
-          </Button>
+                : "Create Account"}
+          </button>
         </form>
 
         {error && (
