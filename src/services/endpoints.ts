@@ -23,10 +23,19 @@ export const PRIVATE_API = {
     UPDATE: (id: string) => `api/notification/edit/${id}`,
     APPROVE: (id: string) => `api/notification/approve/${id}`,
     ARCHIVE: (id: string) => `api/notification/delete/${id}`,
+    DELETE_PERMANENT: (id: string) => `api/notification/delete-permanent/${id}`,
     UNARCHIVE: (id: string) =>
       `/api/notification/unarchive/${id}`,
     ADD_COMMENT: (id: string) => `api/notification/comment/${id}`,
     GET_COMMENTS: (id: string) => `api/notification/comments/${id}`,
+    DELETE_BULK_PERMANENT: "api/notification/bulk-permanent-delete",
+  },
+  SCRAPER: {
+    RUN: "api/scraper/run",
+    STATUS: "api/scraper/status",
+    SOURCES: "api/scraper/sources",
+    SOURCE_BY_KEY: (key: string) => `api/scraper/sources/${key}`,
+    PREVIEW: (siteKey: string) => `api/scraper/preview/${siteKey}`,
   },
   FEEDBACK: {
     VIEW: "api/feedback/view",

@@ -16,6 +16,7 @@ import AddNotificationPage from "./pages/admin/AddNotificationPage";
 import EditNotificationPage from "./pages/admin/EditNotificationPage";
 import ReviewNotificationPage from "./pages/admin/ReviewNotificationPage";
 import AdminFeedbackPage from "./pages/admin/AdminFeedbackPage";
+import ScraperDashboard from "./pages/admin/ScraperDashboard";
 import Navbar from "./components/Navbar/Navbar";
 import Navigation from "./components/Navigation/Navigation";
 import SearchBar from "./components/SearchBar/SearchBar";
@@ -272,6 +273,17 @@ const AppLayout: React.FC = () => {
                   onLogout={handleLogout}
                   onShowAuthPopup={() => setShowAuthPopup(true)}
                 />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/scraper"
+            element={
+              <ProtectedRoute
+                isAuthenticated={isAuthenticated}
+                checkingAuth={checkingAuth}
+              >
+                <ScraperDashboard />
               </ProtectedRoute>
             }
           />
