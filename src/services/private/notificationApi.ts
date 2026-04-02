@@ -11,10 +11,10 @@ export const addNotification = (data: INotification) => {
 };
 
 // Fetch all notifications (admin) with optional search + time filter + category filter
-export const fetchNotifications = (search?: string, timeRange?: string, category?: string) => {
+export const fetchNotifications = (search?: string, timeRange?: string, category?: string, state?: string) => {
   return privateFetch<any>(PRIVATE_API.NOTIFICATION.LIST, {
     method: "POST",
-    body: JSON.stringify({ search, timeRange, category }),
+    body: JSON.stringify({ search, timeRange, category, state }),
   });
 };
 
@@ -51,6 +51,13 @@ export const deleteNotification = (id: string) => {
   });
 };
 
+// Permanent delete notification
+export const permanentDeleteNotification = (id: string) => {
+  return privateFetch<any>(PRIVATE_API.NOTIFICATION.DELETE_PERMANENT(id), {
+    method: "DELETE",
+  });
+};
+
 // Unarchive notification
 export const unarchiveNotification = (id: string) => {
   return privateFetch(PRIVATE_API.NOTIFICATION.UNARCHIVE(id), {
@@ -74,4 +81,12 @@ export const addReviewComment = (
 // Get review comments
 export const getReviewComments = (id: string) => {
   return privateFetch<any>(PRIVATE_API.NOTIFICATION.GET_COMMENTS(id));
+};
+
+// Bulk permanent delete notifications
+export const bulkPermanentDeleteNotifications = (ids: string[]) => {
+  return privateFetch<any>(PRIVATE_API.NOTIFICATION.DELETE_BULK_PERMANENT, {
+    method: "DELETE",
+    body: JSON.stringify({ ids }),
+  });
 };

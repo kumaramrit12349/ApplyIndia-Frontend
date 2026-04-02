@@ -1,9 +1,9 @@
 .job-banner-container {
   display: flex;
   align-items: center;
-  background: linear-gradient(90deg, #1e3a8a, #3b82f6);
+  background: linear-gradient(90deg, #1e3a8a, #1d4ed8);
   color: white;
-  height: 40px;
+  height: 52px;
   overflow: hidden;
   position: relative;
   font-family: inherit;
@@ -32,7 +32,7 @@
   position: absolute;
   top: 0;
   right: -10px;
-  border-width: 20px 0 20px 10px;
+  border-width: 26px 0 26px 10px;
   border-style: solid;
   border-color: transparent transparent transparent #ef4444;
 }
@@ -52,9 +52,16 @@
   align-items: center;
   vertical-align: middle;
   white-space: nowrap;
-  animation: marquee 40s linear infinite;
+  animation-name: marquee;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
   /* Make width strictly wrap its content so that 50% is exactly half */
   width: max-content;
+  /* Hardware acceleration to prevent text blur during scroll */
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
 }
 
 .job-banner-marquee:hover .job-banner-content {
@@ -62,10 +69,14 @@
 }
 
 .job-banner-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   color: white;
   text-decoration: none;
   font-weight: 500;
   font-size: 0.95rem;
+  line-height: 1.2;
   transition: opacity 0.2s, color 0.2s;
 }
 
@@ -92,7 +103,7 @@
 
 @media (max-width: 768px) {
   .job-banner-container {
-    height: 35px;
+    height: 46px;
   }
   
   .job-banner-label {
@@ -101,7 +112,7 @@
   }
   
   .job-banner-label::after {
-    border-width: 17.5px 0 17.5px 10px;
+    border-width: 23px 0 23px 10px;
   }
   
   .job-banner-marquee {
@@ -114,9 +125,5 @@
   
   .job-banner-separator {
     margin: 0 1.25rem;
-  }
-  
-  .job-banner-content {
-    animation-duration: 30s; /* slightly faster on mobile for tighter loop */
   }
 }

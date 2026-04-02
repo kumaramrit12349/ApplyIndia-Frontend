@@ -170,17 +170,40 @@ const HomePage: React.FC = () => {
               <div className="spinner-border text-primary" />
             </div>
           ) : (
-            Object.entries(grouped).map(([category, notifications]) => (
-              <div key={category} className="col-12 col-md-6 col-lg-4">
-                <div className="h-100 shadow-sm">
-                  <ListView
-                    category={category}
-                    items={notifications}
-                    loading={groupedLoading}
-                  />
-                </div>
-              </div>
-            ))
+            (() => {
+              const categoryOrder = [
+                "job",
+                "admit-card",
+                "result",
+                "entrance-exam",
+                "answer-key",
+                "syllabus",
+                "admission",
+                "scholarship",
+                "sarkari-yojana",
+                "documents",
+              ];
+
+              return Object.entries(grouped)
+                .sort((a, b) => {
+                  const idxA = categoryOrder.indexOf(a[0].toLowerCase());
+                  const idxB = categoryOrder.indexOf(b[0].toLowerCase());
+                  const sortA = idxA === -1 ? 999 : idxA;
+                  const sortB = idxB === -1 ? 999 : idxB;
+                  return sortA - sortB;
+                })
+                .map(([category, notifications]) => (
+                  <div key={category} className="col-12 col-md-6 col-lg-4">
+                    <div className="h-100 shadow-sm">
+                      <ListView
+                        category={category}
+                        items={notifications}
+                        loading={groupedLoading}
+                      />
+                    </div>
+                  </div>
+                ));
+            })()
           )}
         </div>
       </div>

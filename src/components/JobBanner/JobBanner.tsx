@@ -27,16 +27,22 @@ const JobBanner: React.FC = () => {
         return null;
     }
 
-    // To create a seamless loop, we duplicate the items array.
-    // The CSS animation will translate the container by -50% (exactly half its width, 
-    // which is exactly one set of items) and then instantly jump back to 0.
-    const seamlessItems = [...latestItems, ...latestItems];
+    // Duplicate items multiple times to ensure they stretch across wide screens,
+    // especially when there are only 1 or 2 items in the database.
+    // Repetition factor
+    const repeats = 15;
+    const repeated = Array(repeats).fill(latestItems).flat();
+    const seamlessItems = [...repeated, ...repeated];
+
+    // Calculate a dynamic speed based on number of uniquely displayed items:
+    // Approximately 3.5 seconds per single item width.
+    const dynamicDuration = `${repeats * latestItems.length * 3.5}s`;
 
     return (
         <div className="job-banner-container">
             <div className="job-banner-label">Latest Updates</div>
             <div className="job-banner-marquee">
-                <div className="job-banner-content">
+                <div className="job-banner-content" style={{ animationDuration: dynamicDuration }}>
                     {seamlessItems.map((item, index) => (
                         <React.Fragment key={(item.sk || index) + "-" + index}>
                             <a
@@ -46,6 +52,14 @@ const JobBanner: React.FC = () => {
                                 rel="noopener noreferrer"
                             >
                                 {item.title}
+                                {item.last_date_to_apply && (
+                                    <span style={{ color: "#facc15", marginTop: "2px", fontWeight: "600", fontSize: "0.8rem", letterSpacing: "0.2px" }}>
+                                        Last Date: {(() => {
+                                            const d = new Date(item.last_date_to_apply as string);
+                                            return isNaN(d.getTime()) ? item.last_date_to_apply : d.toLocaleDateString("en-GB", { day: '2-digit', month: 'short', year: 'numeric' });
+                                        })()}
+                                    </span>
+                                )}
                             </a>
                             <span className="job-banner-separator">•</span>
                         </React.Fragment>
