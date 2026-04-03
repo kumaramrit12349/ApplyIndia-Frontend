@@ -311,7 +311,7 @@ const AppLayout: React.FC = () => {
           />
 
           {/* Google OAuth callback */}
-          <Route path="/auth/callback" element={<GoogleCallbackPage />} />
+          <Route path="/login/callback" element={<GoogleCallbackPage />} />
 
           {/* Legal pages */}
           <Route path="/privacy" element={<PrivacyPolicy />} />
