@@ -12,6 +12,7 @@ interface ProfileSectionProps {
   category?: string;
   onLogout: () => void;
   onShowAuthPopup: () => void;
+  onShowSignUpPopup?: () => void;
 }
 
 const ROLE_COLORS: Record<string, string> = {
@@ -31,6 +32,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({
   category,
   onLogout,
   onShowAuthPopup,
+  onShowSignUpPopup,
 }) => {
   const [open, setOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -64,7 +66,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({
         <button className="ai-btn-login" onClick={onShowAuthPopup}>
           Log in
         </button>
-        <button className="ai-btn-signup" onClick={onShowAuthPopup}>
+        <button className="ai-btn-signup" onClick={onShowSignUpPopup ?? onShowAuthPopup}>
           Sign up
         </button>
       </div>

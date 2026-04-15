@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import NotificationDetailView from "../../../components/Generic/NotificationDetailView";
 import { getNotificationById } from "../../../services/public/notiifcationApi";
 import SEO from "../../../components/SEO/SEO";
@@ -16,6 +16,7 @@ const UserNotificationDetailPage: React.FC<UserNotificationDetailPageProps> = ({
   const { id } = useParams<{
     id: string;
   }>();
+  const navigate = useNavigate();
   const [notification, setNotification] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -50,7 +51,36 @@ const UserNotificationDetailPage: React.FC<UserNotificationDetailPageProps> = ({
     );
   }
   return (
-    <div className="container mt-5 mb-5">
+    <div className="container mt-4 mb-5">
+      {/* Back Button */}
+      <button
+        onClick={() => navigate(-1)}
+        className="btn btn-sm mb-3"
+        style={{
+          background: "transparent",
+          border: "1px solid #dee2e6",
+          borderRadius: "20px",
+          color: "#6b7280",
+          padding: "4px 14px",
+          fontWeight: 500,
+          fontSize: "0.88rem",
+          cursor: "pointer",
+          display: "inline-flex",
+          alignItems: "center",
+          gap: "6px",
+          transition: "all 0.2s",
+        }}
+        onMouseOver={(e) => {
+          e.currentTarget.style.background = "#f3f4f6";
+          e.currentTarget.style.color = "#374151";
+        }}
+        onMouseOut={(e) => {
+          e.currentTarget.style.background = "transparent";
+          e.currentTarget.style.color = "#6b7280";
+        }}
+      >
+        ← Back
+      </button>
       <SEO 
         title={notification.title} 
         description={notification.description?.substring(0, 150) + "..."}

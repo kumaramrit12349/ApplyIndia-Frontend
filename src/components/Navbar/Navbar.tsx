@@ -14,6 +14,7 @@ interface NavbarProps {
   category?: string;
   onLogout: () => void;
   onShowAuthPopup: () => void;
+  onShowSignUpPopup?: () => void;
 }
 
 const Navbar: React.FC<NavbarProps> = ({
@@ -27,6 +28,7 @@ const Navbar: React.FC<NavbarProps> = ({
   category,
   onLogout,
   onShowAuthPopup,
+  onShowSignUpPopup,
 }) => {
   return (
     <nav className="ai-navbar">
@@ -49,6 +51,7 @@ const Navbar: React.FC<NavbarProps> = ({
             category={category}
             onLogout={onLogout}
             onShowAuthPopup={onShowAuthPopup}
+            onShowSignUpPopup={onShowSignUpPopup}
           />
         </div>
       </div>

@@ -82,14 +82,11 @@ const StateView: React.FC = () => {
             />
             <div className="row justify-content-center">
                 <div className="col-12 col-md-10 col-lg-8">
-                    <h2 className="mb-3 text-center text-capitalize">
-                        {stateLabel}
-                        {searchValue && (
-                            <span className="text-muted ms-2">
-                                (Search: "{searchValue}")
-                            </span>
-                        )}
-                    </h2>
+                    {searchValue && (
+                        <p className="text-center text-muted mb-3" style={{ fontSize: "0.92rem" }}>
+                            Showing results for <strong>"{searchValue}"</strong>
+                        </p>
+                    )}
 
                     {loading && items.length === 0 ? (
                         <div className="text-center py-5">
@@ -118,7 +115,7 @@ const StateView: React.FC = () => {
                             }
                         >
                             <ListView
-                                category={""} // Hiding category title since we are showing states
+                                category={stateLabel} // Show state name in card header
                                 items={items}
                                 showSeeMore={false}
                                 showAllItems={true}

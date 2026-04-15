@@ -12,6 +12,7 @@ interface AuthPopupProps {
   onRequireVerification?: (email: string) => void;
   onForgotPassword?: () => void;
   initialError?: string;
+  initialTab?: AuthTab;
 }
 
 const AuthPopup: React.FC<AuthPopupProps> = ({
@@ -21,6 +22,7 @@ const AuthPopup: React.FC<AuthPopupProps> = ({
   onRequireVerification,
   onForgotPassword,
   initialError,
+  initialTab = "login",
 }) => {
   const [tab, setTab] = useState<AuthTab>("login");
   const [form, setForm] = useState({
@@ -35,13 +37,17 @@ const AuthPopup: React.FC<AuthPopupProps> = ({
   const [showPassword, setShowPassword] = useState(false);
 
   React.useEffect(() => {
-    if (initialError && show) {
+    if (!show) {
+      setError("");
+      return;
+    }
+    if (initialError) {
       setError(initialError);
       setTab("login");
-    } else if (!show) {
-      setError("");
+    } else {
+      setTab(initialTab);
     }
-  }, [initialError, show]);
+  }, [initialError, initialTab, show]);
 
   const swapTab = (next: AuthTab) => {
     setTab(next);
@@ -199,7 +205,7 @@ const AuthPopup: React.FC<AuthPopupProps> = ({
         </div>
 
         {/* FORM */}
-        <form onSubmit={handleSubmit} autoComplete="on">
+        <form onSubmit={handleSubmit} autoComplete="off">
           {/* Email and Password always present */}
           <div className="mb-3">
             <label className="form-label fw-semibold" htmlFor="email">
