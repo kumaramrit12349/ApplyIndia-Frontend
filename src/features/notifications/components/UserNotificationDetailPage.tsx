@@ -3,19 +3,111 @@ import { useParams, useNavigate } from "react-router-dom";
 import NotificationDetailView from "../../../components/Generic/NotificationDetailView";
 import { getNotificationById } from "../../../services/public/notiifcationApi";
 import SEO from "../../../components/SEO/SEO";
+import { formatStateName } from "../../../utils/utils";
+
+const SITE_URL = "https://applyindia.online";
 
 interface UserNotificationDetailPageProps {
   isAuthenticated?: boolean;
   onShowAuthPopup?: () => void;
 }
 
+/** Strip HTML tags from a string for use in plain-text meta fields */
+function stripHtml(html: string): string {
+  return html.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
+}
+
+/** Build a keyword-rich meta description from notification fields */
+function buildDescription(notification: any): string {
+  const parts: string[] = [];
+
+  if (notification.details?.short_description) {
+    const clean = stripHtml(notification.details.short_description);
+    if (clean) parts.push(clean.substring(0, 120));
+  }
+
+  if (notification.total_vacancies) {
+    parts.push(`${notification.total_vacancies} vacancies.`);
+  }
+
+  if (notification.last_date_to_apply) {
+    parts.push(`Last date: ${notification.last_date_to_apply}.`);
+  }
+
+  if (!parts.length) {
+    parts.push(`${notification.title} — Apply online on Apply India.`);
+  }
+
+  return parts.join(" ").substring(0, 155);
+}
+
+/** Build a JSON-LD JobPosting schema object for Google rich results */
+function buildJobPostingSchema(notification: any): Record<string, unknown> {
+  const schema: Record<string, unknown> = {
+    "@context": "https://schema.org",
+    "@type": "JobPosting",
+    "title": notification.title,
+    "description": notification.details?.short_description
+      ? stripHtml(notification.details.short_description)
+      : notification.title,
+    "datePosted": notification.start_date || notification.created_at
+      ? new Date(notification.start_date || notification.created_at).toISOString().split("T")[0]
+      : new Date().toISOString().split("T")[0],
+    "employmentType": "FULL_TIME",
+    "hiringOrganization": {
+      "@type": "Organization",
+      "name": notification.department || "Government of India",
+      "sameAs": notification.links?.official_website_url || SITE_URL,
+    },
+    "jobLocation": {
+      "@type": "Place",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "IN",
+        ...(notification.state
+          ? { "addressRegion": formatStateName(notification.state) }
+          : {}),
+      },
+    },
+  };
+
+  if (notification.last_date_to_apply) {
+    schema["validThrough"] = new Date(notification.last_date_to_apply).toISOString().split("T")[0];
+  }
+
+  if (notification.total_vacancies) {
+    schema["totalJobOpenings"] = notification.total_vacancies;
+  }
+
+  if (notification.eligibility?.qualification) {
+    schema["qualifications"] = notification.eligibility.qualification;
+  }
+
+  if (notification.eligibility?.min_age && notification.eligibility?.max_age) {
+    schema["experienceRequirements"] = `Age: ${notification.eligibility.min_age}–${notification.eligibility.max_age} years`;
+  }
+
+  if (notification.links?.apply_online_url) {
+    schema["url"] = notification.links.apply_online_url;
+  }
+
+  // Application fee as baseSalary workaround — include apply link as direct apply URL
+  if (notification.fee?.general_fee !== undefined) {
+    schema["applicationContact"] = {
+      "@type": "ContactPoint",
+      "contactType": "Application",
+      "url": notification.links?.apply_online_url || SITE_URL,
+    };
+  }
+
+  return schema;
+}
+
 const UserNotificationDetailPage: React.FC<UserNotificationDetailPageProps> = ({
   isAuthenticated = false,
   onShowAuthPopup,
 }) => {
-  const { id } = useParams<{
-    id: string;
-  }>();
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [notification, setNotification] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -42,16 +134,28 @@ const UserNotificationDetailPage: React.FC<UserNotificationDetailPageProps> = ({
       </div>
     );
   }
+
   if (!notification) {
     return (
       <div className="container mt-5">
-        <SEO title="Notification Not Found" />
+        <SEO title="Notification Not Found" noindex={true} />
         <div className="alert alert-danger">Notification not found</div>
       </div>
     );
   }
+
+  const pageUrl = `${SITE_URL}${window.location.pathname}`;
+
   return (
     <div className="container mt-4 mb-5">
+      <SEO
+        title={notification.title}
+        description={buildDescription(notification)}
+        canonical={pageUrl}
+        type="article"
+        schema={buildJobPostingSchema(notification)}
+      />
+
       {/* Back Button */}
       <button
         onClick={() => navigate(-1)}
@@ -81,10 +185,7 @@ const UserNotificationDetailPage: React.FC<UserNotificationDetailPageProps> = ({
       >
         ← Back
       </button>
-      <SEO 
-        title={notification.title} 
-        description={notification.description?.substring(0, 150) + "..."}
-      />
+
       <NotificationDetailView
         notification={notification}
         isAuthenticated={isAuthenticated}
@@ -95,4 +196,3 @@ const UserNotificationDetailPage: React.FC<UserNotificationDetailPageProps> = ({
 };
 
 export default UserNotificationDetailPage;
-

@@ -73,12 +73,15 @@ const StateView: React.FC = () => {
 
     /* ================= UI ================= */
     const stateLabel = INDIAN_STATES.find(s => s.value === decodedState)?.label || decodedState;
+    const currentYear = new Date().getFullYear();
 
     return (
         <div className="container py-3 px-2 px-md-4">
             <SEO 
-                title={`${stateLabel} Jobs`} 
-                description={`Find all government job notifications in ${stateLabel}.`}
+                title={`${stateLabel} Government Jobs & Notifications ${currentYear}`} 
+                description={`Find the latest government job notifications, entrance exams, results, and scholarships in ${stateLabel}. Apply online on Apply India.`}
+                noindex={!!searchValue}
+                canonical={`https://applyindia.online/notification/state/${decodedState}`}
             />
             <div className="row justify-content-center">
                 <div className="col-12 col-md-10 col-lg-8">

@@ -104,8 +104,9 @@ const HomePage: React.FC = () => {
     return (
       <div className="container py-3 px-2 px-md-4">
         <SEO 
-          title={`Search results for "${searchValue}"`} 
-          description={`Find government job notifications and results related to ${searchValue}.`} 
+          title={`Search results for "${searchValue}" — Government Jobs & Notifications`} 
+          description={`Find government job notifications and results related to "${searchValue}" across India.`} 
+          noindex={true}
         />
         <div className="row justify-content-center">
           <div className="col-12 col-md-10 col-lg-8">
@@ -158,10 +159,13 @@ const HomePage: React.FC = () => {
 
   /* ================= DEFAULT GROUPED UI ================= */
 
+  const currentYear = new Date().getFullYear();
+
   return (
     <div className="page">
       <SEO 
-        title="Home" 
+        title={`Government Jobs, Sarkari Naukri & Exam Results ${currentYear}`}
+        description="Find the latest central & state government job notifications, entrance exams, admit cards, results, and scholarships across India. Your trusted sarkari naukri platform."
       />
       <div className="container py-4">
         <div className="row g-4">

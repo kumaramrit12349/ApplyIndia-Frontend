@@ -8,6 +8,36 @@ import SEO from "../../../components/SEO/SEO";
 
 const PAGE_SIZE = 20;
 
+const currentYear = new Date().getFullYear();
+
+/** Category-specific SEO copy for rich search-engine snippets */
+const SEO_MAP: Record<string, { title: string; description: string }> = {
+  "job": {
+    title: `Government Jobs ${currentYear} — Latest Sarkari Naukri Notifications`,
+    description: "Browse the latest central & state government job notifications. Check eligibility, vacancies, last date to apply, and apply online on Apply India.",
+  },
+  "entrance-exam": {
+    title: `Entrance Exam Notifications ${currentYear} — JEE, NEET, CUET & More`,
+    description: "Find upcoming entrance exam notifications, admit cards, results, and syllabi across India. Stay updated on JEE, NEET, CUET, and state-level exams.",
+  },
+  "admission": {
+    title: `College & University Admission Notifications ${currentYear}`,
+    description: "Latest college and university admission notifications across India. Check deadlines, eligibility, and apply online through Apply India.",
+  },
+  "scholarship": {
+    title: `Scholarship Notifications ${currentYear} — Apply for Government Scholarships`,
+    description: "Find central and state government scholarship opportunities for students across India. Check eligibility, last date to apply, and application process.",
+  },
+  "sarkari-yojana": {
+    title: `Sarkari Yojana ${currentYear} — Government Schemes & Welfare Benefits`,
+    description: "Discover the latest central and state government yojana and welfare schemes including PM Kisan, Ayushman Bharat, and more. Check eligibility and how to apply.",
+  },
+  "documents": {
+    title: "Government Document Help — Aadhaar, PAN, Caste Certificate & More",
+    description: "Step-by-step guidance on applying for important government documents like Aadhaar card, PAN card, caste certificate, domicile, and income certificate.",
+  },
+};
+
 function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
@@ -73,12 +103,18 @@ const CategoryView: React.FC = () => {
   /* ================= UI ================= */
 
   const formattedCategory = decodedCategory.replace(/-/g, " ");
+  const seoData = SEO_MAP[decodedCategory] || {
+    title: `${formattedCategory.replace(/\b\w/g, l => l.toUpperCase())} Notifications ${currentYear}`,
+    description: `Find the latest ${formattedCategory} notifications across India. Check eligibility, last date, and apply online on Apply India.`,
+  };
 
   return (
     <div className="container py-3 px-2 px-md-4">
       <SEO 
-        title={`${formattedCategory} Jobs`} 
-        description={`Find all government job notifications in the ${formattedCategory} category.`}
+        title={seoData.title}
+        description={seoData.description}
+        noindex={!!searchValue}
+        canonical={`https://applyindia.online/notification/category/${decodedCategory}`}
       />
       <div className="row justify-content-center">
         <div className="col-12 col-md-10 col-lg-8">
