@@ -52,9 +52,9 @@ const formatCurrency = (amount?: string | number | null) => {
   return `₹ ${Number(amount).toLocaleString()}`;
 };
 
-const formatPercentage = (value?: string | number) => {
-  if (value === null || value === undefined) return "Not Specified";
-  return `${Number(value)}`;
+const formatPercentage = (value?: string | number | null) => {
+  if (value === null || value === undefined || value === 0 || value === "0") return "Not Specified";
+  return `${Number(value)} %`;
 };
 
 const getGroupedFees = (fee?: INotification["fee"]) => {
@@ -76,7 +76,21 @@ const getGroupedFees = (fee?: INotification["fee"]) => {
       map[formatted].push(label);
     }
   });
-  return Object.entries(map);
+
+  return Object.entries(map).sort((a, b) => {
+    // Put "₹ 0" group at the end if you want, or just alphabetical
+    return b[1].length - a[1].length;
+  });
+};
+
+const renderAgeInfo = (min?: number | null, max?: number | null) => {
+  const isMinZero = min === null || min === undefined || min === 0;
+  const isMaxZero = max === null || max === undefined || max === 0;
+
+  if (isMinZero && isMaxZero) return "Not Specified";
+  if (!isMinZero && isMaxZero) return `Minimum ${min} Years`;
+  if (isMinZero && !isMaxZero) return `Maximum ${max} Years`;
+  return `${min} – ${max} Years`;
 };
 
 /* ──────────────── Tracking Steps Config ──────────────── */
@@ -137,7 +151,14 @@ const LabelValue = ({
   highlight?: boolean;
   fallback?: string;
 }) => {
-  const displayValue = value ? value : (fallback ?? "Not Available");
+  const displayValue = (value === null || value === undefined || value === "") 
+    ? (fallback ?? "Not Available") 
+    : value;
+    
+  if (displayValue === "Not Available") {
+    return null; // hide completely if totally missing and no fallback provided
+  }
+  
   return (
     <div className="ndv-lv">
       <span className="ndv-lv-label">{label}</span>
@@ -300,6 +321,12 @@ export default function NotificationDetailView({
   ].filter(Boolean) as { href: string; label: string; icon: React.ReactNode; iconClass: string }[];
 
   const hasAnyLinks = notification.links?.apply_online_url || linkItems.length > 0;
+  
+  const isJob = notification.category === "job";
+  const needsFeesAndDates = ["job", "entrance-exam", "admission"].includes(notification.category);
+  const needsEligibility = notification.category !== "documents";
+  const groupedFees = getGroupedFees(notification.fee);
+  const isAllFeesZero = groupedFees.length === 1 && groupedFees[0][0] === "₹ 0";
 
   return (
     <main className="ndv-page">
@@ -499,93 +526,110 @@ export default function NotificationDetailView({
                 <LabelValue label="Category" value={formatCategoryTitle(notification.category)} />
                 <LabelValue label="Department" value={notification.department} />
                 <LabelValue label="State / Region" value={formatStateName(notification.state)} highlight />
-                <LabelValue label="Total Vacancies" value={notification.total_vacancies} />
-              </div>
-            </div>
-          </div>
-
-          {/* Important Dates */}
-          <div className="col-12 col-md-6">
-            <div className="ndv-card" style={{ animationDelay: "0.15s" }}>
-              <div className="ndv-card-header ndv-card-header--orange">
-                <div className="ndv-card-icon ndv-card-icon--orange"><BsCalendar /></div>
-                <h3 className="ndv-card-title">Important Dates</h3>
-              </div>
-              <div className="ndv-card-body">
-                <LabelValue label="Start Date" value={formatDate(notification.start_date)} />
-                <LabelValue label="Last Date To Apply" value={formatDate(notification.last_date_to_apply)} highlight />
-                <LabelValue label="Exam Date" value={formatDate(notification.exam_date)} />
-                <LabelValue label="Admit Card Date" value={formatDate((notification as any).admit_card_date)} />
-                <LabelValue label="Result Date" value={formatDate((notification as any).result_date)} />
-
-                {notification.details?.important_date_details && (
-                  <div
-                    className="mt-3"
-                    style={{ fontSize: "0.88rem", color: "#6b7280", lineHeight: 1.6, wordBreak: "break-word" }}
-                    dangerouslySetInnerHTML={{ __html: notification.details.important_date_details }}
+                {isJob && (
+                  <LabelValue 
+                    label="Total Vacancies" 
+                    value={notification.total_vacancies ? notification.total_vacancies : "Not Specified"} 
                   />
                 )}
               </div>
             </div>
           </div>
 
-          {/* Fees */}
-          <div className="col-12 col-md-6">
-            <div className="ndv-card" style={{ animationDelay: "0.2s" }}>
-              <div className="ndv-card-header ndv-card-header--green">
-                <div className="ndv-card-icon ndv-card-icon--green"><BsCurrencyRupee /></div>
-                <h3 className="ndv-card-title">Application Fees</h3>
-              </div>
-              <div className="ndv-card-body">
-                {getGroupedFees(notification.fee).map(([fee, cats]) => (
-                  <LabelValue key={fee} label={`${cats.join("/")} Fee`} value={fee} />
-                ))}
+          {/* Important Dates */}
+          {needsFeesAndDates && (
+            <div className="col-12 col-md-6">
+              <div className="ndv-card" style={{ animationDelay: "0.15s" }}>
+                <div className="ndv-card-header ndv-card-header--orange">
+                  <div className="ndv-card-icon ndv-card-icon--orange"><BsCalendar /></div>
+                  <h3 className="ndv-card-title">Important Dates</h3>
+                </div>
+                <div className="ndv-card-body">
+                  <LabelValue label="Start Date" value={formatDate(notification.start_date)} />
+                  <LabelValue label="Last Date To Apply" value={formatDate(notification.last_date_to_apply)} highlight />
+                  <LabelValue label="Exam Date" value={formatDate(notification.exam_date)} />
+                  <LabelValue label="Admit Card Date" value={formatDate((notification as any).admit_card_date)} />
+                  <LabelValue label="Result Date" value={formatDate((notification as any).result_date)} />
 
-                {notification.fee?.other_fee_details && (
-                  <div className="mt-3">
-                    <span style={{ fontWeight: 600, fontSize: "0.88rem", color: "#1f2937", display: "block", marginBottom: 4 }}>
-                      Other Fee Details
-                    </span>
+                  {notification.details?.important_date_details && (
                     <div
-                      style={{ fontSize: "0.85rem", color: "#6b7280", wordBreak: "break-word", lineHeight: 1.6 }}
-                      dangerouslySetInnerHTML={{ __html: notification.fee.other_fee_details }}
+                      className="mt-3"
+                      style={{ fontSize: "0.88rem", color: "#6b7280", lineHeight: 1.6, wordBreak: "break-word" }}
+                      dangerouslySetInnerHTML={{ __html: notification.details.important_date_details }}
                     />
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
             </div>
-          </div>
+          )}
+
+          {/* Fees */}
+          {needsFeesAndDates && (
+            <div className="col-12 col-md-6">
+              <div className="ndv-card" style={{ animationDelay: "0.2s" }}>
+                <div className="ndv-card-header ndv-card-header--green">
+                  <div className="ndv-card-icon ndv-card-icon--green"><BsCurrencyRupee /></div>
+                  <h3 className="ndv-card-title">Application Fees</h3>
+                </div>
+                <div className="ndv-card-body">
+                  {isAllFeesZero && !notification.fee?.other_fee_details ? (
+                    <div className="d-flex align-items-center gap-2 mb-3">
+                       <span className="badge" style={{background: '#dcfce7', color: '#166534', fontSize: '0.9rem', padding: '0.4rem 0.8rem'}}>No Application Fee</span>
+                    </div>
+                  ) : (
+                    groupedFees.map(([fee, cats]) => (
+                      <LabelValue key={fee} label={`${cats.join("/")} Fee`} value={fee} />
+                    ))
+                  )}
+
+                  {notification.fee?.other_fee_details && (
+                    <div className="mt-3">
+                      <span style={{ fontWeight: 600, fontSize: "0.88rem", color: "#1f2937", display: "block", marginBottom: 4 }}>
+                        Other Fee Details
+                      </span>
+                      <div
+                        style={{ fontSize: "0.85rem", color: "#6b7280", wordBreak: "break-word", lineHeight: 1.6 }}
+                        dangerouslySetInnerHTML={{ __html: notification.fee.other_fee_details }}
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Eligibility */}
-          <div className="col-12 col-md-6">
-            <div className="ndv-card" style={{ animationDelay: "0.25s" }}>
-              <div className="ndv-card-header ndv-card-header--purple">
-                <div className="ndv-card-icon ndv-card-icon--purple"><BsFillPersonFill /></div>
-                <h3 className="ndv-card-title">Eligibility</h3>
-              </div>
-              <div className="ndv-card-body">
-                <LabelValue
-                  label="Age"
-                  value={`${notification.eligibility?.min_age ?? "—"} – ${notification.eligibility?.max_age ?? "—"} Years`}
-                />
-                <LabelValue label="Qualification" value={notification.eligibility?.qualification} />
-                <LabelValue label="Specialization" value={notification.eligibility?.specialization} />
-                <LabelValue label="Minimum %" value={formatPercentage(notification.eligibility?.min_percentage)} />
+          {needsEligibility && (
+            <div className="col-12 col-md-6">
+              <div className="ndv-card" style={{ animationDelay: "0.25s" }}>
+                <div className="ndv-card-header ndv-card-header--purple">
+                  <div className="ndv-card-icon ndv-card-icon--purple"><BsFillPersonFill /></div>
+                  <h3 className="ndv-card-title">Eligibility</h3>
+                </div>
+                <div className="ndv-card-body">
+                  <LabelValue
+                    label="Age"
+                    value={renderAgeInfo(notification.eligibility?.min_age, notification.eligibility?.max_age)}
+                  />
+                  <LabelValue label="Qualification" value={notification.eligibility?.qualification} />
+                  <LabelValue label="Specialization" value={notification.eligibility?.specialization} />
+                  <LabelValue label="Minimum Requirement" value={formatPercentage(notification.eligibility?.min_percentage)} />
 
-                {notification.eligibility?.age_relaxation_details && (
-                  <div className="mt-3">
-                    <span style={{ fontWeight: 600, fontSize: "0.88rem", color: "#1f2937", display: "block", marginBottom: 4 }}>
-                      Age Relaxation
-                    </span>
-                    <div
-                      style={{ fontSize: "0.85rem", color: "#6b7280", wordBreak: "break-word", lineHeight: 1.6 }}
-                      dangerouslySetInnerHTML={{ __html: notification.eligibility.age_relaxation_details }}
-                    />
-                  </div>
-                )}
+                  {notification.eligibility?.age_relaxation_details && (
+                    <div className="mt-3">
+                      <span style={{ fontWeight: 600, fontSize: "0.88rem", color: "#1f2937", display: "block", marginBottom: 4 }}>
+                        Age Relaxation
+                      </span>
+                      <div
+                        style={{ fontSize: "0.85rem", color: "#6b7280", wordBreak: "break-word", lineHeight: 1.6 }}
+                        dangerouslySetInnerHTML={{ __html: notification.eligibility.age_relaxation_details }}
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
 
         {/* ═══════════════ IMPORTANT LINKS ═══════════════ */}
