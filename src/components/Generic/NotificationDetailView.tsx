@@ -151,14 +151,14 @@ const LabelValue = ({
   highlight?: boolean;
   fallback?: string;
 }) => {
-  const displayValue = (value === null || value === undefined || value === "") 
-    ? (fallback ?? "Not Available") 
+  const displayValue = (value === null || value === undefined || value === "")
+    ? (fallback ?? "Not Available")
     : value;
-    
+
   if (displayValue === "Not Available") {
     return null; // hide completely if totally missing and no fallback provided
   }
-  
+
   return (
     <div className="ndv-lv">
       <span className="ndv-lv-label">{label}</span>
@@ -321,7 +321,7 @@ export default function NotificationDetailView({
   ].filter(Boolean) as { href: string; label: string; icon: React.ReactNode; iconClass: string }[];
 
   const hasAnyLinks = notification.links?.apply_online_url || linkItems.length > 0;
-  
+
   const isJob = notification.category === "job";
   const needsFeesAndDates = ["job", "entrance-exam", "admission"].includes(notification.category);
   const needsEligibility = notification.category !== "documents";
@@ -415,104 +415,6 @@ export default function NotificationDetailView({
           />
         )}
 
-        {/* ═══════════════ TRACK YOUR PROGRESS ═══════════════ */}
-        {!isAdmin && (
-          <div className="ndv-track" id="track-progress-section">
-            <div className="ndv-track-title">🚀 Track Your Progress</div>
-            <p className="ndv-track-subtitle">
-              Follow your journey step by step — each milestone unlocks the next!
-            </p>
-
-            <div className="ndv-track-note">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#667eea" viewBox="0 0 16 16">
-                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
-                <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0z" />
-              </svg>
-              <span className="d-flex align-items-center flex-wrap gap-2">
-                <strong>Note:</strong> You can track an application a maximum of <strong>3 times</strong>. To remove it, go to your 
-                <button 
-                  onClick={() => window.open("/dashboard", "_blank")}
-                  style={{
-                    background: '#667eea',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '4px',
-                    padding: '2px 8px',
-                    fontSize: '0.85em',
-                    fontWeight: 600,
-                    cursor: 'pointer'
-                  }}
-                >
-                  Dashboard
-                </button>
-              </span>
-            </div>
-
-            {/* Stepper */}
-            <div className="ndv-stepper">
-              {TRACKING_STEPS.map((step, i) => {
-                const state = getStepState(i);
-                return (
-                  <React.Fragment key={step.status}>
-                    <div className="ndv-step">
-                      <div className={`ndv-step-circle ndv-step-circle--${state}`}>
-                        {state === "completed" ? "✓" : i + 1}
-                      </div>
-                      <span className={`ndv-step-label ndv-step-label--${state}`}>
-                        {step.label}
-                      </span>
-                    </div>
-                    {i < TRACKING_STEPS.length - 1 && (
-                      <div
-                        className={`ndv-step-connector ${getStepState(i) === "completed"
-                          ? "ndv-step-connector--done"
-                          : "ndv-step-connector--pending"
-                          }`}
-                      />
-                    )}
-                  </React.Fragment>
-                );
-              })}
-            </div>
-
-            {/* Action buttons */}
-            <div className="ndv-track-actions">
-              {TRACKING_STEPS.map((step, i) => {
-                const state = getStepState(i);
-                const isLoading = trackingLoading === step.status;
-                return (
-                  <button
-                    key={step.status}
-                    id={`track-btn-${step.status}`}
-                    className={`ndv-track-btn ndv-track-btn--${state}`}
-                    disabled={state === "locked" || state === "completed" || isLoading}
-                    onClick={() => handleTrackAction(step)}
-                  >
-                    {isLoading ? (
-                      <div className="spinner-border spinner-border-sm" role="status">
-                        <span className="visually-hidden">Loading...</span>
-                      </div>
-                    ) : (
-                      <>
-                        <span className="ndv-track-btn-emoji">
-                          {state === "completed" ? (
-                            <BsCheckCircleFill />
-                          ) : state === "locked" ? (
-                            <BsLockFill />
-                          ) : (
-                            step.emoji
-                          )}
-                        </span>
-                        <span>{step.label}</span>
-                      </>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
         {/* ═══════════════ INFO CARDS ═══════════════ */}
         <div className="row g-3 mb-3">
           {/* Basic Details */}
@@ -527,9 +429,9 @@ export default function NotificationDetailView({
                 <LabelValue label="Department" value={notification.department} />
                 <LabelValue label="State / Region" value={formatStateName(notification.state)} highlight />
                 {isJob && (
-                  <LabelValue 
-                    label="Total Vacancies" 
-                    value={notification.total_vacancies ? notification.total_vacancies : "Not Specified"} 
+                  <LabelValue
+                    label="Total Vacancies"
+                    value={notification.total_vacancies ? notification.total_vacancies : "Not Specified"}
                   />
                 )}
               </div>
@@ -574,7 +476,7 @@ export default function NotificationDetailView({
                 <div className="ndv-card-body">
                   {isAllFeesZero && !notification.fee?.other_fee_details ? (
                     <div className="d-flex align-items-center gap-2 mb-3">
-                       <span className="badge" style={{background: '#dcfce7', color: '#166534', fontSize: '0.9rem', padding: '0.4rem 0.8rem'}}>No Application Fee</span>
+                      <span className="badge" style={{ background: '#dcfce7', color: '#166534', fontSize: '0.9rem', padding: '0.4rem 0.8rem' }}>No Application Fee</span>
                     </div>
                   ) : (
                     groupedFees.map(([fee, cats]) => (
@@ -678,6 +580,104 @@ export default function NotificationDetailView({
           />
         )}
 
+        {/* ═══════════════ TRACK YOUR PROGRESS ═══════════════ */}
+        {!isAdmin && (
+          <div className="ndv-track" id="track-progress-section">
+            <div className="ndv-track-title">🚀 Track Your Progress</div>
+            <p className="ndv-track-subtitle">
+              Follow your journey step by step — each milestone unlocks the next!
+            </p>
+
+            <div className="ndv-track-note">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#667eea" viewBox="0 0 16 16">
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
+                <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0z" />
+              </svg>
+              <span className="d-flex align-items-center flex-wrap gap-2">
+                <strong>Note:</strong> You can track an application a maximum of <strong>3 times</strong>. To remove it, go to your
+                <button
+                  onClick={() => window.open("/dashboard", "_blank")}
+                  style={{
+                    background: '#667eea',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px',
+                    padding: '2px 8px',
+                    fontSize: '0.85em',
+                    fontWeight: 600,
+                    cursor: 'pointer'
+                  }}
+                >
+                  Dashboard
+                </button>
+              </span>
+            </div>
+
+            {/* Stepper */}
+            <div className="ndv-stepper">
+              {TRACKING_STEPS.map((step, i) => {
+                const state = getStepState(i);
+                return (
+                  <React.Fragment key={step.status}>
+                    <div className="ndv-step">
+                      <div className={`ndv-step-circle ndv-step-circle--${state}`}>
+                        {state === "completed" ? "✓" : i + 1}
+                      </div>
+                      <span className={`ndv-step-label ndv-step-label--${state}`}>
+                        {step.label}
+                      </span>
+                    </div>
+                    {i < TRACKING_STEPS.length - 1 && (
+                      <div
+                        className={`ndv-step-connector ${getStepState(i) === "completed"
+                          ? "ndv-step-connector--done"
+                          : "ndv-step-connector--pending"
+                          }`}
+                      />
+                    )}
+                  </React.Fragment>
+                );
+              })}
+            </div>
+
+            {/* Action buttons */}
+            <div className="ndv-track-actions">
+              {TRACKING_STEPS.map((step, i) => {
+                const state = getStepState(i);
+                const isLoading = trackingLoading === step.status;
+                return (
+                  <button
+                    key={step.status}
+                    id={`track-btn-${step.status}`}
+                    className={`ndv-track-btn ndv-track-btn--${state}`}
+                    disabled={state === "locked" || state === "completed" || isLoading}
+                    onClick={() => handleTrackAction(step)}
+                  >
+                    {isLoading ? (
+                      <div className="spinner-border spinner-border-sm" role="status">
+                        <span className="visually-hidden">Loading...</span>
+                      </div>
+                    ) : (
+                      <>
+                        <span className="ndv-track-btn-emoji">
+                          {state === "completed" ? (
+                            <BsCheckCircleFill />
+                          ) : state === "locked" ? (
+                            <BsLockFill />
+                          ) : (
+                            step.emoji
+                          )}
+                        </span>
+                        <span>{step.label}</span>
+                      </>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {/* ═══════════════ ADMIN METADATA ═══════════════ */}
         {isAdmin && (
           <div className="ndv-admin-meta">
@@ -706,9 +706,9 @@ export default function NotificationDetailView({
       />
 
       {/* Support Popup for Limit Reached */}
-      <SupportPopup 
-        show={showSupport} 
-        onClose={() => setShowSupport(false)} 
+      <SupportPopup
+        show={showSupport}
+        onClose={() => setShowSupport(false)}
       />
     </main>
   );
