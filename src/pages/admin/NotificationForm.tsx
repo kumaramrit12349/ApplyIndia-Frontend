@@ -282,6 +282,10 @@ const NotificationForm: React.FC<Props> = ({
   );
 
   /* ---------------- UI ---------------- */
+  
+  const isJob = form.category === "job";
+  const needsFeesAndDates = ["job", "entrance-exam", "admission"].includes(form.category);
+  const needsEligibility = form.category !== "documents";
 
   return (
     <>
@@ -330,27 +334,29 @@ const NotificationForm: React.FC<Props> = ({
 
           {renderInputField("Department", "department", "text", false, "e.g. Staff Selection Commission")}
           
-          <div className="mb-3">
-            <label className="ai-form-label">Total Vacancies</label>
-            <input
-              type="text"
-              inputMode="numeric"
-              className="ai-input"
-              placeholder="e.g. 5000"
-              value={totalVacanciesUI}
-              onChange={(e) => {
-                const value = e.target.value;
-                if (value === "") {
-                  setTotalVacanciesUI("");
-                  setForm((p: INotification) => ({ ...p, total_vacancies: 0 }));
-                  return;
-                }
-                if (!/^[0-9]+$/.test(value)) return;
-                setTotalVacanciesUI(value);
-                setForm((p: INotification) => ({ ...p, total_vacancies: Number(value) }));
-              }}
-            />
-          </div>
+          {isJob && (
+            <div className="mb-3">
+              <label className="ai-form-label">Total Vacancies</label>
+              <input
+                type="text"
+                inputMode="numeric"
+                className="ai-input"
+                placeholder="e.g. 5000"
+                value={totalVacanciesUI}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value === "") {
+                    setTotalVacanciesUI("");
+                    setForm((p: INotification) => ({ ...p, total_vacancies: 0 }));
+                    return;
+                  }
+                  if (!/^[0-9]+$/.test(value)) return;
+                  setTotalVacanciesUI(value);
+                  setForm((p: INotification) => ({ ...p, total_vacancies: Number(value) }));
+                }}
+              />
+            </div>
+          )}
         </div>
 
         {/* ================= DETAILS ================= */}
@@ -362,12 +368,12 @@ const NotificationForm: React.FC<Props> = ({
         {renderSectionTitle("Important Dates")}
         <div className="ai-form-grid">
           {[
-            { key: "start_date", label: "Start Date", required: true },
-            { key: "last_date_to_apply", label: "Last Date to Apply", required: true },
-            { key: "exam_date", label: "Exam Date", required: false },
-            { key: "admit_card_date", label: "Admit Card Date", required: false },
-            { key: "result_date", label: "Result Date", required: false },
-          ].map(({ key, label, required }) => (
+            { key: "start_date", label: "Start Date", required: true, show: true },
+            { key: "last_date_to_apply", label: "Last Date to Apply", required: true, show: true },
+            { key: "exam_date", label: "Exam Date", required: false, show: needsFeesAndDates },
+            { key: "admit_card_date", label: "Admit Card Date", required: false, show: needsFeesAndDates },
+            { key: "result_date", label: "Result Date", required: false, show: needsFeesAndDates },
+          ].map(({ key, label, required, show }) => show ? (
             <div className="mb-3" key={key}>
               <label className="ai-form-label">
                 {label}
@@ -388,118 +394,130 @@ const NotificationForm: React.FC<Props> = ({
               />
               {(touched[key] || submitAttempted) && errors[key] && <span className="ai-error-msg">{errors[key]}</span>}
             </div>
-          ))}
+          ) : null)}
         </div>
         {renderTextArea("Important Date Details", form.details.important_date_details || "", (v) => handleNestedChange("details", "important_date_details", v))}
 
         {/* ================= STATUS FLAGS ================= */}
-        {renderSectionTitle("Notification Status Availability")}
-        <div className="ai-checkbox-group mb-5">
-          <div className="row">
-            {[
-              ["has_admit_card", "Admit Card Available"],
-              ["has_result", "Result Available"],
-              ["has_answer_key", "Answer Key Available"],
-              ["has_syllabus", "Syllabus Available"],
-            ].map(([key, label]) => (
-              <div className="col-md-6 mb-3" key={key}>
-                <div className="form-check d-flex align-items-center gap-2">
-                  <input
-                    type="checkbox"
-                    className="form-check-input mt-0"
-                    style={{width: '1.2rem', height: '1.2rem'}}
-                    id={key}
-                    checked={(form as any)[key] || false}
-                    onChange={(e) => setForm((p: INotification) => ({ ...p, [key]: e.target.checked }))}
-                  />
-                  <label className="form-check-label ai-form-label mb-0" htmlFor={key}>
-                    {label}
-                  </label>
-                </div>
+        {needsFeesAndDates && (
+          <>
+            {renderSectionTitle("Notification Status Availability")}
+            <div className="ai-checkbox-group mb-5">
+              <div className="row">
+                {[
+                  ["has_admit_card", "Admit Card Available"],
+                  ["has_result", "Result Available"],
+                  ["has_answer_key", "Answer Key Available"],
+                  ["has_syllabus", "Syllabus Available"],
+                ].map(([key, label]) => (
+                  <div className="col-md-6 mb-3" key={key}>
+                    <div className="form-check d-flex align-items-center gap-2">
+                      <input
+                        type="checkbox"
+                        className="form-check-input mt-0"
+                        style={{width: '1.2rem', height: '1.2rem'}}
+                        id={key}
+                        checked={(form as any)[key] || false}
+                        onChange={(e) => setForm((p: INotification) => ({ ...p, [key]: e.target.checked }))}
+                      />
+                      <label className="form-check-label ai-form-label mb-0" htmlFor={key}>
+                        {label}
+                      </label>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        </div>
+            </div>
+          </>
+        )}
 
         {/* ================= FEES ================= */}
-        {renderSectionTitle("Application Fees")}
-        <div className="ai-form-grid">
-          {[
-            ["general_fee", "General Fee (₹)"],
-            ["obc_fee", "OBC Fee (₹)"],
-            ["sc_fee", "SC Fee (₹)"],
-            ["st_fee", "ST Fee (₹)"],
-            ["ph_fee", "PH Fee (₹)"],
-          ].map(([key, label]) => (
-            <div className="mb-3" key={key}>
-              <label className="ai-form-label">{label}</label>
-              <input
-                type="text"
-                inputMode="numeric"
-                className="ai-input"
-                placeholder="0"
-                value={feeUI[key] ?? ""}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  if (value === "") {
-                    setFeeUI((p: Record<string, string>) => ({ ...p, [key]: "" }));
-                    handleNestedChange("fee", key, 0);
-                    return;
-                  }
-                  if (!/^[0-9]+$/.test(value)) return;
-                  setFeeUI((p: Record<string, string>) => ({ ...p, [key]: value }));
-                  handleNestedChange("fee", key, Number(value));
-                }}
-              />
+        {needsFeesAndDates && (
+          <>
+            {renderSectionTitle("Application Fees")}
+            <div className="ai-form-grid">
+              {[
+                ["general_fee", "General Fee (₹)"],
+                ["obc_fee", "OBC Fee (₹)"],
+                ["sc_fee", "SC Fee (₹)"],
+                ["st_fee", "ST Fee (₹)"],
+                ["ph_fee", "PH Fee (₹)"],
+              ].map(([key, label]) => (
+                <div className="mb-3" key={key}>
+                  <label className="ai-form-label">{label}</label>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    className="ai-input"
+                    placeholder="0"
+                    value={feeUI[key] ?? ""}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (value === "") {
+                        setFeeUI((p: Record<string, string>) => ({ ...p, [key]: "" }));
+                        handleNestedChange("fee", key, null); // send null to indicate not specified rather than 0
+                        return;
+                      }
+                      if (!/^[0-9]+$/.test(value)) return;
+                      setFeeUI((p: Record<string, string>) => ({ ...p, [key]: value }));
+                      handleNestedChange("fee", key, Number(value));
+                    }}
+                  />
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-        {renderTextArea("Other Fee Details", form.fee.other_fee_details || "", (v) => handleNestedChange("fee", "other_fee_details", v))}
+            {renderTextArea("Other Fee Details", form.fee.other_fee_details || "", (v) => handleNestedChange("fee", "other_fee_details", v))}
+          </>
+        )}
 
         {/* ================= ELIGIBILITY ================= */}
-        {renderSectionTitle("Eligibility Criteria")}
-        <div className="ai-form-grid">
-          {[
-            ["min_age", "Minimum Age", "number"],
-            ["max_age", "Maximum Age", "number"],
-            ["qualification", "Qualification", "text"],
-            ["specialization", "Specialization", "text"],
-            ["min_percentage", "Min. Percentage (%)", "number"],
-          ].map(([key, label, type]) => (
-            <div className="mb-3" key={key}>
-              <label className="ai-form-label">{label}</label>
-              {type === "number" ? (
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  className="ai-input"
-                  placeholder="0"
-                  value={eligibilityUI[key] ?? ""}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    if (value === "") {
-                      setEligibilityUI((p: Record<string, string>) => ({ ...p, [key]: "" }));
-                      handleNestedChange("eligibility", key, 0);
-                      return;
-                    }
-                    if (!/^[0-9]+$/.test(value)) return;
-                    setEligibilityUI((p: Record<string, string>) => ({ ...p, [key]: value }));
-                    handleNestedChange("eligibility", key, Number(value));
-                  }}
-                />
-              ) : (
-                <input
-                  type="text"
-                  className="ai-input"
-                  placeholder={`e.g. ${label}`}
-                  value={(form.eligibility as any)[key]}
-                  onChange={(e) => handleNestedChange("eligibility", key, e.target.value)}
-                />
-              )}
+        {needsEligibility && (
+          <>
+            {renderSectionTitle("Eligibility Criteria")}
+            <div className="ai-form-grid">
+              {[
+                ["min_age", "Minimum Age", "number"],
+                ["max_age", "Maximum Age", "number"],
+                ["qualification", "Qualification", "text"],
+                ["specialization", "Specialization", "text"],
+                ["min_percentage", "Min. Percentage (%)", "number"],
+              ].map(([key, label, type]) => (
+                <div className="mb-3" key={key}>
+                  <label className="ai-form-label">{label}</label>
+                  {type === "number" ? (
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      className="ai-input"
+                      placeholder="0"
+                      value={eligibilityUI[key] ?? ""}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        if (value === "") {
+                          setEligibilityUI((p: Record<string, string>) => ({ ...p, [key]: "" }));
+                          handleNestedChange("eligibility", key, null); // Pass null instead of 0
+                          return;
+                        }
+                        if (!/^[0-9]+$/.test(value)) return;
+                        setEligibilityUI((p: Record<string, string>) => ({ ...p, [key]: value }));
+                        handleNestedChange("eligibility", key, Number(value));
+                      }}
+                    />
+                  ) : (
+                    <input
+                      type="text"
+                      className="ai-input"
+                      placeholder={`e.g. ${label}`}
+                      value={(form.eligibility as any)[key]}
+                      onChange={(e) => handleNestedChange("eligibility", key, e.target.value)}
+                    />
+                  )}
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-        {renderTextArea("Age Relaxation Details", form.eligibility.age_relaxation_details || "", (v) => handleNestedChange("eligibility", "age_relaxation_details", v))}
+            {renderTextArea("Age Relaxation Details", form.eligibility.age_relaxation_details || "", (v) => handleNestedChange("eligibility", "age_relaxation_details", v))}
+          </>
+        )}
 
         {/* ================= LINKS ================= */}
         {renderSectionTitle("Important Links")}

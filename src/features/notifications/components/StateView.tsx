@@ -6,6 +6,7 @@ import type { HomePageNotification } from "../../../types/notification";
 import { fetchNotificationsByState } from "../../../services/public/notiifcationApi";
 import { INDIAN_STATES } from "../../../constant/SharedConstant";
 import SEO from "../../../components/SEO/SEO";
+import { buildBreadcrumbSchema, SITE_URL } from "../../../seo/site";
 
 const PAGE_SIZE = 20;
 
@@ -73,23 +74,49 @@ const StateView: React.FC = () => {
 
     /* ================= UI ================= */
     const stateLabel = INDIAN_STATES.find(s => s.value === decodedState)?.label || decodedState;
+    const currentYear = new Date().getFullYear();
+    const canonicalUrl = `${SITE_URL}/notification/state/${decodedState}`;
 
     return (
         <div className="container py-3 px-2 px-md-4">
             <SEO 
-                title={`${stateLabel} Jobs`} 
-                description={`Find all government job notifications in ${stateLabel}.`}
+                title={`${stateLabel} Government Jobs & Notifications ${currentYear}`} 
+                description={`Find the latest government job notifications, entrance exams, results, and scholarships in ${stateLabel}. Apply online on Apply India.`}
+                noindex={!!searchValue}
+                canonical={canonicalUrl}
+                keywords={[
+                    "apply india",
+                    "apply india online",
+                    `${stateLabel} government jobs`,
+                    `${stateLabel} sarkari naukri`,
+                    `${stateLabel} notifications`,
+                ]}
+                schema={[
+                    {
+                        "@context": "https://schema.org",
+                        "@type": "CollectionPage",
+                        name: `${stateLabel} Government Jobs & Notifications ${currentYear}`,
+                        url: canonicalUrl,
+                        description: `Find the latest government job notifications, entrance exams, results, and scholarships in ${stateLabel}. Apply online on Apply India.`,
+                        isPartOf: {
+                            "@type": "WebSite",
+                            name: "Apply India",
+                            url: SITE_URL,
+                        },
+                    },
+                    buildBreadcrumbSchema([
+                        { name: "Home", url: `${SITE_URL}/` },
+                        { name: stateLabel, url: canonicalUrl },
+                    ]),
+                ]}
             />
             <div className="row justify-content-center">
                 <div className="col-12 col-md-10 col-lg-8">
-                    <h2 className="mb-3 text-center text-capitalize">
-                        {stateLabel}
-                        {searchValue && (
-                            <span className="text-muted ms-2">
-                                (Search: "{searchValue}")
-                            </span>
-                        )}
-                    </h2>
+                    {searchValue && (
+                        <p className="text-center text-muted mb-3" style={{ fontSize: "0.92rem" }}>
+                            Showing results for <strong>"{searchValue}"</strong>
+                        </p>
+                    )}
 
                     {loading && items.length === 0 ? (
                         <div className="text-center py-5">
@@ -118,7 +145,7 @@ const StateView: React.FC = () => {
                             }
                         >
                             <ListView
-                                category={""} // Hiding category title since we are showing states
+                                category={stateLabel} // Show state name in card header
                                 items={items}
                                 showSeeMore={false}
                                 showAllItems={true}

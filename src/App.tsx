@@ -58,6 +58,7 @@ const AppLayout: React.FC = () => {
   const [checkingAuth, setCheckingAuth] = useState(true);
 
   const [showAuthPopup, setShowAuthPopup] = useState(false);
+  const [showSignUpTab, setShowSignUpTab] = useState(false);
   const [showVerifyPopup, setShowVerifyPopup] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [showResetPassword, setShowResetPassword] = useState(false);
@@ -138,6 +139,7 @@ const AppLayout: React.FC = () => {
     }
 
     setShowAuthPopup(false);
+    setShowSignUpTab(false);
     setShowVerifyPopup(false);
   };
   const handleRequireVerification = (email: string) => {
@@ -202,6 +204,7 @@ const AppLayout: React.FC = () => {
         category={userCategory}
         onLogout={handleLogout}
         onShowAuthPopup={() => setShowAuthPopup(true)}
+        onShowSignUpPopup={() => { setShowSignUpTab(true); setShowAuthPopup(true); }}
       />
 
       {!isAdminRoute && <Navigation />}
@@ -363,11 +366,12 @@ const AppLayout: React.FC = () => {
 
       <SignUpPopup
         show={showAuthPopup && !isAuthenticated}
-        onClose={() => setShowAuthPopup(false)}
+        onClose={() => { setShowAuthPopup(false); setShowSignUpTab(false); }}
         onAuthSuccess={handleAuthSuccess}
         onRequireVerification={handleRequireVerification}
         onForgotPassword={handleForgotPassword}
         initialError={authPopupError}
+        initialTab={showSignUpTab ? "register" : "login"}
       />
 
       <VerifyAccountPopup

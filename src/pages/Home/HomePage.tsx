@@ -5,6 +5,13 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import type { HomePageNotification } from "../../types/notification";
 import { fetchHomePageNotifications, fetchNotificationsByCategory } from "../../services/public/notiifcationApi";
 import SEO from "../../components/SEO/SEO";
+import {
+  buildBreadcrumbSchema,
+  ORGANIZATION_SCHEMA,
+  SITE_DESCRIPTION,
+  SITE_URL,
+  WEBSITE_SCHEMA,
+} from "../../seo/site";
 
 interface GroupedNotifications {
   [category: string]: HomePageNotification[];
@@ -104,8 +111,9 @@ const HomePage: React.FC = () => {
     return (
       <div className="container py-3 px-2 px-md-4">
         <SEO 
-          title={`Search results for "${searchValue}"`} 
-          description={`Find government job notifications and results related to ${searchValue}.`} 
+          title={`Search results for "${searchValue}" — Government Jobs & Notifications`} 
+          description={`Find government job notifications and results related to "${searchValue}" across India.`} 
+          noindex={true}
         />
         <div className="row justify-content-center">
           <div className="col-12 col-md-10 col-lg-8">
@@ -158,10 +166,49 @@ const HomePage: React.FC = () => {
 
   /* ================= DEFAULT GROUPED UI ================= */
 
+  const currentYear = new Date().getFullYear();
+
   return (
     <div className="page">
       <SEO 
-        title="Home" 
+        title={`Apply India Online - Government Jobs, Sarkari Naukri & Exam Results ${currentYear}`}
+        description={SITE_DESCRIPTION}
+        canonical={`${SITE_URL}/`}
+        keywords={[
+          "apply india",
+          "apply india online",
+          "government jobs india",
+          "sarkari naukri",
+          "sarkari result",
+          "government job notifications",
+          "admit card",
+          "scholarship india",
+        ]}
+        schema={[
+          ORGANIZATION_SCHEMA,
+          WEBSITE_SCHEMA,
+          {
+            "@context": "https://schema.org",
+            "@type": "WebPage",
+            name: `Apply India Online - Government Jobs, Sarkari Naukri & Exam Results ${currentYear}`,
+            url: `${SITE_URL}/`,
+            description: SITE_DESCRIPTION,
+            isPartOf: {
+              "@type": "WebSite",
+              name: "Apply India",
+              url: SITE_URL,
+            },
+            breadcrumb: {
+              "@id": `${SITE_URL}/#breadcrumb`,
+            },
+          },
+          {
+            ...buildBreadcrumbSchema([
+              { name: "Home", url: `${SITE_URL}/` },
+            ]),
+            "@id": `${SITE_URL}/#breadcrumb`,
+          },
+        ]}
       />
       <div className="container py-4">
         <div className="row g-4">

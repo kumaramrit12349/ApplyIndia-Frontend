@@ -44,7 +44,29 @@
   height: 100%;
   display: flex;
   align-items: center;
-  margin-left: 15px;
+  margin-left: 20px;
+}
+
+/* Fade edge so items don't hard-clip at the left and right */
+.job-banner-marquee::before,
+.job-banner-marquee::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 48px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.job-banner-marquee::before {
+  left: 0;
+  background: linear-gradient(to right, #1d4ed8, transparent);
+}
+
+.job-banner-marquee::after {
+  right: 0;
+  background: linear-gradient(to left, #1e3a8a, transparent);
 }
 
 .job-banner-content {
