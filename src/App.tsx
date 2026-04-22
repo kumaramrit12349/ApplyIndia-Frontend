@@ -1,7 +1,7 @@
 // App.tsx (only AppLayout shown; rest unchanged)
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
-import React, { useEffect, useState } from "react";
+import React, { Suspense, lazy, useEffect, useState } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -11,13 +11,6 @@ import {
   Navigate,
 } from "react-router-dom";
 import HomePage from "./pages/Home/HomePage";
-import DashboardPage from "./pages/admin/DashboardPage";
-import AddNotificationPage from "./pages/admin/AddNotificationPage";
-import EditNotificationPage from "./pages/admin/EditNotificationPage";
-import ReviewNotificationPage from "./pages/admin/ReviewNotificationPage";
-import AdminFeedbackPage from "./pages/admin/AdminFeedbackPage";
-import ScraperDashboard from "./pages/admin/ScraperDashboard";
-
 import Navbar from "./components/Navbar/Navbar";
 import Navigation from "./components/Navigation/Navigation";
 import SearchBar from "./components/SearchBar/SearchBar";
@@ -29,22 +22,35 @@ import CategoryView from "./features/notifications/components/CategoryView";
 import StateView from "./features/notifications/components/StateView";
 import UserNotificationDetailPage from "./features/notifications/components/UserNotificationDetailPage";
 import JobBanner from "./components/JobBanner/JobBanner";
-import PrivacyPolicy from "./pages/legal/PrivacyPolicy";
-import TermsAndConditions from "./pages/legal/TermsAndConditions";
-import Disclaimer from "./pages/legal/Disclaimer";
-import AboutUs from "./pages/legal/AboutUs";
-import FeedbackPage from "./pages/feedback/FeedbackPage";
 import ForgotPasswordPopup from "./components/ForgotPasswordPopup";
 import ResetPasswordPopup from "./components/ResetPasswordPopup";
-import ProfilePage from "./pages/ProfilePage";
-import MyDashboard from "./pages/MyDashboard";
-import GoogleCallbackPage from "./pages/GoogleCallbackPage";
 import { ToastContainer, toast } from "react-toastify";
 import { checkAuthStatus, logoutUser } from "./services/authApi";
 import { AuthProvider } from "./context/AuthContext";
 import ScrollToTop from "./components/ScrollToTop";
 
+const DashboardPage = lazy(() => import("./pages/admin/DashboardPage"));
+const AddNotificationPage = lazy(() => import("./pages/admin/AddNotificationPage"));
+const EditNotificationPage = lazy(() => import("./pages/admin/EditNotificationPage"));
+const ReviewNotificationPage = lazy(() => import("./pages/admin/ReviewNotificationPage"));
+const AdminFeedbackPage = lazy(() => import("./pages/admin/AdminFeedbackPage"));
+const ScraperDashboard = lazy(() => import("./pages/admin/ScraperDashboard"));
+const PrivacyPolicy = lazy(() => import("./pages/legal/PrivacyPolicy"));
+const TermsAndConditions = lazy(() => import("./pages/legal/TermsAndConditions"));
+const Disclaimer = lazy(() => import("./pages/legal/Disclaimer"));
+const AboutUs = lazy(() => import("./pages/legal/AboutUs"));
+const FeedbackPage = lazy(() => import("./pages/feedback/FeedbackPage"));
+const ProfilePage = lazy(() => import("./pages/ProfilePage"));
+const MyDashboard = lazy(() => import("./pages/MyDashboard"));
+const GoogleCallbackPage = lazy(() => import("./pages/GoogleCallbackPage"));
 
+const RouteFallback: React.FC = () => (
+  <div className="d-flex justify-content-center align-items-center py-5">
+    <div className="spinner-border text-primary" role="status">
+      <span className="visually-hidden">Loading...</span>
+    </div>
+  </div>
+);
 
 const AppLayout: React.FC = () => {
   const location = useLocation();
@@ -212,146 +218,148 @@ const AppLayout: React.FC = () => {
       {!isAdminRoute && <JobBanner />}
 
       <main className="flex-grow-1">
-        <Routes>
-          <Route path="/" element={<HomePage />} />
+        <Suspense fallback={<RouteFallback />}>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
 
-          {/* Admin routes – protected */}
-          <Route
-            path="/admin/dashboard"
-            element={
-              <ProtectedRoute
-                isAuthenticated={isAuthenticated}
-                checkingAuth={checkingAuth}
-              >
-                <DashboardPage adminRole={adminRole} />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/addNotification"
-            element={
-              <ProtectedRoute
-                isAuthenticated={isAuthenticated}
-                checkingAuth={checkingAuth}
-              >
-                <AddNotificationPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/edit/:id"
-            element={
-              <ProtectedRoute
-                isAuthenticated={isAuthenticated}
-                checkingAuth={checkingAuth}
-              >
-                <EditNotificationPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/review/:id"
-            element={
-              <ProtectedRoute
-                isAuthenticated={isAuthenticated}
-                checkingAuth={checkingAuth}
-              >
-                <ReviewNotificationPage adminRole={adminRole} />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/feedback"
-            element={
-              <ProtectedRoute
-                isAuthenticated={isAuthenticated}
-                checkingAuth={checkingAuth}
-              >
-                <AdminFeedbackPage
+            {/* Admin routes – protected */}
+            <Route
+              path="/admin/dashboard"
+              element={
+                <ProtectedRoute
                   isAuthenticated={isAuthenticated}
-                  givenName={givenName}
-                  familyName={familyName}
-                  email={userEmail}
-                  isAdmin={isAdmin}
-                  adminRole={adminRole}
-                  onLogout={handleLogout}
+                  checkingAuth={checkingAuth}
+                >
+                  <DashboardPage adminRole={adminRole} />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/addNotification"
+              element={
+                <ProtectedRoute
+                  isAuthenticated={isAuthenticated}
+                  checkingAuth={checkingAuth}
+                >
+                  <AddNotificationPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/edit/:id"
+              element={
+                <ProtectedRoute
+                  isAuthenticated={isAuthenticated}
+                  checkingAuth={checkingAuth}
+                >
+                  <EditNotificationPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/review/:id"
+              element={
+                <ProtectedRoute
+                  isAuthenticated={isAuthenticated}
+                  checkingAuth={checkingAuth}
+                >
+                  <ReviewNotificationPage adminRole={adminRole} />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/feedback"
+              element={
+                <ProtectedRoute
+                  isAuthenticated={isAuthenticated}
+                  checkingAuth={checkingAuth}
+                >
+                  <AdminFeedbackPage
+                    isAuthenticated={isAuthenticated}
+                    givenName={givenName}
+                    familyName={familyName}
+                    email={userEmail}
+                    isAdmin={isAdmin}
+                    adminRole={adminRole}
+                    onLogout={handleLogout}
+                    onShowAuthPopup={() => setShowAuthPopup(true)}
+                  />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/scraper"
+              element={
+                <ProtectedRoute
+                  isAuthenticated={isAuthenticated}
+                  checkingAuth={checkingAuth}
+                >
+                  <ScraperDashboard />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Public routes */}
+            <Route
+              path="/notification/category/:category"
+              element={<CategoryView />}
+            />
+            <Route
+              path="/notification/state/:state"
+              element={<StateView />}
+            />
+            <Route
+              path="/notification/:slug/:id"
+              element={
+                <UserNotificationDetailPage
+                  isAuthenticated={isAuthenticated}
                   onShowAuthPopup={() => setShowAuthPopup(true)}
                 />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/scraper"
-            element={
-              <ProtectedRoute
-                isAuthenticated={isAuthenticated}
-                checkingAuth={checkingAuth}
-              >
-                <ScraperDashboard />
-              </ProtectedRoute>
-            }
-          />
+              }
+            />
 
-          {/* Public routes */}
-          <Route
-            path="/notification/category/:category"
-            element={<CategoryView />}
-          />
-          <Route
-            path="/notification/state/:state"
-            element={<StateView />}
-          />
-          <Route
-            path="/notification/:slug/:id"
-            element={
-              <UserNotificationDetailPage
-                isAuthenticated={isAuthenticated}
-                onShowAuthPopup={() => setShowAuthPopup(true)}
-              />
-            }
-          />
+            {/* User dashboard – protected */}
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute
+                  isAuthenticated={isAuthenticated}
+                  checkingAuth={checkingAuth}
+                >
+                  <MyDashboard />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* User dashboard – protected */}
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute
-                isAuthenticated={isAuthenticated}
-                checkingAuth={checkingAuth}
-              >
-                <MyDashboard />
-              </ProtectedRoute>
-            }
-          />
+            {/* Google OAuth callback */}
+            <Route path="/login/callback" element={<GoogleCallbackPage />} />
 
-          {/* Google OAuth callback */}
-          <Route path="/login/callback" element={<GoogleCallbackPage />} />
+            {/* Legal pages */}
+            <Route path="/privacy" element={<PrivacyPolicy />} />
+            <Route path="/terms" element={<TermsAndConditions />} />
+            <Route path="/disclaimer" element={<Disclaimer />} />
+            <Route path="/about" element={<AboutUs />} />
 
-          {/* Legal pages */}
-          <Route path="/privacy" element={<PrivacyPolicy />} />
-          <Route path="/terms" element={<TermsAndConditions />} />
-          <Route path="/disclaimer" element={<Disclaimer />} />
-          <Route path="/about" element={<AboutUs />} />
+            {/* feedback page */}
+            <Route path="/feedback" element={<FeedbackPage />} />
 
-          {/* feedback page */}
-          <Route path="/feedback" element={<FeedbackPage />} />
+            {/* Profile page – protected */}
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute
+                  isAuthenticated={isAuthenticated}
+                  checkingAuth={checkingAuth}
+                >
+                  <ProfilePage />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* Profile page – protected */}
-          <Route
-            path="/profile"
-            element={
-              <ProtectedRoute
-                isAuthenticated={isAuthenticated}
-                checkingAuth={checkingAuth}
-              >
-                <ProfilePage />
-              </ProtectedRoute>
-            }
-          />
-
-          {/* Catch‑all: wrong URL → home */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+            {/* Catch-all: wrong URL -> home */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </Suspense>
       </main>
 
       <ToastContainer
