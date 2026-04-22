@@ -6,6 +6,7 @@ import type { HomePageNotification } from "../../../types/notification";
 import { fetchNotificationsByState } from "../../../services/public/notiifcationApi";
 import { INDIAN_STATES } from "../../../constant/SharedConstant";
 import SEO from "../../../components/SEO/SEO";
+import { buildBreadcrumbSchema, SITE_URL } from "../../../seo/site";
 
 const PAGE_SIZE = 20;
 
@@ -74,6 +75,7 @@ const StateView: React.FC = () => {
     /* ================= UI ================= */
     const stateLabel = INDIAN_STATES.find(s => s.value === decodedState)?.label || decodedState;
     const currentYear = new Date().getFullYear();
+    const canonicalUrl = `${SITE_URL}/notification/state/${decodedState}`;
 
     return (
         <div className="container py-3 px-2 px-md-4">
@@ -81,7 +83,32 @@ const StateView: React.FC = () => {
                 title={`${stateLabel} Government Jobs & Notifications ${currentYear}`} 
                 description={`Find the latest government job notifications, entrance exams, results, and scholarships in ${stateLabel}. Apply online on Apply India.`}
                 noindex={!!searchValue}
-                canonical={`https://applyindia.online/notification/state/${decodedState}`}
+                canonical={canonicalUrl}
+                keywords={[
+                    "apply india",
+                    "apply india online",
+                    `${stateLabel} government jobs`,
+                    `${stateLabel} sarkari naukri`,
+                    `${stateLabel} notifications`,
+                ]}
+                schema={[
+                    {
+                        "@context": "https://schema.org",
+                        "@type": "CollectionPage",
+                        name: `${stateLabel} Government Jobs & Notifications ${currentYear}`,
+                        url: canonicalUrl,
+                        description: `Find the latest government job notifications, entrance exams, results, and scholarships in ${stateLabel}. Apply online on Apply India.`,
+                        isPartOf: {
+                            "@type": "WebSite",
+                            name: "Apply India",
+                            url: SITE_URL,
+                        },
+                    },
+                    buildBreadcrumbSchema([
+                        { name: "Home", url: `${SITE_URL}/` },
+                        { name: stateLabel, url: canonicalUrl },
+                    ]),
+                ]}
             />
             <div className="row justify-content-center">
                 <div className="col-12 col-md-10 col-lg-8">

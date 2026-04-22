@@ -5,6 +5,7 @@ import ListView from "./ListView";
 import type { HomePageNotification } from "../../../types/notification";
 import { fetchNotificationsByCategory } from "../../../services/public/notiifcationApi";
 import SEO from "../../../components/SEO/SEO";
+import { buildBreadcrumbSchema, SITE_URL } from "../../../seo/site";
 
 const PAGE_SIZE = 20;
 
@@ -103,8 +104,11 @@ const CategoryView: React.FC = () => {
   /* ================= UI ================= */
 
   const formattedCategory = decodedCategory.replace(/-/g, " ");
+  const categoryLabel =
+    formattedCategory.replace(/\b\w/g, l => l.toUpperCase());
+  const canonicalUrl = `${SITE_URL}/notification/category/${decodedCategory}`;
   const seoData = SEO_MAP[decodedCategory] || {
-    title: `${formattedCategory.replace(/\b\w/g, l => l.toUpperCase())} Notifications ${currentYear}`,
+    title: `${categoryLabel} Notifications ${currentYear}`,
     description: `Find the latest ${formattedCategory} notifications across India. Check eligibility, last date, and apply online on Apply India.`,
   };
 
@@ -114,7 +118,32 @@ const CategoryView: React.FC = () => {
         title={seoData.title}
         description={seoData.description}
         noindex={!!searchValue}
-        canonical={`https://applyindia.online/notification/category/${decodedCategory}`}
+        canonical={canonicalUrl}
+        keywords={[
+          "apply india",
+          "apply india online",
+          `${formattedCategory} notifications`,
+          `${formattedCategory} updates`,
+          `${formattedCategory} apply online`,
+        ]}
+        schema={[
+          {
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            name: `${categoryLabel} Notifications`,
+            url: canonicalUrl,
+            description: seoData.description,
+            isPartOf: {
+              "@type": "WebSite",
+              name: "Apply India",
+              url: SITE_URL,
+            },
+          },
+          buildBreadcrumbSchema([
+            { name: "Home", url: `${SITE_URL}/` },
+            { name: categoryLabel, url: canonicalUrl },
+          ]),
+        ]}
       />
       <div className="row justify-content-center">
         <div className="col-12 col-md-10 col-lg-8">

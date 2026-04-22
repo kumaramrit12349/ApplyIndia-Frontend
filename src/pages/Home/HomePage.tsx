@@ -5,6 +5,13 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import type { HomePageNotification } from "../../types/notification";
 import { fetchHomePageNotifications, fetchNotificationsByCategory } from "../../services/public/notiifcationApi";
 import SEO from "../../components/SEO/SEO";
+import {
+  buildBreadcrumbSchema,
+  ORGANIZATION_SCHEMA,
+  SITE_DESCRIPTION,
+  SITE_URL,
+  WEBSITE_SCHEMA,
+} from "../../seo/site";
 
 interface GroupedNotifications {
   [category: string]: HomePageNotification[];
@@ -164,8 +171,44 @@ const HomePage: React.FC = () => {
   return (
     <div className="page">
       <SEO 
-        title={`Government Jobs, Sarkari Naukri & Exam Results ${currentYear}`}
-        description="Find the latest central & state government job notifications, entrance exams, admit cards, results, and scholarships across India. Your trusted sarkari naukri platform."
+        title={`Apply India Online - Government Jobs, Sarkari Naukri & Exam Results ${currentYear}`}
+        description={SITE_DESCRIPTION}
+        canonical={`${SITE_URL}/`}
+        keywords={[
+          "apply india",
+          "apply india online",
+          "government jobs india",
+          "sarkari naukri",
+          "sarkari result",
+          "government job notifications",
+          "admit card",
+          "scholarship india",
+        ]}
+        schema={[
+          ORGANIZATION_SCHEMA,
+          WEBSITE_SCHEMA,
+          {
+            "@context": "https://schema.org",
+            "@type": "WebPage",
+            name: `Apply India Online - Government Jobs, Sarkari Naukri & Exam Results ${currentYear}`,
+            url: `${SITE_URL}/`,
+            description: SITE_DESCRIPTION,
+            isPartOf: {
+              "@type": "WebSite",
+              name: "Apply India",
+              url: SITE_URL,
+            },
+            breadcrumb: {
+              "@id": `${SITE_URL}/#breadcrumb`,
+            },
+          },
+          {
+            ...buildBreadcrumbSchema([
+              { name: "Home", url: `${SITE_URL}/` },
+            ]),
+            "@id": `${SITE_URL}/#breadcrumb`,
+          },
+        ]}
       />
       <div className="container py-4">
         <div className="row g-4">

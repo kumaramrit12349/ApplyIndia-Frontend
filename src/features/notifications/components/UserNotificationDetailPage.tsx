@@ -4,8 +4,7 @@ import NotificationDetailView from "../../../components/Generic/NotificationDeta
 import { getNotificationById } from "../../../services/public/notiifcationApi";
 import SEO from "../../../components/SEO/SEO";
 import { formatStateName } from "../../../utils/utils";
-
-const SITE_URL = "https://applyindia.online";
+import { buildBreadcrumbSchema, SITE_URL } from "../../../seo/site";
 
 interface UserNotificationDetailPageProps {
   isAuthenticated?: boolean;
@@ -103,6 +102,36 @@ function buildJobPostingSchema(notification: any): Record<string, unknown> {
   return schema;
 }
 
+function buildArticleSchema(notification: any, pageUrl: string): Record<string, unknown> {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: notification.title,
+    description: buildDescription(notification),
+    mainEntityOfPage: pageUrl,
+    datePublished:
+      notification.created_at
+        ? new Date(notification.created_at).toISOString()
+        : new Date().toISOString(),
+    dateModified:
+      notification.updated_at
+        ? new Date(notification.updated_at).toISOString()
+        : new Date().toISOString(),
+    author: {
+      "@type": "Organization",
+      name: "Apply India",
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "Apply India",
+      logo: {
+        "@type": "ImageObject",
+        url: `${SITE_URL}/logo.png`,
+      },
+    },
+  };
+}
+
 const UserNotificationDetailPage: React.FC<UserNotificationDetailPageProps> = ({
   isAuthenticated = false,
   onShowAuthPopup,
@@ -145,6 +174,18 @@ const UserNotificationDetailPage: React.FC<UserNotificationDetailPageProps> = ({
   }
 
   const pageUrl = `${SITE_URL}${window.location.pathname}`;
+  const breadcrumbSchema = buildBreadcrumbSchema([
+    { name: "Home", url: `${SITE_URL}/` },
+    ...(notification.category
+      ? [{
+          name: String(notification.category).replace(/-/g, " "),
+          url: `${SITE_URL}/notification/category/${notification.category}`,
+        }]
+      : []),
+    { name: notification.title, url: pageUrl },
+  ]);
+  const primarySchema =
+    notification.category === "job" ? buildJobPostingSchema(notification) : buildArticleSchema(notification, pageUrl);
 
   return (
     <div className="container mt-4 mb-5">
@@ -153,7 +194,14 @@ const UserNotificationDetailPage: React.FC<UserNotificationDetailPageProps> = ({
         description={buildDescription(notification)}
         canonical={pageUrl}
         type="article"
-        schema={buildJobPostingSchema(notification)}
+        keywords={[
+          "apply india",
+          "apply india online",
+          notification.title,
+          notification.department,
+          notification.state ? `${formatStateName(notification.state)} government jobs` : "",
+        ].filter(Boolean)}
+        schema={[primarySchema, breadcrumbSchema]}
       />
 
       {/* Back Button */}
