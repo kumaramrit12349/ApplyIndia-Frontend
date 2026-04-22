@@ -126,7 +126,7 @@ function buildArticleSchema(notification: any, pageUrl: string): Record<string, 
       name: "Apply India",
       logo: {
         "@type": "ImageObject",
-        url: `${SITE_URL}/logo.png`,
+        url: `${SITE_URL}/logo-20260422.png`,
       },
     },
   };
