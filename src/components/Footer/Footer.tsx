@@ -58,6 +58,7 @@ const Footer: React.FC = () => {
                   aria-label={item.name}
                   title={item.name}
                   className="ai-social-icon"
+                  style={{ background: item.color }}
                 >
                   <img
                     src={item.icon}
