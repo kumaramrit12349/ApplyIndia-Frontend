@@ -1,69 +1,77 @@
-# React + TypeScript + Vite
+# ApplyIndia Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React + TypeScript + Vite frontend for ApplyIndia.
 
-Currently, two official plugins are available:
+## Requirements
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Node.js 20 or newer
+- npm
 
-## Expanding the ESLint configuration
+## Local Development
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Install dependencies:
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Run the app against the local backend:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run local
 ```
+
+Run the app with the development environment:
+
+```bash
+npm run dev
+```
+
+## Available Scripts
+
+- `npm run local`: starts Vite with `devlocal` mode
+- `npm run dev`: starts Vite with `development` mode
+- `npm run build`: runs TypeScript build and creates the production bundle
+- `npm run build:dev`: creates a development-mode bundle
+- `npm run build:prod`: creates a production-mode bundle
+- `npm run lint`: runs ESLint
+- `npm run preview`: serves the built app locally
+
+## Environment Modes
+
+The project uses these env files:
+
+- `.env.devlocal`: local frontend + local backend
+- `.env.development`: development deployment
+- `.env.production`: production deployment
+
+Current API targets:
+
+- `devlocal`: `http://localhost:3000`
+- `development`: `https://dev.applyindia.online`
+- `production`: `https://applyindia.online`
+
+## Deployment
+
+Deployment is handled by GitHub Actions.
+
+- Push to `devAWS` to deploy the development frontend
+- Push to `prodAWS` to deploy the production frontend
+
+The workflows:
+
+- build the Vite app
+- upload `dist/` to S3
+- upload `index.html` with no-cache headers
+- invalidate CloudFront
+
+Workflow files:
+
+- `.github/workflows/deploy-frontend.yml`
+- `.github/workflows/deploy-frontend-prod.yml`
+
+## Build Notes
+
+- Production assets are split into smaller chunks during Vite build
+- Static hashed assets are cached aggressively
+- `index.html` is uploaded separately with no-cache headers so new deployments are picked up immediately
