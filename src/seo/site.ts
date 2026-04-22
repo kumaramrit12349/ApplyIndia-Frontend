@@ -2,7 +2,7 @@ import { APPLYINDIA_SOCIAL_LINKS } from "../constant/SharedConstant";
 
 export const SITE_NAME = "Apply India";
 export const SITE_URL = "https://applyindia.online";
-export const SITE_OG_IMAGE = `${SITE_URL}/logo.png`;
+export const SITE_OG_IMAGE = `${SITE_URL}/logo-20260422.png`;
 export const SITE_TWITTER_HANDLE = "@ApplyIndia_";
 export const SITE_DESCRIPTION =
   "Apply India Online helps you discover the latest government jobs, sarkari naukri updates, admit cards, results, entrance exams, scholarships, and admissions across India.";
