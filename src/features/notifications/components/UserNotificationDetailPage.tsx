@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import NotificationDetailView from "../../../components/Generic/NotificationDetailView";
 import { getNotificationById } from "../../../services/public/notiifcationApi";
 import SEO from "../../../components/SEO/SEO";
@@ -137,7 +137,6 @@ const UserNotificationDetailPage: React.FC<UserNotificationDetailPageProps> = ({
   onShowAuthPopup,
 }) => {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
   const [notification, setNotification] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
