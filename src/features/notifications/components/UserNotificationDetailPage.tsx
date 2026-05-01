@@ -178,9 +178,9 @@ const UserNotificationDetailPage: React.FC<UserNotificationDetailPageProps> = ({
     { name: "Home", url: `${SITE_URL}/` },
     ...(notification.category
       ? [{
-          name: String(notification.category).replace(/-/g, " "),
-          url: `${SITE_URL}/notification/category/${notification.category}`,
-        }]
+        name: String(notification.category).replace(/-/g, " "),
+        url: `${SITE_URL}/notification/category/${notification.category}`,
+      }]
       : []),
     { name: notification.title, url: pageUrl },
   ]);
@@ -203,36 +203,6 @@ const UserNotificationDetailPage: React.FC<UserNotificationDetailPageProps> = ({
         ].filter(Boolean)}
         schema={[primarySchema, breadcrumbSchema]}
       />
-
-      {/* Back Button */}
-      <button
-        onClick={() => navigate(-1)}
-        className="btn btn-sm mb-3"
-        style={{
-          background: "transparent",
-          border: "1px solid #dee2e6",
-          borderRadius: "20px",
-          color: "#6b7280",
-          padding: "4px 14px",
-          fontWeight: 500,
-          fontSize: "0.88rem",
-          cursor: "pointer",
-          display: "inline-flex",
-          alignItems: "center",
-          gap: "6px",
-          transition: "all 0.2s",
-        }}
-        onMouseOver={(e) => {
-          e.currentTarget.style.background = "#f3f4f6";
-          e.currentTarget.style.color = "#374151";
-        }}
-        onMouseOut={(e) => {
-          e.currentTarget.style.background = "transparent";
-          e.currentTarget.style.color = "#6b7280";
-        }}
-      >
-        ← Back
-      </button>
 
       <NotificationDetailView
         notification={notification}
