@@ -177,9 +177,9 @@ const UserNotificationDetailPage: React.FC<UserNotificationDetailPageProps> = ({
     { name: "Home", url: `${SITE_URL}/` },
     ...(notification.category
       ? [{
-          name: String(notification.category).replace(/-/g, " "),
-          url: `${SITE_URL}/notification/category/${notification.category}`,
-        }]
+        name: String(notification.category).replace(/-/g, " "),
+        url: `${SITE_URL}/notification/category/${notification.category}`,
+      }]
       : []),
     { name: notification.title, url: pageUrl },
   ]);
