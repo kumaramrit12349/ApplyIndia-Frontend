@@ -19,18 +19,15 @@ export interface NotificationFormState {
   exam_date: string;
   admit_card_available_date: string;
   result_date: string;
-  important_date_details: string;
 
   general_fee: string;
   obc_fee: string;
   sc_fee: string;
   st_fee: string;
   ph_fee: string;
-  other_fee_details: string;
 
   min_age: string;
   max_age: string;
-  age_relaxation_details: string;
 
   qualification: string;
   specialization: string;
@@ -68,7 +65,6 @@ export interface NotificationForm {
   exam_date?: string;
   admit_card_available_date?: string;
   result_date?: string;
-  important_date_details?: string;
 
   // Fees
   general_fee: number;
@@ -76,12 +72,10 @@ export interface NotificationForm {
   sc_fee: number;
   st_fee: number;
   ph_fee: number;
-  other_fee_details: string;
 
   // Ages
   min_age: number;
   max_age: number;
-  age_relaxation_details: string;
 
   // Educational Qualification
   qualification: string;

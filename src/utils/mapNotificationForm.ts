@@ -23,18 +23,15 @@ export const mapFormToPayload = (
   exam_date: form.exam_date || undefined,
   admit_card_available_date: form.admit_card_available_date || undefined,
   result_date: form.result_date || undefined,
-  important_date_details: form.important_date_details || undefined,
 
   general_fee: Number(form.general_fee),
   obc_fee: Number(form.obc_fee),
   sc_fee: Number(form.sc_fee),
   st_fee: Number(form.st_fee),
   ph_fee: Number(form.ph_fee),
-  other_fee_details: form.other_fee_details,
 
   min_age: Number(form.min_age),
   max_age: Number(form.max_age),
-  age_relaxation_details: form.age_relaxation_details,
 
   qualification: form.qualification,
   specialization: form.specialization,

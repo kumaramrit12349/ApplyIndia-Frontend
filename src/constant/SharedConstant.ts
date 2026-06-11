@@ -102,18 +102,15 @@ export const NOTIFICATION_COLUMNS = {
   EXAM_DATE: "exam_date",
   ADMIT_CARD_AVAILABLE_DATE: "admit_card_available_date",
   RESULT_DATE: "result_date",
-  IMPORTANT_DATE_DETAILS: "important_date_details",
 
   GENERAL_FEE: "general_fee",
   OBC_FEE: "obc_fee",
   SC_FEE: "sc_fee",
   ST_FEE: "st_fee",
   PH_FEE: "ph_fee",
-  OTHER_FEE_DETAILS: "other_fee_details",
 
   MIN_AGE: "min_age",
   MAX_AGE: "max_age",
-  AGE_RELAXATION_DETAILS: "age_relaxation_details",
 
   QUALIFICATION: "qualification", // Comma seperated
   SPECIALIZATION: "specialization", // Comman seperated

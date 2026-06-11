@@ -32,9 +32,9 @@ const NotificationForm: React.FC<Props> = ({
   const initialValues: INotification = {
     ...rawInitialValues,
     state: findStateCode(rawInitialValues.state),
-    details: rawInitialValues.details || { short_description: "", long_description: "", important_date_details: "" },
-    fee: rawInitialValues.fee || { general_fee: 0, obc_fee: 0, sc_fee: 0, st_fee: 0, ph_fee: 0, other_fee_details: "" },
-    eligibility: rawInitialValues.eligibility || { min_age: 0, max_age: 0, qualification: "", specialization: "", min_percentage: 0, age_relaxation_details: "" },
+    details: rawInitialValues.details || { short_description: "", long_description: "" },
+    fee: rawInitialValues.fee || { general_fee: 0, obc_fee: 0, sc_fee: 0, st_fee: 0, ph_fee: 0 },
+    eligibility: rawInitialValues.eligibility || { min_age: 0, max_age: 0, qualification: "", specialization: "", min_percentage: 0 },
     links: rawInitialValues.links || { youtube_link: "", apply_online_url: "", notification_pdf_url: "", official_website_url: "", admit_card_url: "", answer_key_url: "", result_url: "", other_links: "" },
   };
 
@@ -396,7 +396,6 @@ const NotificationForm: React.FC<Props> = ({
             </div>
           ) : null)}
         </div>
-        {renderTextArea("Important Date Details", form.details.important_date_details || "", (v) => handleNestedChange("details", "important_date_details", v))}
 
         {/* ================= STATUS FLAGS ================= */}
         {needsFeesAndDates && (
@@ -466,7 +465,6 @@ const NotificationForm: React.FC<Props> = ({
                 </div>
               ))}
             </div>
-            {renderTextArea("Other Fee Details", form.fee.other_fee_details || "", (v) => handleNestedChange("fee", "other_fee_details", v))}
           </>
         )}
 
@@ -515,7 +513,6 @@ const NotificationForm: React.FC<Props> = ({
                 </div>
               ))}
             </div>
-            {renderTextArea("Age Relaxation Details", form.eligibility.age_relaxation_details || "", (v) => handleNestedChange("eligibility", "age_relaxation_details", v))}
           </>
         )}
 

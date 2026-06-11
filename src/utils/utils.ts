@@ -53,7 +53,6 @@ export const emptyNotificationForm: INotification = {
   details: {
     short_description: "",
     long_description: "",
-    important_date_details: "",
   },
 
   fee: {
@@ -62,7 +61,6 @@ export const emptyNotificationForm: INotification = {
     sc_fee: 0,
     st_fee: 0,
     ph_fee: 0,
-    other_fee_details: "",
   },
 
   eligibility: {
@@ -71,7 +69,6 @@ export const emptyNotificationForm: INotification = {
     qualification: "",
     specialization: "",
     min_percentage: 0,
-    age_relaxation_details: "",
   },
 
   links: {
