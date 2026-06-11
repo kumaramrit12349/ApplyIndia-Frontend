@@ -35,8 +35,8 @@ const JobBanner: React.FC = () => {
     const seamlessItems = [...repeated, ...repeated];
 
     // Calculate a dynamic speed based on number of uniquely displayed items:
-    // Approximately 3.5 seconds per single item width.
-    const dynamicDuration = `${repeats * latestItems.length * 3.5}s`;
+    // Approximately 6.0 seconds per single item width.
+    const dynamicDuration = `${repeats * latestItems.length * 6.0}s`;
 
     return (
         <div className="job-banner-container">
