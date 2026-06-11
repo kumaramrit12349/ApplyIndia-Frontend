@@ -497,7 +497,9 @@ export default function NotificationDetailView({
                   />
                   <LabelValue label="Qualification" value={notification.eligibility?.qualification} />
                   <LabelValue label="Specialization" value={notification.eligibility?.specialization} />
-                  <LabelValue label="Minimum Requirement" value={formatPercentage(notification.eligibility?.min_percentage)} />
+                  {notification.eligibility?.min_percentage ? (
+                    <LabelValue label="Minimum Percentage" value={formatPercentage(notification.eligibility?.min_percentage)} />
+                  ) : null}
 
                 </div>
               </div>
