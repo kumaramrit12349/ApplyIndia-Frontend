@@ -62,10 +62,12 @@ const getGroupedFees = (fee?: INotification["fee"]) => {
   const map: Record<string, string[]> = {};
   const fees = [
     { key: "general_fee", label: "Gen" },
+    { key: "ews_fee", label: "EWS" },
     { key: "obc_fee", label: "OBC" },
     { key: "sc_fee", label: "SC" },
     { key: "st_fee", label: "ST" },
     { key: "ph_fee", label: "PH" },
+    { key: "female_fee", label: "Female" },
   ] as const;
 
   fees.forEach(({ key, label }) => {

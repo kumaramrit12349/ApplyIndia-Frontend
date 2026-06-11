@@ -33,7 +33,7 @@ const NotificationForm: React.FC<Props> = ({
     ...rawInitialValues,
     state: findStateCode(rawInitialValues.state),
     details: rawInitialValues.details || { short_description: "", long_description: "" },
-    fee: rawInitialValues.fee || { general_fee: 0, obc_fee: 0, sc_fee: 0, st_fee: 0, ph_fee: 0 },
+    fee: rawInitialValues.fee || { general_fee: 0, ews_fee: 0, obc_fee: 0, sc_fee: 0, st_fee: 0, ph_fee: 0, female_fee: 0 },
     eligibility: rawInitialValues.eligibility || { min_age: 0, max_age: 0, qualification: "", specialization: "", min_percentage: 0 },
     links: rawInitialValues.links || { youtube_link: "", apply_online_url: "", notification_pdf_url: "", official_website_url: "", admit_card_url: "", answer_key_url: "", result_url: "", other_links: "" },
   };
@@ -61,6 +61,10 @@ const NotificationForm: React.FC<Props> = ({
       initialValues.fee.general_fee !== undefined
         ? String(initialValues.fee.general_fee)
         : "",
+    ews_fee:
+      initialValues.fee.ews_fee !== undefined
+        ? String(initialValues.fee.ews_fee)
+        : "",
     obc_fee:
       initialValues.fee.obc_fee !== undefined
         ? String(initialValues.fee.obc_fee)
@@ -76,6 +80,10 @@ const NotificationForm: React.FC<Props> = ({
     ph_fee:
       initialValues.fee.ph_fee !== undefined
         ? String(initialValues.fee.ph_fee)
+        : "",
+    female_fee:
+      initialValues.fee.female_fee !== undefined
+        ? String(initialValues.fee.female_fee)
         : "",
   });
 
@@ -449,10 +457,12 @@ const NotificationForm: React.FC<Props> = ({
             <div className="ai-form-grid">
               {[
                 ["general_fee", "General Fee (₹)"],
+                ["ews_fee", "EWS Fee (₹)"],
                 ["obc_fee", "OBC Fee (₹)"],
                 ["sc_fee", "SC Fee (₹)"],
                 ["st_fee", "ST Fee (₹)"],
                 ["ph_fee", "PH Fee (₹)"],
+                ["female_fee", "Female Fee (₹)"],
               ].map(([key, label]) => (
                 <div className="mb-3" key={key}>
                   <label className="ai-form-label">{label}</label>

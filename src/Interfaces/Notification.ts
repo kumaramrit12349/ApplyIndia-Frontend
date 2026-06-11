@@ -25,6 +25,8 @@ export interface NotificationFormState {
   sc_fee: string;
   st_fee: string;
   ph_fee: string;
+  ews_fee: string;
+  female_fee: string;
 
   min_age: string;
   max_age: string;
@@ -72,6 +74,8 @@ export interface NotificationForm {
   sc_fee: number;
   st_fee: number;
   ph_fee: number;
+  ews_fee: number;
+  female_fee: number;
 
   // Ages
   min_age: number;

@@ -108,6 +108,8 @@ export const NOTIFICATION_COLUMNS = {
   SC_FEE: "sc_fee",
   ST_FEE: "st_fee",
   PH_FEE: "ph_fee",
+  EWS_FEE: "ews_fee",
+  FEMALE_FEE: "female_fee",
 
   MIN_AGE: "min_age",
   MAX_AGE: "max_age",

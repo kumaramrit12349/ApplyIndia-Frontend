@@ -39,6 +39,8 @@ export interface NotificationForm extends BaseInterface {
   sc_fee: number;
   st_fee: number;
   ph_fee: number;
+  ews_fee: number;
+  female_fee: number;
 
   min_age: number;
   max_age: number;

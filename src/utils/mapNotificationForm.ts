@@ -29,6 +29,8 @@ export const mapFormToPayload = (
   sc_fee: Number(form.sc_fee),
   st_fee: Number(form.st_fee),
   ph_fee: Number(form.ph_fee),
+  ews_fee: Number(form.ews_fee),
+  female_fee: Number(form.female_fee),
 
   min_age: Number(form.min_age),
   max_age: Number(form.max_age),

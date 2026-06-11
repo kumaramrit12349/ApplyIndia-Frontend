@@ -61,6 +61,8 @@ export const emptyNotificationForm: INotification = {
     sc_fee: 0,
     st_fee: 0,
     ph_fee: 0,
+    ews_fee: 0,
+    female_fee: 0,
   },
 
   eligibility: {
