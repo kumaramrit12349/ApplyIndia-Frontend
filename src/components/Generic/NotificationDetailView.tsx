@@ -413,7 +413,7 @@ export default function NotificationDetailView({
         {notification.details?.short_description && (
           <div
             className="ndv-short-desc"
-            dangerouslySetInnerHTML={{ __html: notification.details.short_description }}
+            dangerouslySetInnerHTML={{ __html: notification.details.short_description.replace(/&nbsp;/g, ' ') }}
           />
         )}
 
@@ -555,7 +555,7 @@ export default function NotificationDetailView({
         {notification.details?.long_description && (
           <div
             className="ndv-long-desc"
-            dangerouslySetInnerHTML={{ __html: notification.details.long_description }}
+            dangerouslySetInnerHTML={{ __html: notification.details.long_description.replace(/&nbsp;/g, ' ') }}
           />
         )}
 
