@@ -450,8 +450,12 @@ export default function NotificationDetailView({
                   <LabelValue label="Start Date" value={formatDate(notification.start_date)} />
                   <LabelValue label="Last Date To Apply" value={formatDate(notification.last_date_to_apply)} highlight />
                   <LabelValue label="Exam Date" value={formatDate(notification.exam_date)} />
-                  <LabelValue label="Admit Card Date" value={formatDate((notification as any).admit_card_date)} />
-                  <LabelValue label="Result Date" value={formatDate((notification as any).result_date)} />
+                  {(notification as any).admit_card_date && (
+                    <LabelValue label="Admit Card Date" value={formatDate((notification as any).admit_card_date)} />
+                  )}
+                  {(notification as any).result_date && (
+                    <LabelValue label="Result Date" value={formatDate((notification as any).result_date)} />
+                  )}
 
                 </div>
               </div>
