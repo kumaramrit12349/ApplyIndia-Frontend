@@ -32,9 +32,9 @@ const NotificationForm: React.FC<Props> = ({
   const initialValues: INotification = {
     ...rawInitialValues,
     state: findStateCode(rawInitialValues.state),
-    details: rawInitialValues.details || { short_description: "", long_description: "", important_date_details: "" },
-    fee: rawInitialValues.fee || { general_fee: 0, obc_fee: 0, sc_fee: 0, st_fee: 0, ph_fee: 0, other_fee_details: "" },
-    eligibility: rawInitialValues.eligibility || { min_age: 0, max_age: 0, qualification: "", specialization: "", min_percentage: 0, age_relaxation_details: "" },
+    details: rawInitialValues.details || { short_description: "", long_description: "" },
+    fee: rawInitialValues.fee || { general_fee: 0, ews_fee: 0, obc_fee: 0, sc_fee: 0, st_fee: 0, ph_fee: 0, female_fee: 0 },
+    eligibility: rawInitialValues.eligibility || { min_age: 0, max_age: 0, qualification: "", specialization: "", min_percentage: 0 },
     links: rawInitialValues.links || { youtube_link: "", apply_online_url: "", notification_pdf_url: "", official_website_url: "", admit_card_url: "", answer_key_url: "", result_url: "", other_links: "" },
   };
 
@@ -61,6 +61,10 @@ const NotificationForm: React.FC<Props> = ({
       initialValues.fee.general_fee !== undefined
         ? String(initialValues.fee.general_fee)
         : "",
+    ews_fee:
+      initialValues.fee.ews_fee !== undefined
+        ? String(initialValues.fee.ews_fee)
+        : "",
     obc_fee:
       initialValues.fee.obc_fee !== undefined
         ? String(initialValues.fee.obc_fee)
@@ -76,6 +80,10 @@ const NotificationForm: React.FC<Props> = ({
     ph_fee:
       initialValues.fee.ph_fee !== undefined
         ? String(initialValues.fee.ph_fee)
+        : "",
+    female_fee:
+      initialValues.fee.female_fee !== undefined
+        ? String(initialValues.fee.female_fee)
         : "",
   });
 
@@ -268,7 +276,7 @@ const NotificationForm: React.FC<Props> = ({
     );
   };
 
-  const renderTextArea = (label: string, value: string, onChange: (val: string) => void) => (
+  const renderTextArea = (label: string, value: string, onChange: (val: string) => void, note?: React.ReactNode) => (
     <div className="mb-4">
       <label className="ai-form-label">{label}</label>
       <div className="quill-wrapper" style={{background: 'rgba(255,255,255,0.7)', borderRadius: '12px', overflow: 'hidden', border: '1px solid rgba(0,0,0,0.1)'}}>
@@ -278,6 +286,11 @@ const NotificationForm: React.FC<Props> = ({
           onChange={onChange}
         />
       </div>
+      {note && (
+        <div style={{ marginTop: '10px', fontSize: '0.85rem', color: '#475569', backgroundColor: '#f8fafc', padding: '10px 14px', borderRadius: '8px', border: '1px solid #e2e8f0', borderLeft: '4px solid #6366f1' }}>
+          {note}
+        </div>
+      )}
     </div>
   );
 
@@ -362,7 +375,14 @@ const NotificationForm: React.FC<Props> = ({
         {/* ================= DETAILS ================= */}
         {renderSectionTitle("Descriptions")}
         {renderTextArea("Short Description", form.details.short_description, (v) => handleNestedChange("details", "short_description", v))}
-        {renderTextArea("Long Description", form.details.long_description, (v) => handleNestedChange("details", "long_description", v))}
+        {renderTextArea(
+          "Long Description",
+          form.details.long_description,
+          (v) => handleNestedChange("details", "long_description", v),
+          <span>
+            <strong style={{ color: '#1e293b' }}>Note:-</strong> ⚠️ Include Important Dates, Application Fee, Age Relaxation, Selection Process, and other important details if available. Keep the content concise, well-formatted, and do not exceed <strong>250 KB</strong>.
+          </span>
+        )}
 
         {/* ================= IMPORTANT DATES ================= */}
         {renderSectionTitle("Important Dates")}
@@ -396,7 +416,6 @@ const NotificationForm: React.FC<Props> = ({
             </div>
           ) : null)}
         </div>
-        {renderTextArea("Important Date Details", form.details.important_date_details || "", (v) => handleNestedChange("details", "important_date_details", v))}
 
         {/* ================= STATUS FLAGS ================= */}
         {needsFeesAndDates && (
@@ -438,10 +457,12 @@ const NotificationForm: React.FC<Props> = ({
             <div className="ai-form-grid">
               {[
                 ["general_fee", "General Fee (₹)"],
+                ["ews_fee", "EWS Fee (₹)"],
                 ["obc_fee", "OBC Fee (₹)"],
                 ["sc_fee", "SC Fee (₹)"],
                 ["st_fee", "ST Fee (₹)"],
                 ["ph_fee", "PH Fee (₹)"],
+                ["female_fee", "Female Fee (₹)"],
               ].map(([key, label]) => (
                 <div className="mb-3" key={key}>
                   <label className="ai-form-label">{label}</label>
@@ -466,7 +487,6 @@ const NotificationForm: React.FC<Props> = ({
                 </div>
               ))}
             </div>
-            {renderTextArea("Other Fee Details", form.fee.other_fee_details || "", (v) => handleNestedChange("fee", "other_fee_details", v))}
           </>
         )}
 
@@ -515,7 +535,6 @@ const NotificationForm: React.FC<Props> = ({
                 </div>
               ))}
             </div>
-            {renderTextArea("Age Relaxation Details", form.eligibility.age_relaxation_details || "", (v) => handleNestedChange("eligibility", "age_relaxation_details", v))}
           </>
         )}
 

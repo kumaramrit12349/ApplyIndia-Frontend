@@ -33,18 +33,17 @@ export interface NotificationForm extends BaseInterface {
   exam_date?: string;
   admit_card_available_date?: string;
   result_date?: string;
-  important_date_details?: string;
 
   general_fee: number;
   obc_fee: number;
   sc_fee: number;
   st_fee: number;
   ph_fee: number;
-  other_fee_details: string;
+  ews_fee: number;
+  female_fee: number;
 
   min_age: number;
   max_age: number;
-  age_relaxation_details: string;
 
   qualification: string;
   specialization: string;

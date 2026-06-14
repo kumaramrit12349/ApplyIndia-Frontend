@@ -62,10 +62,12 @@ const getGroupedFees = (fee?: INotification["fee"]) => {
   const map: Record<string, string[]> = {};
   const fees = [
     { key: "general_fee", label: "Gen" },
+    { key: "ews_fee", label: "EWS" },
     { key: "obc_fee", label: "OBC" },
     { key: "sc_fee", label: "SC" },
     { key: "st_fee", label: "ST" },
     { key: "ph_fee", label: "PH" },
+    { key: "female_fee", label: "Female" },
   ] as const;
 
   fees.forEach(({ key, label }) => {
@@ -411,7 +413,7 @@ export default function NotificationDetailView({
         {notification.details?.short_description && (
           <div
             className="ndv-short-desc"
-            dangerouslySetInnerHTML={{ __html: notification.details.short_description }}
+            dangerouslySetInnerHTML={{ __html: notification.details.short_description.replace(/&nbsp;/g, ' ') }}
           />
         )}
 
@@ -450,16 +452,13 @@ export default function NotificationDetailView({
                   <LabelValue label="Start Date" value={formatDate(notification.start_date)} />
                   <LabelValue label="Last Date To Apply" value={formatDate(notification.last_date_to_apply)} highlight />
                   <LabelValue label="Exam Date" value={formatDate(notification.exam_date)} />
-                  <LabelValue label="Admit Card Date" value={formatDate((notification as any).admit_card_date)} />
-                  <LabelValue label="Result Date" value={formatDate((notification as any).result_date)} />
-
-                  {notification.details?.important_date_details && (
-                    <div
-                      className="mt-3"
-                      style={{ fontSize: "0.88rem", color: "#6b7280", lineHeight: 1.6, wordBreak: "break-word" }}
-                      dangerouslySetInnerHTML={{ __html: notification.details.important_date_details }}
-                    />
+                  {(notification as any).admit_card_date && (
+                    <LabelValue label="Admit Card Date" value={formatDate((notification as any).admit_card_date)} />
                   )}
+                  {(notification as any).result_date && (
+                    <LabelValue label="Result Date" value={formatDate((notification as any).result_date)} />
+                  )}
+
                 </div>
               </div>
             </div>
@@ -474,7 +473,7 @@ export default function NotificationDetailView({
                   <h3 className="ndv-card-title">Application Fees</h3>
                 </div>
                 <div className="ndv-card-body">
-                  {isAllFeesZero && !notification.fee?.other_fee_details ? (
+                  {isAllFeesZero ? (
                     <div className="d-flex align-items-center gap-2 mb-3">
                       <span className="badge" style={{ background: '#dcfce7', color: '#166534', fontSize: '0.9rem', padding: '0.4rem 0.8rem' }}>No Application Fee</span>
                     </div>
@@ -484,17 +483,6 @@ export default function NotificationDetailView({
                     ))
                   )}
 
-                  {notification.fee?.other_fee_details && (
-                    <div className="mt-3">
-                      <span style={{ fontWeight: 600, fontSize: "0.88rem", color: "#1f2937", display: "block", marginBottom: 4 }}>
-                        Other Fee Details
-                      </span>
-                      <div
-                        style={{ fontSize: "0.85rem", color: "#6b7280", wordBreak: "break-word", lineHeight: 1.6 }}
-                        dangerouslySetInnerHTML={{ __html: notification.fee.other_fee_details }}
-                      />
-                    </div>
-                  )}
                 </div>
               </div>
             </div>
@@ -515,19 +503,10 @@ export default function NotificationDetailView({
                   />
                   <LabelValue label="Qualification" value={notification.eligibility?.qualification} />
                   <LabelValue label="Specialization" value={notification.eligibility?.specialization} />
-                  <LabelValue label="Minimum Requirement" value={formatPercentage(notification.eligibility?.min_percentage)} />
+                  {notification.eligibility?.min_percentage ? (
+                    <LabelValue label="Minimum Percentage" value={formatPercentage(notification.eligibility?.min_percentage)} />
+                  ) : null}
 
-                  {notification.eligibility?.age_relaxation_details && (
-                    <div className="mt-3">
-                      <span style={{ fontWeight: 600, fontSize: "0.88rem", color: "#1f2937", display: "block", marginBottom: 4 }}>
-                        Age Relaxation
-                      </span>
-                      <div
-                        style={{ fontSize: "0.85rem", color: "#6b7280", wordBreak: "break-word", lineHeight: 1.6 }}
-                        dangerouslySetInnerHTML={{ __html: notification.eligibility.age_relaxation_details }}
-                      />
-                    </div>
-                  )}
                 </div>
               </div>
             </div>
@@ -576,7 +555,7 @@ export default function NotificationDetailView({
         {notification.details?.long_description && (
           <div
             className="ndv-long-desc"
-            dangerouslySetInnerHTML={{ __html: notification.details.long_description }}
+            dangerouslySetInnerHTML={{ __html: notification.details.long_description.replace(/&nbsp;/g, ' ') }}
           />
         )}
 

@@ -508,8 +508,8 @@
 .long-description-content {
   max-width: 100%;
   white-space: normal !important;
-  overflow-wrap: anywhere;
-  word-break: break-word;
+  overflow-wrap: break-word;
+  word-break: normal;
 }
 
 .short-description-content span,
@@ -521,8 +521,8 @@
 
 .short-description-content a,
 .long-description-content a {
-  word-break: break-all;
-  overflow-wrap: anywhere;
+  word-break: normal;
+  overflow-wrap: break-word;
 }
 
 /* ========================================
