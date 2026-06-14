@@ -35,10 +35,10 @@ import "./NotificationDetailView.css";
 const formatDate = (d?: string) =>
   d
     ? new Date(d).toLocaleDateString("en-IN", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    })
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      })
     : "Not Released";
 
 const formatDateTime = (d?: number | string | null) => {
@@ -53,7 +53,8 @@ const formatCurrency = (amount?: string | number | null) => {
 };
 
 const formatPercentage = (value?: string | number | null) => {
-  if (value === null || value === undefined || value === 0 || value === "0") return "Not Specified";
+  if (value === null || value === undefined || value === 0 || value === "0")
+    return "Not Specified";
   return `${Number(value)} %`;
 };
 
@@ -104,39 +105,39 @@ const TRACKING_STEPS: {
   congratsTitle: string;
   congratsMessage: string;
 }[] = [
-    {
-      status: 1,
-      label: "Mark as Applied",
-      emoji: "📝",
-      congratsTitle: "🎉 Application Submitted!",
-      congratsMessage:
-        "You've taken the first step towards your dream job! Stay focused and keep going!",
-    },
-    {
-      status: 2,
-      label: "Admit Card Downloaded",
-      emoji: "🎫",
-      congratsTitle: "🎉 Admit Card Ready!",
-      congratsMessage:
-        "Great progress! Your admit card is secured. Prepare well for the exam!",
-    },
-    {
-      status: 3,
-      label: "Result Downloaded",
-      emoji: "📊",
-      congratsTitle: "🎉 Result Checked!",
-      congratsMessage:
-        "Awesome! You've checked your result. Keep pushing towards the finish line!",
-    },
-    {
-      status: 4,
-      label: "Selected / Joined",
-      emoji: "🏆",
-      congratsTitle: "🏆 You Made It!",
-      congratsMessage:
-        "Incredible achievement! You've been selected! This is the start of something amazing!",
-    },
-  ];
+  {
+    status: 1,
+    label: "Mark as Applied",
+    emoji: "📝",
+    congratsTitle: "🎉 Application Submitted!",
+    congratsMessage:
+      "You've taken the first step towards your dream job! Stay focused and keep going!",
+  },
+  {
+    status: 2,
+    label: "Admit Card Downloaded",
+    emoji: "🎫",
+    congratsTitle: "🎉 Admit Card Ready!",
+    congratsMessage:
+      "Great progress! Your admit card is secured. Prepare well for the exam!",
+  },
+  {
+    status: 3,
+    label: "Result Downloaded",
+    emoji: "📊",
+    congratsTitle: "🎉 Result Checked!",
+    congratsMessage:
+      "Awesome! You've checked your result. Keep pushing towards the finish line!",
+  },
+  {
+    status: 4,
+    label: "Selected / Joined",
+    emoji: "🏆",
+    congratsTitle: "🏆 You Made It!",
+    congratsMessage:
+      "Incredible achievement! You've been selected! This is the start of something amazing!",
+  },
+];
 
 const STATUS_ORDER: UserActivityStatus[] = [1, 2, 3, 4];
 
@@ -153,9 +154,10 @@ const LabelValue = ({
   highlight?: boolean;
   fallback?: string;
 }) => {
-  const displayValue = (value === null || value === undefined || value === "")
-    ? (fallback ?? "Not Available")
-    : value;
+  const displayValue =
+    value === null || value === undefined || value === ""
+      ? (fallback ?? "Not Available")
+      : value;
 
   if (displayValue === "Not Available") {
     return null; // hide completely if totally missing and no fallback provided
@@ -192,12 +194,18 @@ export default function NotificationDetailView({
   onApprove?: () => void;
   approving?: boolean;
 }) {
-  const [currentStatus, setCurrentStatus] = useState<UserActivityStatus | null>(null);
-  const [trackingLoading, setTrackingLoading] = useState<UserActivityStatus | null>(null);
+  const [currentStatus, setCurrentStatus] = useState<UserActivityStatus | null>(
+    null,
+  );
+  const [trackingLoading, setTrackingLoading] =
+    useState<UserActivityStatus | null>(null);
   const [isWishlistedLoading, setIsWishlistedLoading] = useState(false);
   const [showCongrats, setShowCongrats] = useState(false);
   const [showSupport, setShowSupport] = useState(false);
-  const [congratsConfig, setCongratsConfig] = useState({ title: "", message: "" });
+  const [congratsConfig, setCongratsConfig] = useState({
+    title: "",
+    message: "",
+  });
 
   useEffect(() => {
     if (isAuthenticated && notification?.sk) {
@@ -207,21 +215,31 @@ export default function NotificationDetailView({
             setCurrentStatus(res.data.status);
           }
         })
-        .catch(() => { });
+        .catch(() => {});
     }
   }, [isAuthenticated, notification?.sk]);
 
   const handleTrackAction = async (step: (typeof TRACKING_STEPS)[number]) => {
     if (!isAuthenticated) {
-      toast.info("🔒 Please login to track your progress!", { autoClose: 3000 });
+      toast.info("🔒 Please login to track your progress!", {
+        autoClose: 3000,
+      });
       if (onShowAuthPopup) onShowAuthPopup();
       return;
     }
     setTrackingLoading(step.status);
     try {
-      await trackActivity(notification.sk, notification.title, notification.category, step.status);
+      await trackActivity(
+        notification.sk,
+        notification.title,
+        notification.category,
+        step.status,
+      );
       setCurrentStatus(step.status);
-      setCongratsConfig({ title: step.congratsTitle, message: step.congratsMessage });
+      setCongratsConfig({
+        title: step.congratsTitle,
+        message: step.congratsMessage,
+      });
       setShowCongrats(true);
     } catch (error: any) {
       const msg = error?.message || "Failed to track activity";
@@ -250,7 +268,12 @@ export default function NotificationDetailView({
         setCurrentStatus(null);
         toast.success("Removed from wishlist");
       } else {
-        await trackActivity(notification.sk, notification.title, notification.category, 0);
+        await trackActivity(
+          notification.sk,
+          notification.title,
+          notification.category,
+          0,
+        );
         setCurrentStatus(0);
         toast.success("Added to wishlist!");
       }
@@ -267,7 +290,8 @@ export default function NotificationDetailView({
   };
 
   const getStepState = (stepIndex: number) => {
-    if (currentStatus === null || currentStatus === 0) return stepIndex === 0 ? "active" : "locked";
+    if (currentStatus === null || currentStatus === 0)
+      return stepIndex === 0 ? "active" : "locked";
     const currentIndex = STATUS_ORDER.indexOf(currentStatus);
     if (stepIndex <= currentIndex) return "completed";
     if (stepIndex === currentIndex + 1) return "active";
@@ -320,12 +344,20 @@ export default function NotificationDetailView({
       icon: <BsLink45Deg />,
       iconClass: "ndv-link-icon--dark",
     },
-  ].filter(Boolean) as { href: string; label: string; icon: React.ReactNode; iconClass: string }[];
+  ].filter(Boolean) as {
+    href: string;
+    label: string;
+    icon: React.ReactNode;
+    iconClass: string;
+  }[];
 
-  const hasAnyLinks = notification.links?.apply_online_url || linkItems.length > 0;
+  const hasAnyLinks =
+    notification.links?.apply_online_url || linkItems.length > 0;
 
   const isJob = notification.category === "job";
-  const needsFeesAndDates = ["job", "entrance-exam", "admission"].includes(notification.category);
+  const needsFeesAndDates = ["job", "entrance-exam", "admission"].includes(
+    notification.category,
+  );
   const needsEligibility = notification.category !== "documents";
   const groupedFees = getGroupedFees(notification.fee);
   const isAllFeesZero = groupedFees.length === 1 && groupedFees[0][0] === "₹ 0";
@@ -344,7 +376,9 @@ export default function NotificationDetailView({
               >
                 ← Dashboard
               </button>
-              {(!adminRole || adminRole === "creator" || adminRole === "admin") && (
+              {(!adminRole ||
+                adminRole === "creator" ||
+                adminRole === "admin") && (
                 <a
                   href={`/admin/edit/${getId(notification.sk)}`}
                   className="ndv-admin-btn ndv-admin-btn--edit"
@@ -397,9 +431,13 @@ export default function NotificationDetailView({
                 {isWishlistedLoading ? (
                   <span className="spinner-border spinner-border-sm" />
                 ) : currentStatus === 0 ? (
-                  <><BsHeartFill /> Wishlisted</>
+                  <>
+                    <BsHeartFill /> Wishlisted
+                  </>
                 ) : (
-                  <><BsHeart /> Add to Wishlist</>
+                  <>
+                    <BsHeart /> Add to Wishlist
+                  </>
                 )}
               </button>
             </div>
@@ -413,7 +451,12 @@ export default function NotificationDetailView({
         {notification.details?.short_description && (
           <div
             className="ndv-short-desc"
-            dangerouslySetInnerHTML={{ __html: notification.details.short_description.replace(/&nbsp;/g, ' ') }}
+            dangerouslySetInnerHTML={{
+              __html: notification.details.short_description.replace(
+                /&nbsp;/g,
+                " ",
+              ),
+            }}
           />
         )}
 
@@ -423,17 +466,33 @@ export default function NotificationDetailView({
           <div className="col-12 col-md-6">
             <div className="ndv-card" style={{ animationDelay: "0.1s" }}>
               <div className="ndv-card-header ndv-card-header--blue">
-                <div className="ndv-card-icon ndv-card-icon--blue"><FcViewDetails /></div>
+                <div className="ndv-card-icon ndv-card-icon--blue">
+                  <FcViewDetails />
+                </div>
                 <h3 className="ndv-card-title">Basic Details</h3>
               </div>
               <div className="ndv-card-body">
-                <LabelValue label="Category" value={formatCategoryTitle(notification.category)} />
-                <LabelValue label="Department" value={notification.department} />
-                <LabelValue label="State / Region" value={formatStateName(notification.state)} highlight />
+                <LabelValue
+                  label="Category"
+                  value={formatCategoryTitle(notification.category)}
+                />
+                <LabelValue
+                  label="Department"
+                  value={notification.department}
+                />
+                <LabelValue
+                  label="State / Region"
+                  value={formatStateName(notification.state)}
+                  highlight
+                />
                 {isJob && (
                   <LabelValue
                     label="Total Vacancies"
-                    value={notification.total_vacancies ? notification.total_vacancies : "Not Specified"}
+                    value={
+                      notification.total_vacancies
+                        ? notification.total_vacancies
+                        : "Not Specified"
+                    }
                   />
                 )}
               </div>
@@ -445,20 +504,37 @@ export default function NotificationDetailView({
             <div className="col-12 col-md-6">
               <div className="ndv-card" style={{ animationDelay: "0.15s" }}>
                 <div className="ndv-card-header ndv-card-header--orange">
-                  <div className="ndv-card-icon ndv-card-icon--orange"><BsCalendar /></div>
+                  <div className="ndv-card-icon ndv-card-icon--orange">
+                    <BsCalendar />
+                  </div>
                   <h3 className="ndv-card-title">Important Dates</h3>
                 </div>
                 <div className="ndv-card-body">
-                  <LabelValue label="Start Date" value={formatDate(notification.start_date)} />
-                  <LabelValue label="Last Date To Apply" value={formatDate(notification.last_date_to_apply)} highlight />
-                  <LabelValue label="Exam Date" value={formatDate(notification.exam_date)} />
+                  <LabelValue
+                    label="Start Date"
+                    value={formatDate(notification.start_date)}
+                  />
+                  <LabelValue
+                    label="Last Date To Apply"
+                    value={formatDate(notification.last_date_to_apply)}
+                    highlight
+                  />
+                  <LabelValue
+                    label="Exam Date"
+                    value={formatDate(notification.exam_date)}
+                  />
                   {(notification as any).admit_card_date && (
-                    <LabelValue label="Admit Card Date" value={formatDate((notification as any).admit_card_date)} />
+                    <LabelValue
+                      label="Admit Card Date"
+                      value={formatDate((notification as any).admit_card_date)}
+                    />
                   )}
                   {(notification as any).result_date && (
-                    <LabelValue label="Result Date" value={formatDate((notification as any).result_date)} />
+                    <LabelValue
+                      label="Result Date"
+                      value={formatDate((notification as any).result_date)}
+                    />
                   )}
-
                 </div>
               </div>
             </div>
@@ -469,20 +545,35 @@ export default function NotificationDetailView({
             <div className="col-12 col-md-6">
               <div className="ndv-card" style={{ animationDelay: "0.2s" }}>
                 <div className="ndv-card-header ndv-card-header--green">
-                  <div className="ndv-card-icon ndv-card-icon--green"><BsCurrencyRupee /></div>
+                  <div className="ndv-card-icon ndv-card-icon--green">
+                    <BsCurrencyRupee />
+                  </div>
                   <h3 className="ndv-card-title">Application Fees</h3>
                 </div>
                 <div className="ndv-card-body">
                   {isAllFeesZero ? (
                     <div className="d-flex align-items-center gap-2 mb-3">
-                      <span className="badge" style={{ background: '#dcfce7', color: '#166534', fontSize: '0.9rem', padding: '0.4rem 0.8rem' }}>No Application Fee</span>
+                      <span
+                        className="badge"
+                        style={{
+                          background: "#dcfce7",
+                          color: "#166534",
+                          fontSize: "0.9rem",
+                          padding: "0.4rem 0.8rem",
+                        }}
+                      >
+                        No Application Fee
+                      </span>
                     </div>
                   ) : (
                     groupedFees.map(([fee, cats]) => (
-                      <LabelValue key={fee} label={`${cats.join("/")} Fee`} value={fee} />
+                      <LabelValue
+                        key={fee}
+                        label={`${cats.join("/")} Fee`}
+                        value={fee}
+                      />
                     ))
                   )}
-
                 </div>
               </div>
             </div>
@@ -493,25 +584,53 @@ export default function NotificationDetailView({
             <div className="col-12 col-md-6">
               <div className="ndv-card" style={{ animationDelay: "0.25s" }}>
                 <div className="ndv-card-header ndv-card-header--purple">
-                  <div className="ndv-card-icon ndv-card-icon--purple"><BsFillPersonFill /></div>
+                  <div className="ndv-card-icon ndv-card-icon--purple">
+                    <BsFillPersonFill />
+                  </div>
                   <h3 className="ndv-card-title">Eligibility</h3>
                 </div>
                 <div className="ndv-card-body">
                   <LabelValue
                     label="Age"
-                    value={renderAgeInfo(notification.eligibility?.min_age, notification.eligibility?.max_age)}
+                    value={renderAgeInfo(
+                      notification.eligibility?.min_age,
+                      notification.eligibility?.max_age,
+                    )}
                   />
-                  <LabelValue label="Qualification" value={notification.eligibility?.qualification} />
-                  <LabelValue label="Specialization" value={notification.eligibility?.specialization} />
+                  <LabelValue
+                    label="Qualification"
+                    value={notification.eligibility?.qualification}
+                  />
+                  <LabelValue
+                    label="Specialization"
+                    value={notification.eligibility?.specialization}
+                  />
                   {notification.eligibility?.min_percentage ? (
-                    <LabelValue label="Minimum Percentage" value={formatPercentage(notification.eligibility?.min_percentage)} />
+                    <LabelValue
+                      label="Minimum Percentage"
+                      value={formatPercentage(
+                        notification.eligibility?.min_percentage,
+                      )}
+                    />
                   ) : null}
-
                 </div>
               </div>
             </div>
           )}
         </div>
+
+        {/* ═══════════════ LONG DESCRIPTION ═══════════════ */}
+        {notification.details?.long_description && (
+          <div
+            className="ndv-long-desc"
+            dangerouslySetInnerHTML={{
+              __html: notification.details.long_description.replace(
+                /&nbsp;/g,
+                " ",
+              ),
+            }}
+          />
+        )}
 
         {/* ═══════════════ IMPORTANT LINKS ═══════════════ */}
         {hasAnyLinks && (
@@ -542,7 +661,9 @@ export default function NotificationDetailView({
                     rel="noopener noreferrer"
                     className="ndv-link-item"
                   >
-                    <span className={`ndv-link-icon ${item.iconClass}`}>{item.icon}</span>
+                    <span className={`ndv-link-icon ${item.iconClass}`}>
+                      {item.icon}
+                    </span>
                     {item.label}
                   </a>
                 ))}
@@ -551,40 +672,40 @@ export default function NotificationDetailView({
           </div>
         )}
 
-        {/* ═══════════════ LONG DESCRIPTION ═══════════════ */}
-        {notification.details?.long_description && (
-          <div
-            className="ndv-long-desc"
-            dangerouslySetInnerHTML={{ __html: notification.details.long_description.replace(/&nbsp;/g, ' ') }}
-          />
-        )}
-
         {/* ═══════════════ TRACK YOUR PROGRESS ═══════════════ */}
         {!isAdmin && (
           <div className="ndv-track" id="track-progress-section">
             <div className="ndv-track-title">🚀 Track Your Progress</div>
             <p className="ndv-track-subtitle">
-              Follow your journey step by step — each milestone unlocks the next!
+              Follow your journey step by step — each milestone unlocks the
+              next!
             </p>
 
             <div className="ndv-track-note">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#667eea" viewBox="0 0 16 16">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="#667eea"
+                viewBox="0 0 16 16"
+              >
                 <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
                 <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0z" />
               </svg>
               <span className="d-flex align-items-center flex-wrap gap-2">
-                <strong>Note:</strong> You can track an application a maximum of <strong>3 times</strong>. To remove it, go to your
+                <strong>Note:</strong> You can track an application a maximum of{" "}
+                <strong>3 times</strong>. To remove it, go to your
                 <button
                   onClick={() => window.open("/dashboard", "_blank")}
                   style={{
-                    background: '#667eea',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '4px',
-                    padding: '2px 8px',
-                    fontSize: '0.85em',
+                    background: "#667eea",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "4px",
+                    padding: "2px 8px",
+                    fontSize: "0.85em",
                     fontWeight: 600,
-                    cursor: 'pointer'
+                    cursor: "pointer",
                   }}
                 >
                   Dashboard
@@ -599,19 +720,24 @@ export default function NotificationDetailView({
                 return (
                   <React.Fragment key={step.status}>
                     <div className="ndv-step">
-                      <div className={`ndv-step-circle ndv-step-circle--${state}`}>
+                      <div
+                        className={`ndv-step-circle ndv-step-circle--${state}`}
+                      >
                         {state === "completed" ? "✓" : i + 1}
                       </div>
-                      <span className={`ndv-step-label ndv-step-label--${state}`}>
+                      <span
+                        className={`ndv-step-label ndv-step-label--${state}`}
+                      >
                         {step.label}
                       </span>
                     </div>
                     {i < TRACKING_STEPS.length - 1 && (
                       <div
-                        className={`ndv-step-connector ${getStepState(i) === "completed"
-                          ? "ndv-step-connector--done"
-                          : "ndv-step-connector--pending"
-                          }`}
+                        className={`ndv-step-connector ${
+                          getStepState(i) === "completed"
+                            ? "ndv-step-connector--done"
+                            : "ndv-step-connector--pending"
+                        }`}
                       />
                     )}
                   </React.Fragment>
@@ -629,11 +755,16 @@ export default function NotificationDetailView({
                     key={step.status}
                     id={`track-btn-${step.status}`}
                     className={`ndv-track-btn ndv-track-btn--${state}`}
-                    disabled={state === "locked" || state === "completed" || isLoading}
+                    disabled={
+                      state === "locked" || state === "completed" || isLoading
+                    }
                     onClick={() => handleTrackAction(step)}
                   >
                     {isLoading ? (
-                      <div className="spinner-border spinner-border-sm" role="status">
+                      <div
+                        className="spinner-border spinner-border-sm"
+                        role="status"
+                      >
                         <span className="visually-hidden">Loading...</span>
                       </div>
                     ) : (
@@ -660,17 +791,41 @@ export default function NotificationDetailView({
         {/* ═══════════════ ADMIN METADATA ═══════════════ */}
         {isAdmin && (
           <div className="ndv-admin-meta">
-            <div className="ndv-card-header ndv-card-header--blue" style={{ margin: "-1.5rem -1.5rem 1rem", borderRadius: "16px 16px 0 0" }}>
-              <div className="ndv-card-icon ndv-card-icon--blue"><BsGear /></div>
+            <div
+              className="ndv-card-header ndv-card-header--blue"
+              style={{
+                margin: "-1.5rem -1.5rem 1rem",
+                borderRadius: "16px 16px 0 0",
+              }}
+            >
+              <div className="ndv-card-icon ndv-card-icon--blue">
+                <BsGear />
+              </div>
               <h3 className="ndv-card-title">Admin Metadata</h3>
             </div>
-            <LabelValue label="Created By" value={notification.created_by || "Unknown"} />
-            <LabelValue label="Created At" value={formatDateTime(notification.created_at)} />
-            <LabelValue label="Modified At" value={formatDateTime(notification.modified_at)} />
-            <LabelValue label="Approved By" value={notification.approved_by || "Pending"} />
+            <LabelValue
+              label="Created By"
+              value={notification.created_by || "Unknown"}
+            />
+            <LabelValue
+              label="Created At"
+              value={formatDateTime(notification.created_at)}
+            />
+            <LabelValue
+              label="Modified At"
+              value={formatDateTime(notification.modified_at)}
+            />
+            <LabelValue
+              label="Approved By"
+              value={notification.approved_by || "Pending"}
+            />
             <LabelValue
               label="Approved At"
-              value={notification.approved_at ? formatDateTime(notification.approved_at) : "Pending approval"}
+              value={
+                notification.approved_at
+                  ? formatDateTime(notification.approved_at)
+                  : "Pending approval"
+              }
             />
           </div>
         )}
@@ -685,10 +840,7 @@ export default function NotificationDetailView({
       />
 
       {/* Support Popup for Limit Reached */}
-      <SupportPopup
-        show={showSupport}
-        onClose={() => setShowSupport(false)}
-      />
+      <SupportPopup show={showSupport} onClose={() => setShowSupport(false)} />
     </main>
   );
 }
