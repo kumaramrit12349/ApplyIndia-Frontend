@@ -16,6 +16,13 @@ export interface AuthStatus {
     specialization?: string;
     isAdmin?: boolean;
     adminRole?: 'creator' | 'reviewer' | 'admin' | null;
+    adminPermissions?: {
+      categories: string[];
+      states: string[];
+      data_window: string;
+      assigned_by?: string;
+      assigned_at?: number;
+    } | null;
     sub?: string;
   };
 }

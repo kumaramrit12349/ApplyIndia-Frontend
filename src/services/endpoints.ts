@@ -40,6 +40,11 @@ export const PRIVATE_API = {
   FEEDBACK: {
     VIEW: "api/feedback/view",
   },
+  ADMIN_ROLES: {
+    LIST: "api/admin-roles",
+    ASSIGN: "api/admin-roles/assign",
+    REMOVE: (sub: string) => `api/admin-roles/${sub}`,
+  },
 };
 
 export const AUTH_API = {
