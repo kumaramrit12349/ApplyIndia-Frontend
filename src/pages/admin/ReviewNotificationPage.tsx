@@ -109,7 +109,7 @@ const ReviewNotificationPage: React.FC<ReviewNotificationPageProps> = ({
   if (loading) {
     return (
       <div className="container mt-5 text-center">
-        <div className="spinner-border text-primary" role="status">
+        <div className="spinner-border" style={{ color: "var(--color-primary)" }} role="status">
           <span className="visually-hidden">Loading...</span>
         </div>
       </div>
@@ -192,8 +192,8 @@ const ReviewNotificationPage: React.FC<ReviewNotificationPageProps> = ({
                         key={c.comment_id}
                         className="p-3 rounded-3"
                         style={{
-                          background: "#f8f9fa",
-                          borderLeft: "4px solid #667eea",
+                          background: "var(--color-bg)",
+                          borderLeft: "4px solid var(--color-secondary)",
                         }}
                       >
                         <div className="d-flex justify-content-between align-items-start mb-1">
@@ -205,7 +205,7 @@ const ReviewNotificationPage: React.FC<ReviewNotificationPageProps> = ({
                                 height: 28,
                                 borderRadius: "50%",
                                 background:
-                                  "linear-gradient(135deg, #667eea, #764ba2)",
+                                  "linear-gradient(135deg, var(--color-secondary), var(--color-primary))",
                                 color: "#fff",
                                 fontSize: 12,
                                 fontWeight: 600,

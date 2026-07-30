@@ -43,9 +43,9 @@ const WINDOW_LABELS: Record<string, string> = {
 };
 
 const ROLE_STYLES: Record<string, { bg: string; text: string; label: string }> = {
-  admin: { bg: "#fee2e2", text: "#991b1b", label: "Admin" },
-  reviewer: { bg: "#fef3c7", text: "#92400e", label: "Reviewer" },
-  creator: { bg: "#dcfce7", text: "#166534", label: "Creator" },
+  admin: { bg: "rgba(15, 61, 145, 0.12)", text: "var(--color-primary)", label: "Admin" },
+  reviewer: { bg: "rgba(245, 158, 11, 0.15)", text: "#d97706", label: "Reviewer" },
+  creator: { bg: "rgba(37, 99, 235, 0.12)", text: "var(--color-secondary)", label: "Creator" },
 };
 
 const AdminRolesPage: React.FC = () => {
@@ -243,7 +243,7 @@ const AdminRolesPage: React.FC = () => {
             <div className="d-flex align-items-center gap-3 mb-2">
               <div
                 className="rounded-circle p-3 d-flex align-items-center justify-content-center"
-                style={{ backgroundColor: "#e0e7ff", color: "#4f46e5" }}
+                style={{ backgroundColor: "rgba(15, 61, 145, 0.12)", color: "var(--color-primary)" }}
               >
                 <FiShield size={28} />
               </div>
@@ -276,7 +276,7 @@ const AdminRolesPage: React.FC = () => {
               <div className="card-body p-0">
                 {loading ? (
                   <div className="d-flex justify-content-center py-5">
-                    <div className="spinner-border text-indigo" role="status">
+                    <div className="spinner-border" style={{ color: "var(--color-primary)" }} role="status">
                       <span className="visually-hidden">Loading...</span>
                     </div>
                   </div>
@@ -624,7 +624,8 @@ const AdminRolesPage: React.FC = () => {
                   {/* Action Buttons */}
                   <button
                     type="submit"
-                    className="btn btn-primary w-100 d-flex align-items-center justify-content-center gap-2 py-2 fw-semibold"
+                    className="btn w-100 d-flex align-items-center justify-content-center gap-2 py-2 fw-semibold text-white border-0"
+                    style={{ background: "var(--color-primary)" }}
                     disabled={submitting}
                   >
                     {submitting ? (

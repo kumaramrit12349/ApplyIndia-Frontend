@@ -136,7 +136,7 @@ const AdminFeedbackPage: React.FC<AdminFeedbackPageProps> = () => {
 
                 {loading ? (
                     <div className="d-flex justify-content-center py-5">
-                        <div className="spinner-border text-primary" role="status">
+                        <div className="spinner-border" style={{ color: "var(--color-primary)" }} role="status">
                             <span className="visually-hidden">Loading...</span>
                         </div>
                     </div>
@@ -182,7 +182,7 @@ const AdminFeedbackPage: React.FC<AdminFeedbackPageProps> = () => {
 
                 {fetchingMore && (
                     <div className="d-flex justify-content-center mt-4">
-                        <div className="spinner-border text-primary spinner-border-sm" role="status">
+                        <div className="spinner-border spinner-border-sm" style={{ color: "var(--color-primary)" }} role="status">
                             <span className="visually-hidden">Loading more...</span>
                         </div>
                     </div>

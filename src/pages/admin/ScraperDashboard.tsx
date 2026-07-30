@@ -276,7 +276,7 @@ const DryRunPreviewModal: React.FC<{
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div style={{ padding: "1.5rem 2rem", background: "linear-gradient(135deg, #667eea, #764ba2)", color: "#fff" }}>
+        <div style={{ padding: "1.5rem 2rem", background: "linear-gradient(135deg, var(--color-secondary), var(--color-primary))", color: "#fff" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
             <div>
               <h3 style={{ margin: 0, fontWeight: 800, fontSize: "1.4rem" }}>Dry Run Preview</h3>
@@ -339,7 +339,7 @@ const DryRunPreviewModal: React.FC<{
                       {item.title}
                     </div>
                     <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                      <span style={{ fontSize: "0.75rem", background: "#667eea15", color: "#667eea", padding: "2px 8px", borderRadius: 6, fontWeight: 600 }}>
+                      <span style={{ fontSize: "0.75rem", background: "rgba(37, 99, 235, 0.1)", color: "var(--color-secondary)", padding: "2px 8px", borderRadius: 6, fontWeight: 600 }}>
                         {item.siteName}
                       </span>
                     </div>
@@ -353,7 +353,7 @@ const DryRunPreviewModal: React.FC<{
                       border: "1.5px solid #e2e8f0",
                       borderRadius: 10,
                       padding: "6px 14px",
-                      color: "#667eea",
+                      color: "var(--color-secondary)",
                       fontSize: "0.8rem",
                       fontWeight: 700,
                       textDecoration: "none",
@@ -373,14 +373,14 @@ const DryRunPreviewModal: React.FC<{
             onClick={onClose}
             style={{
               padding: "10px 24px",
-              background: "#667eea",
+              background: "var(--color-primary)",
               color: "#fff",
               border: "none",
               borderRadius: 12,
               fontWeight: 700,
               fontSize: "0.9rem",
               cursor: "pointer",
-              boxShadow: "0 4px 12px rgba(102,126,234,0.3)",
+              boxShadow: "0 4px 12px rgba(15,61,145,0.3)",
             }}
           >
             Got it
@@ -1132,7 +1132,7 @@ const SourceModal: React.FC<{
           </div>
 
           <label style={{ display: "flex", alignItems: "center", gap: 12, cursor: "pointer", userSelect: "none", marginTop: 6, width: "fit-content" }}>
-            <input type="checkbox" checked={formData.isActive} onChange={(e) => setFormData({...formData, isActive: e.target.checked})} style={{ width: 20, height: 20, cursor: "pointer", accentColor: "#6366f1" }} />
+            <input type="checkbox" checked={formData.isActive} onChange={(e) => setFormData({...formData, isActive: e.target.checked})} style={{ width: 20, height: 20, cursor: "pointer", accentColor: "var(--color-primary)" }} />
             <span style={{ fontSize: "0.95rem", fontWeight: 700, color: "#334155" }}>Active and Enabled for Tracking</span>
           </label>
 
@@ -1144,11 +1144,11 @@ const SourceModal: React.FC<{
               style={{ 
                 borderRadius: 12, 
                 padding: "12px 28px", 
-                background: canSave ? "linear-gradient(135deg, #667eea, #764ba2)" : "#e2e8f0", 
-                color: canSave ? "#fff" : "#94a3b8", 
-                fontWeight: 800, 
-                border: "none", 
-                boxShadow: canSave ? "0 10px 15px -3px rgba(102, 126, 234, 0.3)" : "none", 
+                background: canSave ? "linear-gradient(135deg, var(--color-secondary), var(--color-primary))" : "#e2e8f0",
+                color: canSave ? "#fff" : "#94a3b8",
+                fontWeight: 800,
+                border: "none",
+                boxShadow: canSave ? "0 10px 15px -3px rgba(15, 61, 145, 0.3)" : "none",
                 cursor: canSave ? "pointer" : "not-allowed", 
                 fontSize: "0.95rem", 
                 transition: "all 0.2s",
@@ -1502,7 +1502,7 @@ const ScraperDashboard: React.FC = () => {
         <div
           className="header-container"
           style={{
-            background: "linear-gradient(135deg, #667eea, #764ba2)",
+            background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))",
             borderRadius: 20,
             padding: "1.5rem 2rem",
             color: "#fff",
@@ -1591,11 +1591,11 @@ const ScraperDashboard: React.FC = () => {
               onClick={() => handleRun(true)}
               disabled={triggering || status.isRunning}
               style={{
-                border: "1.5px solid #667eea",
+                border: "1.5px solid var(--color-primary)",
                 borderRadius: 10,
                 padding: "8px 18px",
-                background: "rgba(102,126,234,0.07)",
-                color: "#667eea",
+                background: "rgba(15,61,145,0.07)",
+                color: "var(--color-primary)",
                 fontWeight: 600,
                 fontSize: "0.85rem",
                 cursor:
@@ -1617,7 +1617,7 @@ const ScraperDashboard: React.FC = () => {
                 background:
                   triggering || status.isRunning
                     ? "#ccc"
-                    : "linear-gradient(135deg, #667eea, #764ba2)",
+                    : "linear-gradient(135deg, var(--color-secondary), var(--color-primary))",
                 color: "#fff",
                 fontWeight: 700,
                 fontSize: "0.85rem",
@@ -1626,7 +1626,7 @@ const ScraperDashboard: React.FC = () => {
                 boxShadow:
                   triggering || status.isRunning
                     ? "none"
-                    : "0 4px 14px rgba(102,126,234,0.35)",
+                    : "0 4px 14px rgba(15,61,145,0.35)",
                 transition: "all 0.2s",
               }}
             >
@@ -1661,9 +1661,9 @@ const ScraperDashboard: React.FC = () => {
                 <button
                   onClick={() => setShowPreview(true)}
                   style={{
-                    background: "rgba(102,126,234,0.1)",
-                    border: "1px solid #667eea",
-                    color: "#667eea",
+                    background: "rgba(15,61,145,0.1)",
+                    border: "1px solid var(--color-primary)",
+                    color: "var(--color-primary)",
                     borderRadius: 8,
                     padding: "4px 12px",
                     fontSize: "0.75rem",
@@ -1697,7 +1697,7 @@ const ScraperDashboard: React.FC = () => {
 
           {loadingStatus ? (
             <div className="text-center py-4">
-              <div className="spinner-border text-primary spinner-border-sm" role="status" />
+              <div className="spinner-border spinner-border-sm" style={{ color: "var(--color-primary)" }} role="status" />
             </div>
           ) : !lastRun ? (
             <div
@@ -1742,7 +1742,7 @@ const ScraperDashboard: React.FC = () => {
 
               {/* Stat cards */}
               <div className="stat-grid" style={{ marginBottom: "1rem", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))" }}>
-                <StatCard label="Found" value={lastRun.totalFound} color="#667eea" icon="🔍" />
+                <StatCard label="Found" value={lastRun.totalFound} color="var(--color-secondary)" icon="🔍" />
                 <StatCard label="New Notifications" value={lastRun.totalInserted} color="#28a745" icon="✅" />
                 <StatCard label="Portal Updates" value={lastRun.totalVirtual ?? 0} color="#17a2b8" icon="🔔" />
                 <StatCard label="Already in DB" value={lastRun.totalSkipped} color="#ffc107" icon="⏭️" />
@@ -1781,7 +1781,7 @@ const ScraperDashboard: React.FC = () => {
                         <span style={{ fontWeight: 600, flex: 1, minWidth: 140 }}>
                           {s.siteKey}
                         </span>
-                        <span style={{ color: "#667eea" }}>🔍 {s.found}</span>
+                        <span style={{ color: "var(--color-secondary)" }}>🔍 {s.found}</span>
                         <span style={{ color: "#28a745" }}>✅ {s.inserted}</span>
                         {(s.virtual ?? 0) > 0 && (
                           <span style={{ color: "#17a2b8" }}>🔔 {s.virtual}</span>
@@ -1963,13 +1963,13 @@ const ScraperDashboard: React.FC = () => {
             <button 
               onClick={() => setEditingSource({})}
               className="btn btn-sm"
-              style={{ 
-                borderRadius: 10, 
-                padding: "8px 16px", 
-                background: "linear-gradient(135deg, #667eea, #764ba2)", 
-                color: "#fff", 
+              style={{
+                borderRadius: 10,
+                padding: "8px 16px",
+                background: "linear-gradient(135deg, var(--color-secondary), var(--color-primary))",
+                color: "#fff",
                 fontWeight: 700,
-                boxShadow: "0 4px 12px rgba(102, 126, 234, 0.25)",
+                boxShadow: "0 4px 12px rgba(15, 61, 145, 0.25)",
                 border: "none"
               }}
             >
@@ -1979,7 +1979,7 @@ const ScraperDashboard: React.FC = () => {
 
           {loadingSources ? (
             <div className="text-center py-4">
-              <div className="spinner-border text-primary spinner-border-sm" role="status" />
+              <div className="spinner-border spinner-border-sm" style={{ color: "var(--color-primary)" }} role="status" />
             </div>
           ) : (
             <div
