@@ -256,7 +256,7 @@ const AppLayout: React.FC = () => {
                   isAuthenticated={isAuthenticated}
                   checkingAuth={checkingAuth}
                 >
-                  <EditNotificationPage />
+                  <EditNotificationPage adminRole={adminRole} />
                 </ProtectedRoute>
               }
             />

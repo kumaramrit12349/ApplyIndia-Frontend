@@ -17,8 +17,16 @@ interface ProfileSectionProps {
 
 const ROLE_COLORS: Record<string, string> = {
   admin: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))",
+  senior_reviewer: "linear-gradient(135deg, #7c3aed, #5b21b6)",
   reviewer: "linear-gradient(135deg, var(--color-accent), #d97706)",
   creator: "linear-gradient(135deg, var(--color-secondary), var(--status-result))",
+};
+
+const ROLE_LABELS: Record<string, string> = {
+  admin: "Admin",
+  senior_reviewer: "Senior Reviewer",
+  reviewer: "Reviewer",
+  creator: "Creator",
 };
 
 const ProfileSection: React.FC<ProfileSectionProps> = ({
@@ -110,7 +118,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({
                     className="ai-role-badge"
                     style={{ background: ROLE_COLORS[adminRole] || ROLE_COLORS.creator }}
                   >
-                    {adminRole.charAt(0).toUpperCase() + adminRole.slice(1)}
+                    {ROLE_LABELS[adminRole] || (adminRole.charAt(0).toUpperCase() + adminRole.slice(1))}
                   </span>
                 )}
               </div>

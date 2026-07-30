@@ -16,22 +16,33 @@ import { Dropdown, Form } from "react-bootstrap";
 import { FiTrash2 } from "react-icons/fi";
 
 /* ============ Role helpers ============ */
-type AdminRole = "creator" | "reviewer" | "admin";
+type AdminRole = "creator" | "reviewer" | "senior_reviewer" | "admin";
 
 const can = (role: AdminRole | undefined, action: string): boolean => {
   if (!role) return false;
   const perms: Record<string, AdminRole[]> = {
-    create: ["creator", "admin"],
-    edit: ["creator", "admin"],
-    approve: ["reviewer", "admin"],
-    archive: ["admin"],
-    unarchive: ["admin"],
+    create: ["creator", "senior_reviewer", "admin"],
+    edit: ["creator", "senior_reviewer", "admin"],
+    approve: ["reviewer", "senior_reviewer", "admin"],
+    archive: ["senior_reviewer", "admin"],
+    unarchive: ["senior_reviewer", "admin"],
   };
   return (perms[action] || []).includes(role);
 };
 
+/** Editing an already-approved notification is limited to Senior Reviewer/Admin. */
+const canEditNotification = (
+  role: AdminRole | undefined,
+  notification: { approved_at?: number | null }
+): boolean => {
+  if (!can(role, "edit")) return false;
+  if (role === "admin" || role === "senior_reviewer") return true;
+  return !notification.approved_at;
+};
+
 const ROLE_COLORS: Record<string, string> = {
   admin: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))",
+  senior_reviewer: "linear-gradient(135deg, #7c3aed, #5b21b6)",
   reviewer: "linear-gradient(135deg, var(--color-accent), #d97706)",
   creator: "linear-gradient(135deg, var(--color-secondary), var(--status-result))",
 };
@@ -819,7 +830,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                         👁️ View
                       </Link>
 
-                      {can(role, "edit") && !n.is_archived && (
+                      {canEditNotification(role, n) && !n.is_archived && (
                         <Link
                           to={`/admin/edit/${getId(n.sk)}`}
                           className="btn btn-sm flex-grow-1"

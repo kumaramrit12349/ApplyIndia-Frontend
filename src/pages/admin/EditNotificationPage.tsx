@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
+import { toast } from "react-toastify";
 import NotificationForm from "./NotificationForm";
 import type { INotification } from "../../interface/NotificationInterface";
 import { getNotificationById, updateNotification } from "../../services/private/notificationApi";
 
-const EditNotificationPage: React.FC = () => {
+interface EditNotificationPageProps {
+  adminRole?: string;
+}
+
+const EditNotificationPage: React.FC<EditNotificationPageProps> = ({ adminRole }) => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [initialValues, setInitialValues] = useState<INotification | null>(
@@ -17,11 +22,23 @@ const EditNotificationPage: React.FC = () => {
 
     getNotificationById(id)
       .then((res: any) => {
-        setInitialValues(res.notification);
+        const fetched: INotification = res.notification;
+        const canEditApproved =
+          adminRole === "admin" ||
+          adminRole === "senior_reviewer" ||
+          !fetched.approved_at;
+
+        if (!canEditApproved) {
+          toast.error("This notification has already been approved. You don't have permission to edit approved notifications.");
+          navigate("/admin/dashboard");
+          return;
+        }
+
+        setInitialValues(fetched);
         setLoading(false);
       })
       .catch(() => navigate("/admin/dashboard"));
-  }, [id, navigate]);
+  }, [id, navigate, adminRole]);
 
   const handleUpdate = async (values: Partial<INotification>) => {
     if (!id) return;

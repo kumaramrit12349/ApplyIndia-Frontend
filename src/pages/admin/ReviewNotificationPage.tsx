@@ -11,7 +11,7 @@ import {
 } from "../../services/private/notificationApi";
 import type { IReviewComment } from "../../interface/NotificationInterface";
 
-type AdminRole = "creator" | "reviewer" | "admin";
+type AdminRole = "creator" | "reviewer" | "senior_reviewer" | "admin";
 
 interface ReviewNotificationPageProps {
   adminRole?: string;
@@ -31,8 +31,8 @@ const ReviewNotificationPage: React.FC<ReviewNotificationPageProps> = ({
   const [commentText, setCommentText] = useState("");
   const [submittingComment, setSubmittingComment] = useState(false);
 
-  const canComment = role === "reviewer" || role === "admin";
-  const canApprove = role === "reviewer" || role === "admin";
+  const canComment = role === "reviewer" || role === "senior_reviewer" || role === "admin";
+  const canApprove = role === "reviewer" || role === "senior_reviewer" || role === "admin";
 
   /* Modal/Toast */
   const [modal, setModal] = useState({

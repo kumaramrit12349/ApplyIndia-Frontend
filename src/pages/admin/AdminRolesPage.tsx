@@ -44,6 +44,7 @@ const WINDOW_LABELS: Record<string, string> = {
 
 const ROLE_STYLES: Record<string, { bg: string; text: string; label: string }> = {
   admin: { bg: "rgba(15, 61, 145, 0.12)", text: "var(--color-primary)", label: "Admin" },
+  senior_reviewer: { bg: "rgba(124, 58, 237, 0.14)", text: "#7c3aed", label: "Senior Reviewer" },
   reviewer: { bg: "rgba(245, 158, 11, 0.15)", text: "#d97706", label: "Reviewer" },
   creator: { bg: "rgba(37, 99, 235, 0.12)", text: "var(--color-secondary)", label: "Creator" },
 };
@@ -55,7 +56,7 @@ const AdminRolesPage: React.FC = () => {
 
   // Form State
   const [email, setEmail] = useState<string>("");
-  const [role, setRole] = useState<"creator" | "reviewer" | "admin">("creator");
+  const [role, setRole] = useState<"creator" | "reviewer" | "senior_reviewer" | "admin">("creator");
   const [allCategories, setAllCategories] = useState<boolean>(true);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [allStates, setAllStates] = useState<boolean>(true);
@@ -95,7 +96,7 @@ const AdminRolesPage: React.FC = () => {
   const handleEditClick = (user: AdminUser) => {
     setIsEditing(true);
     setEmail(user.email);
-    setRole(user.admin_role as "creator" | "reviewer" | "admin");
+    setRole(user.admin_role as "creator" | "reviewer" | "senior_reviewer" | "admin");
 
     const perms = user.admin_permissions;
     if (perms) {
@@ -461,11 +462,12 @@ const AdminRolesPage: React.FC = () => {
                       className="form-select"
                       value={role}
                       onChange={(e) =>
-                        setRole(e.target.value as "creator" | "reviewer" | "admin")
+                        setRole(e.target.value as "creator" | "reviewer" | "senior_reviewer" | "admin")
                       }
                     >
                       <option value="creator">Creator (Add/Edit notifications)</option>
                       <option value="reviewer">Reviewer (Approve notifications)</option>
+                      <option value="senior_reviewer">Senior Reviewer (Create, edit, approve & archive)</option>
                       <option value="admin">Admin (All actions, full control)</option>
                     </select>
                   </div>
@@ -620,6 +622,15 @@ const AdminRolesPage: React.FC = () => {
                       Restricts the historical range of notifications this user can view or modify.
                     </div>
                   </div>
+
+                  {(role === "creator" || role === "reviewer") && (
+                    <div className="mb-4 p-3 border rounded d-flex align-items-start gap-2" style={{ background: "var(--color-bg)" }}>
+                      <FiInfo className="flex-shrink-0 mt-1 text-muted" size={14} />
+                      <div className="form-text text-muted small mb-0">
+                        {role === "reviewer" ? "Reviewers" : "Creators"} can only edit notifications that haven't been approved yet, and can't archive notifications. Assign the "Senior Reviewer" role for full edit/archive access.
+                      </div>
+                    </div>
+                  )}
 
                   {/* Action Buttons */}
                   <button

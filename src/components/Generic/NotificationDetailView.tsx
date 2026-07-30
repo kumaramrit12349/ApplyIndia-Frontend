@@ -378,7 +378,11 @@ export default function NotificationDetailView({
               </button>
               {(!adminRole ||
                 adminRole === "creator" ||
-                adminRole === "admin") && (
+                adminRole === "senior_reviewer" ||
+                adminRole === "admin") &&
+                (adminRole === "admin" ||
+                  adminRole === "senior_reviewer" ||
+                  !notification.approved_at) && (
                 <a
                   href={`/admin/edit/${getId(notification.sk)}`}
                   className="ndv-admin-btn ndv-admin-btn--edit"
