@@ -16,9 +16,9 @@ interface ProfileSectionProps {
 }
 
 const ROLE_COLORS: Record<string, string> = {
-  admin: "linear-gradient(135deg, #667eea, #764ba2)",
-  reviewer: "linear-gradient(135deg, #f093fb, #f5576c)",
-  creator: "linear-gradient(135deg, #4facfe, #00f2fe)",
+  admin: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))",
+  reviewer: "linear-gradient(135deg, var(--color-accent), #d97706)",
+  creator: "linear-gradient(135deg, var(--color-secondary), var(--status-result))",
 };
 
 const ProfileSection: React.FC<ProfileSectionProps> = ({
