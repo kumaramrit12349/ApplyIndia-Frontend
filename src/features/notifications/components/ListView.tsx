@@ -18,6 +18,13 @@ const WishlistButton = ({ notification, category, onWishlisted, onLimitReached }
     ? notification.sk
     : `Notification#${notification.sk}#META`;
 
+  const deadlinePassed = (() => {
+    if (!notification.last_date_to_apply) return false;
+    const deadline = new Date(notification.last_date_to_apply as string).getTime();
+    if (isNaN(deadline)) return false;
+    return deadline < Date.now();
+  })();
+
   useEffect(() => {
     if (!isAuthenticated || !fullSk) {
       setHasChecked(true);
@@ -40,6 +47,11 @@ const WishlistButton = ({ notification, category, onWishlisted, onLimitReached }
     if (!isAuthenticated) {
       toast.info("🔒 Please login to add to wishlist");
       onShowAuthPopup();
+      return;
+    }
+
+    if (deadlinePassed && !isWishlisted) {
+      toast.warning("Applications for this notification have closed.");
       return;
     }
 
@@ -74,9 +86,15 @@ const WishlistButton = ({ notification, category, onWishlisted, onLimitReached }
   return (
     <button
       onClick={handleWishlistClick}
-      disabled={loading}
+      disabled={loading || (deadlinePassed && !isWishlisted)}
       className={`ai-btn-wishlist ${isWishlisted ? 'active' : ''}`}
-      title={isWishlisted ? "Remove from Wishlist" : "Add to Wishlist"}
+      title={
+        deadlinePassed && !isWishlisted
+          ? "Applications closed"
+          : isWishlisted
+            ? "Remove from Wishlist"
+            : "Add to Wishlist"
+      }
     >
       {loading ? (
         <span className="spinner-border spinner-border-sm text-danger" role="status" aria-hidden="true" style={{ width: 14, height: 14 }}></span>

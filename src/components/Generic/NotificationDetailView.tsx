@@ -141,6 +141,13 @@ const TRACKING_STEPS: {
 
 const STATUS_ORDER: UserActivityStatus[] = [1, 2, 3, 4];
 
+const isDeadlinePassed = (lastDateToApply?: string): boolean => {
+  if (!lastDateToApply) return false;
+  const deadline = new Date(lastDateToApply).getTime();
+  if (isNaN(deadline)) return false;
+  return deadline < Date.now();
+};
+
 /* ──────────────── Sub-components ──────────────── */
 
 const LabelValue = ({
@@ -245,6 +252,8 @@ export default function NotificationDetailView({
       const msg = error?.message || "Failed to track activity";
       if (msg.includes("ATTEMPT_LIMIT_REACHED")) {
         setShowSupport(true);
+      } else if (msg.includes("DEADLINE_PASSED")) {
+        toast.error("Applications for this notification have closed.");
       } else if (msg.includes("Invalid status transition")) {
         toast.warning("Complete the previous step first!");
       } else {
@@ -261,6 +270,11 @@ export default function NotificationDetailView({
       if (onShowAuthPopup) onShowAuthPopup();
       return;
     }
+    if (currentStatus !== 0 && deadlinePassed) {
+      toast.error("Applications for this notification have closed.");
+      return;
+    }
+
     setIsWishlistedLoading(true);
     try {
       if (currentStatus === 0) {
@@ -281,6 +295,8 @@ export default function NotificationDetailView({
       const msg = error?.message || "Failed to update wishlist";
       if (msg.includes("ATTEMPT_LIMIT_REACHED")) {
         setShowSupport(true);
+      } else if (msg.includes("DEADLINE_PASSED")) {
+        toast.error("Applications for this notification have closed.");
       } else {
         toast.error(msg);
       }
@@ -289,9 +305,14 @@ export default function NotificationDetailView({
     }
   };
 
+  const deadlinePassed = isDeadlinePassed(notification.last_date_to_apply);
+  const hasAlreadyApplied = currentStatus !== null && currentStatus !== 0;
+
   const getStepState = (stepIndex: number) => {
-    if (currentStatus === null || currentStatus === 0)
-      return stepIndex === 0 ? "active" : "locked";
+    if (currentStatus === null || currentStatus === 0) {
+      if (stepIndex !== 0) return "locked";
+      return deadlinePassed ? "locked" : "active";
+    }
     const currentIndex = STATUS_ORDER.indexOf(currentStatus);
     if (stepIndex <= currentIndex) return "completed";
     if (stepIndex === currentIndex + 1) return "active";
@@ -425,7 +446,9 @@ export default function NotificationDetailView({
           <h1 className="ndv-hero-title">{notification.title}</h1>
 
           {/* Hero actions */}
-          {!isAdmin && (currentStatus === null || currentStatus === 0) && (
+          {!isAdmin &&
+            (currentStatus === 0 ||
+              (currentStatus === null && !deadlinePassed)) && (
             <div className="ndv-hero-actions">
               <button
                 className={`ndv-btn-wishlist ${currentStatus === 0 ? "ndv-btn-wishlist--active" : ""}`}
@@ -685,6 +708,17 @@ export default function NotificationDetailView({
               next!
             </p>
 
+            {deadlinePassed && !hasAlreadyApplied && (
+              <div className="ndv-track-note" style={{ borderColor: "var(--color-danger)" }}>
+                <BsLockFill color="var(--color-danger)" />
+                <span>
+                  <strong>Applications closed</strong> — the last date to
+                  apply for this notification has passed, so it can no
+                  longer be marked as Applied.
+                </span>
+              </div>
+            )}
+
             <div className="ndv-track-note">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -761,6 +795,11 @@ export default function NotificationDetailView({
                     className={`ndv-track-btn ndv-track-btn--${state}`}
                     disabled={
                       state === "locked" || state === "completed" || isLoading
+                    }
+                    title={
+                      i === 0 && state === "locked" && deadlinePassed
+                        ? "Applications for this notification have closed"
+                        : undefined
                     }
                     onClick={() => handleTrackAction(step)}
                   >
