@@ -51,6 +51,12 @@
   --color-secondary: #2563EB;
   --color-accent: #F59E0B;
 
+  /* RGB companions (Bootstrap-style) — for rgba() tints that need to
+     stay in sync with the brand hue across light/dark theme swaps,
+     since a single hardcoded rgba() literal can't adapt itself. */
+  --color-primary-rgb: 15, 61, 145;
+  --color-secondary-rgb: 37, 99, 235;
+
   /* ---- Feedback / semantic ---- */
   --color-success: #16A34A;
   --color-warning: #F59E0B;
@@ -148,6 +154,8 @@
   --color-primary-hover: #1E3A8A;
   --color-secondary: #60A5FA;
   --color-accent: #FBBF24;
+  --color-primary-rgb: 29, 78, 216;
+  --color-secondary-rgb: 96, 165, 250;
 
   /* ---- Feedback / semantic ---- */
   --color-success: #22C55E;
