@@ -31,9 +31,9 @@ const can = (role: AdminRole | undefined, action: string): boolean => {
 };
 
 const ROLE_COLORS: Record<string, string> = {
-  admin: "linear-gradient(135deg, #667eea, #764ba2)",
-  reviewer: "linear-gradient(135deg, #f093fb, #f5576c)",
-  creator: "linear-gradient(135deg, #4facfe, #00f2fe)",
+  admin: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))",
+  reviewer: "linear-gradient(135deg, var(--color-accent), #d97706)",
+  creator: "linear-gradient(135deg, var(--color-secondary), var(--status-result))",
 };
 
 const PAGE_SIZE = 20;
@@ -318,11 +318,30 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
 
   return (
     <div className="container-fluid px-3 px-lg-4 px-xxl-5 py-3 py-md-4">
-      {/* CSS to hide default Bootstrap dropdown carets */}
+      {/* CSS to hide default Bootstrap dropdown carets + brand-color overrides */}
       <style>
         {`
           .dropdown-toggle::after {
             display: none !important;
+          }
+          .dropdown-menu {
+            --bs-dropdown-link-active-bg: var(--color-primary);
+            --bs-dropdown-link-active-color: #fff;
+          }
+          .admin-tab-btn {
+            border: 1px solid var(--color-border);
+            background: var(--color-surface);
+            color: var(--color-body);
+          }
+          .admin-tab-btn:hover {
+            border-color: rgba(15, 61, 145, 0.3);
+            background: rgba(15, 61, 145, 0.05);
+          }
+          .admin-tab-btn--active,
+          .admin-tab-btn--active:hover {
+            background: var(--color-primary);
+            border-color: var(--color-primary);
+            color: #fff;
           }
         `}
       </style>
@@ -577,10 +596,10 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
           <button
             key={t.key}
             onClick={() => setTab(t.key)}
-            className={`btn rounded-pill d-flex align-items-center gap-1 flex-grow-0 py-1 py-md-2 px-2 px-md-3 ${
+            className={`admin-tab-btn btn rounded-pill d-flex align-items-center gap-1 flex-grow-0 py-1 py-md-2 px-2 px-md-3 ${
               tab === t.key
-                ? "btn-dark border-dark fw-semibold"
-                : "btn-outline-secondary"
+                ? "admin-tab-btn--active fw-semibold"
+                : ""
             }`}
             style={{ 
               transition: "all 0.2s ease",
@@ -589,8 +608,12 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
           >
             {t.icon} {t.label}{" "}
             <span
-              className="badge bg-white bg-opacity-25 text-dark ms-1"
-              style={{ fontSize: "0.7rem" }}
+              className="badge ms-1"
+              style={{
+                fontSize: "0.7rem",
+                background: tab === t.key ? "rgba(255,255,255,0.25)" : "var(--color-bg)",
+                color: tab === t.key ? "#fff" : "var(--color-muted)",
+              }}
             >
               {t.list.length}
             </span>
@@ -611,9 +634,9 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                 width: 20,
                 height: 20,
                 borderRadius: 6,
-                border: "2px solid #cbd5e1",
-                background: displayList.slice(0, visibleCount).every(n => selectedIds.includes(n.sk)) ? "#000" : "transparent",
-                borderColor: displayList.slice(0, visibleCount).every(n => selectedIds.includes(n.sk)) ? "#000" : "#cbd5e1",
+                border: "2px solid var(--color-border)",
+                background: displayList.slice(0, visibleCount).every(n => selectedIds.includes(n.sk)) ? "var(--color-primary)" : "transparent",
+                borderColor: displayList.slice(0, visibleCount).every(n => selectedIds.includes(n.sk)) ? "var(--color-primary)" : "var(--color-border)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -633,7 +656,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
       {/* Content */}
       {loading ? (
         <div className="text-center py-5">
-          <div className="spinner-border text-primary" role="status">
+          <div className="spinner-border" style={{ color: "var(--color-primary)" }} role="status">
             <span className="visually-hidden">Loading...</span>
           </div>
         </div>
@@ -683,8 +706,8 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                           width: 22,
                           height: 22,
                           borderRadius: 7,
-                          border: `2px solid ${selectedIds.includes(n.sk) ? "#000" : "#cbd5e1"}`,
-                          background: selectedIds.includes(n.sk) ? "#000" : "transparent",
+                          border: `2px solid ${selectedIds.includes(n.sk) ? "var(--color-primary)" : "var(--color-border)"}`,
+                          background: selectedIds.includes(n.sk) ? "var(--color-primary)" : "transparent",
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
@@ -702,15 +725,15 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                     <div className="flex-grow-1 d-flex flex-column gap-3">
                     {/* Top: Info Row */}
                     <div>
-                      <h6 className="mb-2 fw-bold" style={{ fontSize: "1rem", lineHeight: 1.4, color: "#1e293b" }}>
+                      <h6 className="mb-2 fw-bold" style={{ fontSize: "1rem", lineHeight: 1.4, color: "var(--color-heading)" }}>
                         {n.title}
                       </h6>
                       <div className="d-flex flex-wrap align-items-center gap-2">
                         <span
                           className="badge border"
                           style={{
-                            backgroundColor: "#f8fafc",
-                            color: "#64748b",
+                            backgroundColor: "var(--color-bg)",
+                            color: "var(--color-muted)",
                             fontSize: "0.65rem",
                             fontFamily: "monospace",
                             padding: "4px 8px",
@@ -723,8 +746,8 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                         <span
                           className="badge"
                           style={{
-                            background: "rgba(99, 102, 241, 0.1)",
-                            color: "#6366f1",
+                            background: "rgba(37, 99, 235, 0.1)",
+                            color: "var(--color-secondary)",
                             fontSize: "0.7rem",
                             padding: "4px 10px",
                             borderRadius: 6,
@@ -736,8 +759,8 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                         <span
                           className="badge"
                           style={{
-                            background: "rgba(102, 126, 234, 0.1)",
-                            color: "#475569",
+                            background: "rgba(2, 132, 199, 0.1)",
+                            color: "var(--color-info)",
                             fontSize: "0.7rem",
                             padding: "4px 10px",
                             borderRadius: 6,
@@ -751,8 +774,8 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                           <span
                             className="badge"
                             style={{
-                              background: "rgba(16, 185, 129, 0.1)",
-                              color: "#059669",
+                              background: "rgba(22, 163, 74, 0.1)",
+                              color: "var(--color-success)",
                               fontSize: "0.7rem",
                               padding: "4px 10px",
                               borderRadius: 6,
@@ -785,8 +808,8 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                           borderRadius: '10px', 
                           fontSize: "0.8rem", 
                           fontWeight: 600,
-                          backgroundColor: "#f1f5f9",
-                          color: '#475569',
+                          backgroundColor: "var(--color-bg)",
+                          color: 'var(--color-body)',
                           border: 'none',
                           padding: '0.5rem'
                         }}
@@ -802,8 +825,8 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                             borderRadius: '10px', 
                             fontSize: "0.8rem", 
                             fontWeight: 600,
-                            backgroundColor: "rgba(99, 102, 241, 0.08)",
-                            color: '#6366f1',
+                            backgroundColor: "rgba(37, 99, 235, 0.08)",
+                            color: 'var(--color-secondary)',
                             border: 'none',
                             padding: '0.5rem'
                           }}
@@ -820,8 +843,8 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                             borderRadius: '10px',
                             fontSize: "0.8rem",
                             fontWeight: 600,
-                            backgroundColor: 'rgba(23, 162, 184, 0.08)',
-                            color: '#0891b2',
+                            backgroundColor: 'rgba(2, 132, 199, 0.08)',
+                            color: 'var(--color-info)',
                             border: 'none',
                             padding: '0.5rem'
                           }}
@@ -837,11 +860,11 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                             borderRadius: '10px', 
                             fontSize: "0.80rem", 
                             fontWeight: 700,
-                            background: 'linear-gradient(135deg, #10b981, #059669)',
+                            background: 'linear-gradient(135deg, var(--color-success), #15803d)',
                             color: '#fff',
                             border: 'none',
                             padding: '0.5rem',
-                            boxShadow: '0 4px 6px -1px rgba(16, 185, 129, 0.2)'
+                            boxShadow: '0 4px 6px -1px rgba(22, 163, 74, 0.2)'
                           }}
                           onClick={() => handleApprove(getId(n.sk))}
                         >
@@ -856,8 +879,8 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                             borderRadius: '10px', 
                             fontSize: "0.8rem", 
                             fontWeight: 600,
-                            backgroundColor: 'rgba(239, 68, 68, 0.08)',
-                            color: '#ef4444',
+                            backgroundColor: 'rgba(220, 38, 38, 0.08)',
+                            color: 'var(--color-danger)',
                             border: 'none',
                             padding: '0.5rem'
                           }}
@@ -875,7 +898,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                             fontSize: "0.8rem", 
                             fontWeight: 600,
                             backgroundColor: 'rgba(245, 158, 11, 0.15)',
-                            color: '#d97706',
+                            color: 'var(--color-accent)',
                             border: 'none',
                             padding: '0.5rem'
                           }}
@@ -892,7 +915,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                             borderRadius: '10px', 
                             fontSize: "0.8rem", 
                             fontWeight: 700,
-                            backgroundColor: 'rgba(220, 53, 69, 0.12)',
+                            backgroundColor: 'rgba(220, 38, 38, 0.12)',
                             color: '#b91c1c',
                             border: 'none',
                             padding: '0.5rem'
@@ -915,7 +938,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
       {/* Infinite scroll loading indicator */}
       {hasMore && !loading && (
         <div className="d-flex justify-content-center mt-4">
-          <div className="spinner-border text-primary spinner-border-sm" role="status">
+          <div className="spinner-border spinner-border-sm" style={{ color: "var(--color-primary)" }} role="status">
             <span className="visually-hidden">Loading more...</span>
           </div>
         </div>
@@ -988,8 +1011,8 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                 Cancel
               </button>
               
-              <button 
-                className="btn btn-sm btn-danger rounded-pill px-4 d-flex align-items-center gap-2 fw-bold"
+              <button
+                className="btn btn-sm rounded-pill px-4 d-flex align-items-center gap-2 fw-bold"
                 disabled={isBulkDeleting}
                 onClick={() => {
                   setModal({
@@ -1001,7 +1024,13 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                     onConfirm: performBulkDelete
                   });
                 }}
-                style={{ boxShadow: "0 4px 12px rgba(239, 68, 68, 0.3)", fontSize: "0.8rem" }}
+                style={{
+                  background: "var(--color-danger)",
+                  color: "#fff",
+                  border: "none",
+                  boxShadow: "0 4px 12px rgba(220, 38, 38, 0.3)",
+                  fontSize: "0.8rem",
+                }}
               >
                 <FiTrash2 size={16} /> Delete
               </button>
