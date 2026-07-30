@@ -414,11 +414,11 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
       {/* Search & Filter Bar */}
       <div 
         className="p-3 mb-4 rounded-4" 
-        style={{ 
-          background: 'rgba(255, 255, 255, 0.7)', 
+        style={{
+          background: 'var(--color-surface)',
           backdropFilter: 'blur(10px)',
-          border: '1px solid rgba(0,0,0,0.05)',
-          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)',
+          border: '1px solid var(--color-border)',
+          boxShadow: 'var(--shadow-sm)',
           position: 'relative',
           zIndex: 1020
         }}
@@ -436,7 +436,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
               <input
                 id="notification-search"
                 type="text"
-                className="form-control border-0 bg-white shadow-sm"
+                className="form-control border-0 shadow-sm"
                 placeholder="Search by title or notification ID..."
                 value={searchInput}
                 onChange={handleSearchChange}
@@ -444,7 +444,9 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                   borderRadius: 14,
                   paddingLeft: 46,
                   height: 48,
-                  fontSize: '0.95rem'
+                  fontSize: '0.95rem',
+                  background: 'var(--color-bg)',
+                  color: 'var(--color-heading)',
                 }}
               />
             </div>
@@ -458,8 +460,8 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                  <Dropdown.Toggle 
                   as="div" 
                   role="button"
-                  className="input-group input-group-sm shadow-sm justify-content-center bg-white" 
-                  style={{ borderRadius: 14, overflow: 'hidden', height: 48 }}
+                  className="input-group input-group-sm shadow-sm justify-content-center"
+                  style={{ borderRadius: 14, overflow: 'hidden', height: 48, background: 'var(--color-bg)' }}
                 >
                   <div className="d-flex align-items-center gap-2 px-3 text-muted" style={{ fontSize: '0.9rem' }}>
                     <span>📁</span>
@@ -497,8 +499,8 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                 <Dropdown.Toggle 
                   as="div" 
                   role="button"
-                  className="input-group input-group-sm shadow-sm justify-content-center bg-white" 
-                  style={{ borderRadius: 14, overflow: 'hidden', height: 48 }}
+                  className="input-group input-group-sm shadow-sm justify-content-center"
+                  style={{ borderRadius: 14, overflow: 'hidden', height: 48, background: 'var(--color-bg)' }}
                 >
                   <div className="d-flex align-items-center gap-2 px-3 text-muted" style={{ fontSize: '0.9rem' }}>
                     <span>🕒</span>
@@ -531,8 +533,8 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                 <Dropdown.Toggle 
                   as="div" 
                   role="button"
-                  className="input-group input-group-sm shadow-sm justify-content-center bg-white" 
-                  style={{ borderRadius: 14, overflow: 'hidden', height: 48 }}
+                  className="input-group input-group-sm shadow-sm justify-content-center"
+                  style={{ borderRadius: 14, overflow: 'hidden', height: 48, background: 'var(--color-bg)' }}
                 >
                   <div className="d-flex align-items-center gap-2 px-3 text-muted text-truncate" style={{ fontSize: '0.9rem' }}>
                     <span>📍</span>
@@ -553,7 +555,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                     zIndex: 1050
                   }}
                 >
-                  <div className="px-3 py-2 sticky-top bg-white border-bottom mb-1">
+                  <div className="px-3 py-2 sticky-top border-bottom mb-1" style={{ background: "var(--color-surface)" }}>
                     <Form.Control
                       size="sm"
                       type="text"

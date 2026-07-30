@@ -28,6 +28,7 @@ import ResetPasswordPopup from "./components/ResetPasswordPopup";
 import { ToastContainer, toast } from "react-toastify";
 import { checkAuthStatus, logoutUser } from "./services/authApi";
 import { AuthProvider } from "./context/AuthContext";
+import { ThemeProvider } from "./context/ThemeContext";
 import ScrollToTop from "./components/ScrollToTop";
 
 const DashboardPage = lazy(() => import("./pages/admin/DashboardPage"));
@@ -421,9 +422,11 @@ const AppLayout: React.FC = () => {
 };
 
 const App: React.FC = () => (
-  <Router>
-    <AppLayout />
-  </Router>
+  <ThemeProvider>
+    <Router>
+      <AppLayout />
+    </Router>
+  </ThemeProvider>
 );
 
 export default App;

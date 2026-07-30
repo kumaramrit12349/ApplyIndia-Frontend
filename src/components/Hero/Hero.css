@@ -1,5 +1,5 @@
 .ai-hero {
-  background: linear-gradient(180deg, #ffffff 0%, var(--color-bg) 100%);
+  background: linear-gradient(180deg, var(--color-surface) 0%, var(--color-bg) 100%);
   padding: var(--space-16) 0 var(--space-12);
   text-align: center;
   position: relative;

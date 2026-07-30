@@ -235,10 +235,10 @@ const AdminRolesPage: React.FC = () => {
   );
 
   return (
-    <div className="min-vh-100 bg-light py-5">
+    <div className="min-vh-100 py-5" style={{ background: "var(--color-bg)" }}>
       <div className="container">
         {/* Header Section */}
-        <div className="card shadow-sm border-0 mb-4 bg-white rounded-3">
+        <div className="card shadow-sm border-0 mb-4 rounded-3" style={{ background: "var(--color-surface)" }}>
           <div className="card-body p-4">
             <div className="d-flex align-items-center gap-3 mb-2">
               <div
@@ -248,7 +248,7 @@ const AdminRolesPage: React.FC = () => {
                 <FiShield size={28} />
               </div>
               <div>
-                <h2 className="h4 mb-1 fw-bold text-dark">
+                <h2 className="h4 mb-1 fw-bold" style={{ color: "var(--color-heading)" }}>
                   Admin Roles & Permissions
                 </h2>
                 <p className="text-muted mb-0 small">
@@ -270,8 +270,8 @@ const AdminRolesPage: React.FC = () => {
           {/* Left Column: Admin Users List */}
           <div className="col-lg-7">
             <div className="card shadow-sm border-0 h-100">
-              <div className="card-header bg-white py-3 border-0">
-                <h5 className="mb-0 fw-bold text-dark">Active Administrators</h5>
+              <div className="card-header py-3 border-0" style={{ background: "var(--color-surface)" }}>
+                <h5 className="mb-0 fw-bold" style={{ color: "var(--color-heading)" }}>Active Administrators</h5>
               </div>
               <div className="card-body p-0">
                 {loading ? (
@@ -288,7 +288,7 @@ const AdminRolesPage: React.FC = () => {
                 ) : (
                   <div className="table-responsive">
                     <table className="table table-hover align-middle mb-0">
-                      <thead className="table-light">
+                      <thead style={{ background: "var(--color-bg)" }}>
                         <tr>
                           <th className="px-4">User</th>
                           <th>Role</th>
@@ -331,7 +331,7 @@ const AdminRolesPage: React.FC = () => {
                           return (
                             <tr key={u.sub || u.email}>
                               <td className="px-4">
-                                <div className="fw-semibold text-dark">
+                                <div className="fw-semibold" style={{ color: "var(--color-heading)" }}>
                                   {u.given_name
                                     ? `${u.given_name} ${u.family_name || ""}`
                                     : "Registered User"}
@@ -413,8 +413,8 @@ const AdminRolesPage: React.FC = () => {
           {/* Right Column: Add / Edit Form */}
           <div className="col-lg-5">
             <div className="card shadow-sm border-0">
-              <div className="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center">
-                <h5 className="mb-0 fw-bold text-dark">
+              <div className="card-header py-3 border-0 d-flex justify-content-between align-items-center" style={{ background: "var(--color-surface)" }}>
+                <h5 className="mb-0 fw-bold" style={{ color: "var(--color-heading)" }}>
                   {isEditing ? "Update Administrator" : "Assign Admin Role"}
                 </h5>
                 {isEditing && (
@@ -492,7 +492,7 @@ const AdminRolesPage: React.FC = () => {
                     </div>
 
                     {!allCategories && (
-                      <div className="p-3 border rounded bg-light">
+                      <div className="p-3 border rounded" style={{ background: "var(--color-bg)" }}>
                         <div className="row g-2">
                           {SELECTABLE_CATEGORIES.map((cat) => (
                             <div key={cat.value} className="col-6">
@@ -542,10 +542,10 @@ const AdminRolesPage: React.FC = () => {
                     </div>
 
                     {!allStates && (
-                      <div className="p-3 border rounded bg-light">
+                      <div className="p-3 border rounded" style={{ background: "var(--color-bg)" }}>
                         {/* Search states */}
                         <div className="input-group input-group-sm mb-2 shadow-xs">
-                          <span className="input-group-text bg-white border-end-0">
+                          <span className="input-group-text border-end-0" style={{ background: "var(--color-surface)" }}>
                             <FiSearch size={12} className="text-secondary" />
                           </span>
                           <input

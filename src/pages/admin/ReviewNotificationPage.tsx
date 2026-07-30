@@ -142,7 +142,7 @@ const ReviewNotificationPage: React.FC<ReviewNotificationPageProps> = ({
         <div className="row justify-content-center mt-4">
           <div className="col-12 col-lg-10 col-xl-9">
             <div className="card border-0 shadow-sm rounded-4">
-              <div className="card-header bg-light border-0 fw-semibold d-flex align-items-center gap-2">
+              <div className="card-header border-0 fw-semibold d-flex align-items-center gap-2" style={{ background: "var(--color-bg)" }}>
                 💬 Review Comments
                 {comments.length > 0 && (
                   <span className="badge bg-secondary">{comments.length}</span>
@@ -225,8 +225,8 @@ const ReviewNotificationPage: React.FC<ReviewNotificationPageProps> = ({
                           </span>
                         </div>
                         <p
-                          className="mb-0 text-dark"
-                          style={{ fontSize: "0.9rem", lineHeight: 1.5 }}
+                          className="mb-0"
+                          style={{ fontSize: "0.9rem", lineHeight: 1.5, color: "var(--color-heading)" }}
                         >
                           {c.comment_text}
                         </p>

@@ -243,13 +243,14 @@ const MyDashboard: React.FC = () => {
                                             className="text-decoration-none"
                                         >
                                             <h6
-                                                className="fw-bold mb-2 text-dark"
+                                                className="fw-bold mb-2"
                                                 style={{
                                                     display: "-webkit-box",
                                                     WebkitLineClamp: 2,
                                                     WebkitBoxOrient: "vertical",
                                                     overflow: "hidden",
                                                     lineHeight: 1.4,
+                                                    color: "var(--color-heading)",
                                                 }}
                                             >
                                                 {activity.notification_title}
@@ -257,7 +258,10 @@ const MyDashboard: React.FC = () => {
                                         </Link>
 
                                         {/* Category */}
-                                        <span className="badge bg-light text-dark border mb-2">
+                                        <span
+                                            className="badge border mb-2"
+                                            style={{ background: "var(--color-bg)", color: "var(--color-body)" }}
+                                        >
                                             {formatCategoryTitle(activity.notification_category)}
                                         </span>
 

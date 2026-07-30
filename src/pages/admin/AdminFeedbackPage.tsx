@@ -104,7 +104,7 @@ const AdminFeedbackPage: React.FC<AdminFeedbackPageProps> = () => {
     };
 
     return (
-        <div className="min-vh-100 bg-light">
+        <div className="min-vh-100" style={{ background: "var(--color-bg)" }}>
             <div className="container py-4">
                 <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
                     <h2 className="mb-0 fw-bold">User Feedback</h2>
@@ -141,7 +141,7 @@ const AdminFeedbackPage: React.FC<AdminFeedbackPageProps> = () => {
                         </div>
                     </div>
                 ) : feedback.length === 0 ? (
-                    <div className="text-center py-5 bg-white rounded shadow-sm">
+                    <div className="text-center py-5 rounded shadow-sm" style={{ background: "var(--color-surface)" }}>
                         <h5 className="text-muted">No feedback found for the selected time range.</h5>
                     </div>
                 ) : (

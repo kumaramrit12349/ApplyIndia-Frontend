@@ -146,7 +146,7 @@
 
 /* --- Short description panel --- */
 .ndv-short-desc {
-  background: rgba(255,255,255,0.95);
+  background: var(--color-surface);
   backdrop-filter: blur(12px);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-xl);
@@ -157,7 +157,7 @@
   overflow-wrap: break-word !important;
   word-break: normal !important;
   font-size: 0.95rem;
-  color: #4b5563;
+  color: var(--color-body);
   line-height: 1.65;
 }
 
@@ -326,7 +326,7 @@
   background: rgba(15,61,145,0.06);
   border: 1px solid rgba(15,61,145,0.12);
   font-size: 0.8rem;
-  color: #4b5563;
+  color: var(--color-body);
   margin-bottom: 1.25rem;
 }
 .ndv-track-note strong { color: var(--color-heading); }
@@ -368,9 +368,9 @@
   animation: ndv-pulseRing 2s infinite;
 }
 .ndv-step-circle--locked {
-  background: #f1f5f9;
-  color: #cbd5e1;
-  border: 2px solid #e2e8f0;
+  background: var(--color-border);
+  color: var(--color-muted);
+  border: 2px solid var(--color-border);
 }
 .ndv-step-label {
   margin-top: 6px;
@@ -382,7 +382,7 @@
 }
 .ndv-step-label--completed { color: #22c55e; font-weight: 600; }
 .ndv-step-label--active    { color: var(--color-secondary); font-weight: 600; }
-.ndv-step-label--locked    { color: #cbd5e1; }
+.ndv-step-label--locked    { color: var(--color-muted); }
 
 .ndv-step-connector {
   flex: 1;
@@ -392,7 +392,7 @@
   transition: background 0.3s ease;
 }
 .ndv-step-connector--done { background: linear-gradient(90deg, #22c55e, #16a34a); }
-.ndv-step-connector--pending { background: #e2e8f0; }
+.ndv-step-connector--pending { background: var(--color-border); }
 
 /* Action buttons grid */
 .ndv-track-actions {
@@ -441,9 +441,9 @@
   box-shadow: 0 6px 20px rgba(37,99,235,0.35);
 }
 .ndv-track-btn--locked {
-  background: #f8fafc;
-  border-color: #e2e8f0;
-  color: #cbd5e1;
+  background: var(--color-bg);
+  border-color: var(--color-border);
+  color: var(--color-muted);
 }
 .ndv-track-btn-emoji {
   font-size: 1.3rem;
@@ -504,7 +504,7 @@
   align-items: center;
   gap: 10px;
   padding: 12px 16px;
-  border: 1.5px solid rgba(0,0,0,0.07);
+  border: 1.5px solid var(--color-border);
   border-radius: 12px;
   text-decoration: none;
   color: var(--color-body);
@@ -512,7 +512,7 @@
   font-weight: 500;
   font-family: var(--font-base);
   transition: all 0.25s ease;
-  background: #fafbfc;
+  background: var(--color-bg);
 }
 .ndv-link-item:hover {
   border-color: rgba(15,61,145,0.3);
@@ -533,7 +533,7 @@
 }
 .ndv-link-icon--green   { background: rgba(40,167,69,0.1);  color: #28a745; }
 .ndv-link-icon--red     { background: rgba(220,38,38,0.1);  color: #dc2626; }
-.ndv-link-icon--dark    { background: rgba(31,41,55,0.08);  color: #1f2937; }
+.ndv-link-icon--dark    { background: rgba(107,114,128,0.12); color: var(--color-heading); }
 .ndv-link-icon--amber   { background: rgba(245,158,11,0.1); color: #d97706; }
 .ndv-link-icon--gray    { background: rgba(107,114,128,0.1);color: #6b7280; }
 .ndv-link-icon--youtube { background: rgba(255,0,0,0.08);   color: #ff0000; }
@@ -602,7 +602,7 @@
 
 /* --- Admin metadata card --- */
 .ndv-admin-meta {
-  background: rgba(255,255,255,0.95);
+  background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-xl);
   padding: 1.5rem;
