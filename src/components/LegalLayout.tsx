@@ -24,8 +24,11 @@ const LegalLayout: React.FC<LegalLayoutProps> = ({
         canonical={canonical}
         keywords={keywords}
       />
-      <div className="bg-white shadow-sm rounded-4 p-4 p-md-5">
-        <h1 className="mb-4 fw-bold">{title}</h1>
+      <div
+        className="rounded-4 p-4 p-md-5"
+        style={{ background: "var(--color-surface)", border: "1px solid var(--color-border)", boxShadow: "var(--shadow-sm)" }}
+      >
+        <h1 className="mb-4 fw-bold" style={{ fontFamily: "var(--font-base)" }}>{title}</h1>
         <div className="legal-content">{children}</div>
       </div>
     </div>

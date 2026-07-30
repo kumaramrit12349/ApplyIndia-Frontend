@@ -1556,17 +1556,18 @@ h1, h2, h3, h4, h5, h6 {
 
 /* ============ LEGAL CONTENT ============ */
 .legal-content {
-  color: #334155;
+  color: var(--color-body);
   line-height: 1.8;
   font-size: 1.05rem;
+  font-family: var(--font-base);
 }
 
 .legal-content h5 {
-  color: #1e3a8a;
+  color: var(--color-primary);
   font-weight: 700;
   margin-top: 2rem;
   margin-bottom: 1rem;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-base);
 }
 
 .legal-content p {
@@ -1583,17 +1584,17 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .legal-content a {
-  color: #2563eb;
+  color: var(--color-secondary);
   text-decoration: none;
   font-weight: 500;
-  transition: color 0.2s;
+  transition: var(--motion-fast);
 }
 
 .legal-content a:hover {
-  color: #1d4ed8;
+  color: var(--color-primary);
   text-decoration: underline;
 }
 
 .legal-content strong {
-  color: #0f172a;
+  color: var(--color-heading);
 }
