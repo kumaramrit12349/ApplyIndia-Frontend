@@ -5,6 +5,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import type { HomePageNotification } from "../../types/notification";
 import { fetchHomePageNotifications, fetchNotificationsByCategory } from "../../services/public/notiifcationApi";
 import SEO from "../../components/SEO/SEO";
+import WhyChoose from "../../components/WhyChoose/WhyChoose";
 import {
   buildBreadcrumbSchema,
   ORGANIZATION_SCHEMA,
@@ -254,6 +255,7 @@ const HomePage: React.FC = () => {
           )}
         </div>
       </div>
+      <WhyChoose />
     </div>
   );
 };
