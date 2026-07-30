@@ -22,6 +22,7 @@ import CategoryView from "./features/notifications/components/CategoryView";
 import StateView from "./features/notifications/components/StateView";
 import UserNotificationDetailPage from "./features/notifications/components/UserNotificationDetailPage";
 import JobBanner from "./components/JobBanner/JobBanner";
+import Hero from "./components/Hero/Hero";
 import ForgotPasswordPopup from "./components/ForgotPasswordPopup";
 import ResetPasswordPopup from "./components/ResetPasswordPopup";
 import { ToastContainer, toast } from "react-toastify";
@@ -215,6 +216,7 @@ const AppLayout: React.FC = () => {
       />
 
       {!isAdminRoute && <Navigation />}
+      {location.pathname === "/" && <Hero />}
       {showSearchBarBanner && <SearchBar />}
       {!isAdminRoute && <JobBanner />}
 

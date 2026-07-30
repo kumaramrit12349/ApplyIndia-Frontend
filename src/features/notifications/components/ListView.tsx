@@ -98,6 +98,44 @@ interface ListViewProps {
   showAllItems?: boolean;
 }
 
+interface StatusBadge {
+  label: string;
+  color: string;
+  bg: string;
+}
+
+const CLOSING_SOON_WINDOW_DAYS = 3;
+const NEW_ITEM_WINDOW_DAYS = 3;
+
+const CATEGORY_STATUS_BADGE: Record<string, StatusBadge> = {
+  "admit-card": { label: "Admit Card", color: "var(--status-admit-card)", bg: "var(--status-admit-card-bg)" },
+  "result": { label: "Result Out", color: "var(--status-result)", bg: "var(--status-result-bg)" },
+};
+
+const getStatusBadge = (category: string, item: HomePageNotification): StatusBadge | null => {
+  const fixed = CATEGORY_STATUS_BADGE[category?.toLowerCase()];
+  if (fixed) return fixed;
+
+  if (!item.last_date_to_apply) return null;
+  const deadline = new Date(item.last_date_to_apply as string).getTime();
+  if (isNaN(deadline)) return null;
+
+  const daysLeft = (deadline - Date.now()) / (1000 * 60 * 60 * 24);
+  if (daysLeft < 0) {
+    return { label: "Closed", color: "var(--status-closed)", bg: "var(--status-closed-bg)" };
+  }
+  if (daysLeft <= CLOSING_SOON_WINDOW_DAYS) {
+    return { label: "Closing Soon", color: "var(--status-closing)", bg: "var(--status-closing-bg)" };
+  }
+  return { label: "Open", color: "var(--status-open)", bg: "var(--status-open-bg)" };
+};
+
+const isNewItem = (item: HomePageNotification): boolean => {
+  if (!item.created_at) return false;
+  const daysOld = (Date.now() - item.created_at) / (1000 * 60 * 60 * 24);
+  return daysOld >= 0 && daysOld <= NEW_ITEM_WINDOW_DAYS;
+};
+
 const ListView: React.FC<ListViewProps> = ({
   category,
   items,
@@ -144,6 +182,8 @@ const ListView: React.FC<ListViewProps> = ({
           <div>
             {displayedItems.map((item, index) => {
               const itemUrl = `/notification/${makeSlug(item.title, item.sk)}`;
+              const statusBadge = getStatusBadge(category, item);
+              const isNew = isNewItem(item);
 
               return (
                 <a
@@ -155,8 +195,17 @@ const ListView: React.FC<ListViewProps> = ({
                 >
                   <div className="flex-grow-1">
                     <span className="ai-list-item-title">
+                      {isNew && <span className="ai-badge-new-dot" title="New" aria-label="New notification" />}
                       {item.title}
                     </span>
+                    {statusBadge && (
+                      <span
+                        className="ai-status-badge"
+                        style={{ color: statusBadge.color, background: statusBadge.bg }}
+                      >
+                        {statusBadge.label}
+                      </span>
+                    )}
                   </div>
 
                   <div className="d-flex align-items-center gap-2">

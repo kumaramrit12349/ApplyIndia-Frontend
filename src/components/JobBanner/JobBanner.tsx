@@ -31,7 +31,7 @@ const JobBanner: React.FC = () => {
         return (
             <div className="job-banner-container job-banner-empty">
                 <div className="job-banner-label">Latest Updates</div>
-                <div className="job-banner-empty-message">✨ No active notifications today. Stay tuned for the latest government job updates!</div>
+                <div className="job-banner-empty-message">No active application notifications available. New government opportunities will appear here soon.</div>
             </div>
         );
     }
@@ -62,7 +62,7 @@ const JobBanner: React.FC = () => {
                             >
                                 {item.title}
                                 {item.last_date_to_apply && (
-                                    <span style={{ color: "#facc15", marginTop: "2px", fontWeight: "600", fontSize: "0.8rem", letterSpacing: "0.2px" }}>
+                                    <span className="job-banner-deadline">
                                         Last Date: {(() => {
                                             const d = new Date(item.last_date_to_apply as string);
                                             return isNaN(d.getTime()) ? item.last_date_to_apply : d.toLocaleDateString("en-GB", { day: '2-digit', month: 'short', year: 'numeric' });

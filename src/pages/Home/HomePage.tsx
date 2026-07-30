@@ -241,7 +241,7 @@ const HomePage: React.FC = () => {
                 })
                 .map(([category, notifications]) => (
                   <div key={category} className="col-12 col-md-6 col-lg-4">
-                    <div className="h-100 shadow-sm">
+                    <div className="h-100">
                       <ListView
                         category={category}
                         items={notifications}

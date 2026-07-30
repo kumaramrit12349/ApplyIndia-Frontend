@@ -74,7 +74,7 @@ const Footer: React.FC = () => {
                 to="/feedback"
                 className="btn btn-outline-light btn-sm rounded-pill px-4"
                 aria-label="Send feedback"
-                style={{ fontFamily: "'Outfit', sans-serif", letterSpacing: "0.5px" }}
+                style={{ fontFamily: "var(--font-base)", letterSpacing: "0.5px" }}
               >
                 Send Feedback
               </Link>

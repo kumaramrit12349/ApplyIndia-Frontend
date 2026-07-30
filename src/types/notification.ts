@@ -5,6 +5,7 @@ export interface HomePageNotification {
   sk: string;
   state?: string;
   last_date_to_apply?: string;
+  created_at?: number;
 }
 
 // types/notification.ts
