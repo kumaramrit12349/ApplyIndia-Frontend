@@ -23,8 +23,17 @@ const JobBanner: React.FC = () => {
             });
     }, []);
 
-    if (loading || latestItems.length === 0) {
+    if (loading) {
         return null;
+    }
+
+    if (latestItems.length === 0) {
+        return (
+            <div className="job-banner-container job-banner-empty">
+                <div className="job-banner-label">Latest Updates</div>
+                <div className="job-banner-empty-message">✨ No active notifications today. Stay tuned for the latest government job updates!</div>
+            </div>
+        );
     }
 
     // Duplicate items multiple times to ensure they stretch across wide screens,
