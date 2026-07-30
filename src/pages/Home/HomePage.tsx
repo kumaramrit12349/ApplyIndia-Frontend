@@ -6,6 +6,7 @@ import type { HomePageNotification } from "../../types/notification";
 import { fetchHomePageNotifications, fetchNotificationsByCategory } from "../../services/public/notiifcationApi";
 import SEO from "../../components/SEO/SEO";
 import WhyChoose from "../../components/WhyChoose/WhyChoose";
+import FAQ from "../../components/FAQ/FAQ";
 import {
   buildBreadcrumbSchema,
   ORGANIZATION_SCHEMA,
@@ -256,6 +257,7 @@ const HomePage: React.FC = () => {
         </div>
       </div>
       <WhyChoose />
+      <FAQ />
     </div>
   );
 };
