@@ -636,7 +636,7 @@ export default function NotificationDetailView({
         {hasAnyLinks && (
           <div className="ndv-links">
             <h2 className="ndv-links-title">
-              <BsLink45Deg style={{ color: "#667eea" }} /> Important Links
+              <BsLink45Deg style={{ color: "var(--color-secondary)" }} /> Important Links
             </h2>
 
             {notification.links?.apply_online_url && (
@@ -686,7 +686,7 @@ export default function NotificationDetailView({
                 xmlns="http://www.w3.org/2000/svg"
                 width="16"
                 height="16"
-                fill="#667eea"
+                fill="var(--color-secondary)"
                 viewBox="0 0 16 16"
               >
                 <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
@@ -698,7 +698,7 @@ export default function NotificationDetailView({
                 <button
                   onClick={() => window.open("/dashboard", "_blank")}
                   style={{
-                    background: "#667eea",
+                    background: "var(--color-secondary)",
                     color: "white",
                     border: "none",
                     borderRadius: "4px",

@@ -16,22 +16,22 @@
   100% { background-position: 200% 0; }
 }
 @keyframes ndv-pulseRing {
-  0%   { box-shadow: 0 0 0 0 rgba(102,126,234,0.35); }
-  70%  { box-shadow: 0 0 0 8px rgba(102,126,234,0); }
-  100% { box-shadow: 0 0 0 0 rgba(102,126,234,0); }
+  0%   { box-shadow: 0 0 0 0 rgba(15,61,145,0.35); }
+  70%  { box-shadow: 0 0 0 8px rgba(15,61,145,0); }
+  100% { box-shadow: 0 0 0 0 rgba(15,61,145,0); }
 }
 
 /* --- Page wrapper --- */
 .ndv-page {
-  font-family: 'Outfit', sans-serif;
-  background: linear-gradient(180deg, #f8f9fc 0%, #eef0f7 100%);
+  font-family: var(--font-base);
+  background: var(--color-bg);
   min-height: 100vh;
   padding-bottom: 3rem;
 }
 
 /* --- Hero section --- */
 .ndv-hero {
-  background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%);
   padding: 2.5rem 0 2rem;
   position: relative;
   overflow: hidden;
@@ -40,7 +40,7 @@
   content: '';
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: linear-gradient(135deg, rgba(102,126,234,0.10) 0%, rgba(118,75,162,0.08) 100%);
+  background: linear-gradient(135deg, rgba(255,255,255,0.10) 0%, transparent 60%);
   pointer-events: none;
 }
 
@@ -73,14 +73,14 @@
   -webkit-backdrop-filter: blur(8px);
 }
 .ndv-badge--category {
-  background: rgba(102,126,234,0.25);
-  color: #c4d0ff;
-  border: 1px solid rgba(102,126,234,0.3);
+  background: rgba(37,99,235,0.28);
+  color: #dbeafe;
+  border: 1px solid rgba(37,99,235,0.4);
 }
 .ndv-badge--state {
-  background: rgba(67,233,123,0.2);
-  color: #97ffc8;
-  border: 1px solid rgba(67,233,123,0.25);
+  background: rgba(2,132,199,0.25);
+  color: #bae6fd;
+  border: 1px solid rgba(2,132,199,0.3);
 }
 .ndv-badge--dept {
   background: rgba(255,255,255,0.1);
@@ -115,7 +115,7 @@
   border-radius: 50px;
   font-size: 0.88rem;
   font-weight: 600;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-base);
   border: 1.5px solid rgba(255,255,255,0.3);
   background: rgba(255,255,255,0.08);
   color: #fff;
@@ -148,11 +148,11 @@
 .ndv-short-desc {
   background: rgba(255,255,255,0.95);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(0,0,0,0.06);
-  border-radius: 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
   padding: 1.25rem 1.5rem;
   margin-bottom: 1.5rem;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  box-shadow: var(--shadow-sm);
   animation: ndv-scaleIn 0.4s ease-out 0.15s both;
   overflow-wrap: break-word !important;
   word-break: normal !important;
@@ -163,11 +163,11 @@
 
 /* --- Section card (info cards) --- */
 .ndv-card {
-  background: #fff;
-  border: 1px solid rgba(0,0,0,0.06);
-  border-radius: 16px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
   overflow: hidden;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  box-shadow: var(--shadow-xs);
   transition: box-shadow 0.3s ease, transform 0.3s ease;
   height: 100%;
   display: flex;
@@ -175,7 +175,7 @@
   animation: ndv-fadeUp 0.45s ease-out both;
 }
 .ndv-card:hover {
-  box-shadow: 0 8px 28px rgba(0,0,0,0.08);
+  box-shadow: var(--shadow-md);
   transform: translateY(-2px);
 }
 
@@ -194,10 +194,10 @@
   border-radius: 0 4px 4px 0;
 }
 
-.ndv-card-header--blue::before   { background: linear-gradient(180deg, #667eea, #764ba2); }
-.ndv-card-header--orange::before { background: linear-gradient(180deg, #f093fb, #f5576c); }
-.ndv-card-header--green::before  { background: linear-gradient(180deg, #43e97b, #38f9d7); }
-.ndv-card-header--purple::before { background: linear-gradient(180deg, #a18cd1, #fbc2eb); }
+.ndv-card-header--blue::before   { background: linear-gradient(180deg, var(--color-secondary), var(--color-primary)); }
+.ndv-card-header--orange::before { background: linear-gradient(180deg, var(--color-accent), #d97706); }
+.ndv-card-header--green::before  { background: linear-gradient(180deg, var(--color-success), #15803d); }
+.ndv-card-header--purple::before { background: linear-gradient(180deg, var(--status-result), #5b21b6); }
 .ndv-card-header--teal::before   { background: linear-gradient(180deg, #0ea5e9, #06b6d4); }
 
 .ndv-card-icon {
@@ -210,16 +210,16 @@
   font-size: 1rem;
   flex-shrink: 0;
 }
-.ndv-card-icon--blue   { background: rgba(102,126,234,0.1);  color: #667eea; }
-.ndv-card-icon--orange { background: rgba(245,87,108,0.1);   color: #f5576c; }
-.ndv-card-icon--green  { background: rgba(67,233,123,0.1);   color: #28a745; }
-.ndv-card-icon--purple { background: rgba(161,140,209,0.1);  color: #764ba2; }
-.ndv-card-icon--teal   { background: rgba(14,165,233,0.1);   color: #0ea5e9; }
+.ndv-card-icon--blue   { background: rgba(37,99,235,0.1);   color: var(--color-secondary); }
+.ndv-card-icon--orange { background: rgba(245,158,11,0.12); color: var(--color-accent); }
+.ndv-card-icon--green  { background: rgba(22,163,74,0.1);   color: var(--color-success); }
+.ndv-card-icon--purple { background: rgba(124,58,237,0.12); color: var(--status-result); }
+.ndv-card-icon--teal   { background: rgba(14,165,233,0.1);  color: #0ea5e9; }
 
 .ndv-card-title {
   font-weight: 600;
   font-size: 1rem;
-  color: #1f2937;
+  color: var(--color-heading);
   margin: 0;
 }
 
@@ -244,7 +244,7 @@
 .ndv-lv-label {
   font-size: 0.88rem;
   font-weight: 500;
-  color: #6b7280;
+  color: var(--color-muted);
   white-space: nowrap;
   flex-shrink: 0;
 }
@@ -252,13 +252,13 @@
 .ndv-lv-value {
   font-size: 0.92rem;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--color-heading);
   text-align: right;
   overflow-wrap: break-word;
   word-break: normal;
 }
 .ndv-lv-value--highlight {
-  color: #dc2626;
+  color: var(--color-danger);
 }
 .ndv-lv-value--muted {
   font-weight: 400;
@@ -280,40 +280,40 @@
   transition: background 0.2s ease;
 }
 .ndv-status-item:hover {
-  background: rgba(102,126,234,0.04);
+  background: rgba(15,61,145,0.04);
 }
 .ndv-status-icon {
   font-size: 1.1rem;
   flex-shrink: 0;
 }
-.ndv-status-icon--on  { color: #22c55e; }
+.ndv-status-icon--on  { color: var(--color-success); }
 .ndv-status-icon--off { color: #d1d5db; }
 .ndv-status-label {
   font-size: 0.9rem;
   font-weight: 500;
 }
-.ndv-status-label--on  { color: #1f2937; }
+.ndv-status-label--on  { color: var(--color-heading); }
 .ndv-status-label--off { color: #9ca3af; }
 
 /* --- Track-your-progress section --- */
 .ndv-track {
-  background: #fff;
-  border: 1px solid rgba(0,0,0,0.06);
-  border-radius: 16px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
   padding: 1.5rem;
   margin-bottom: 1.5rem;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  box-shadow: var(--shadow-xs);
   animation: ndv-fadeUp 0.45s ease-out 0.15s both;
 }
 .ndv-track-title {
   font-size: 1.15rem;
   font-weight: 700;
-  color: #1f2937;
+  color: var(--color-heading);
   margin-bottom: 4px;
 }
 .ndv-track-subtitle {
   font-size: 0.85rem;
-  color: #6b7280;
+  color: var(--color-muted);
   margin-bottom: 0.75rem;
 }
 
@@ -323,13 +323,13 @@
   gap: 8px;
   padding: 10px 14px;
   border-radius: 10px;
-  background: rgba(102,126,234,0.06);
-  border: 1px solid rgba(102,126,234,0.12);
+  background: rgba(15,61,145,0.06);
+  border: 1px solid rgba(15,61,145,0.12);
   font-size: 0.8rem;
   color: #4b5563;
   margin-bottom: 1.25rem;
 }
-.ndv-track-note strong { color: #1f2937; }
+.ndv-track-note strong { color: var(--color-heading); }
 
 /* Progress stepper */
 .ndv-stepper {
@@ -362,9 +362,9 @@
   box-shadow: 0 3px 10px rgba(34,197,94,0.3);
 }
 .ndv-step-circle--active {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, var(--color-secondary), var(--color-primary));
   color: #fff;
-  box-shadow: 0 3px 10px rgba(102,126,234,0.3);
+  box-shadow: 0 3px 10px rgba(37,99,235,0.3);
   animation: ndv-pulseRing 2s infinite;
 }
 .ndv-step-circle--locked {
@@ -381,7 +381,7 @@
   line-height: 1.25;
 }
 .ndv-step-label--completed { color: #22c55e; font-weight: 600; }
-.ndv-step-label--active    { color: #667eea; font-weight: 600; }
+.ndv-step-label--active    { color: var(--color-secondary); font-weight: 600; }
 .ndv-step-label--locked    { color: #cbd5e1; }
 
 .ndv-step-connector {
@@ -413,7 +413,7 @@
   padding: 14px 8px;
   border-radius: 12px;
   border: 1.5px solid transparent;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-base);
   font-size: 0.78rem;
   font-weight: 600;
   cursor: pointer;
@@ -431,14 +431,14 @@
   color: #16a34a;
 }
 .ndv-track-btn--active {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, var(--color-secondary), var(--color-primary));
   border-color: transparent;
   color: #fff;
-  box-shadow: 0 4px 14px rgba(102,126,234,0.25);
+  box-shadow: 0 4px 14px rgba(37,99,235,0.25);
 }
 .ndv-track-btn--active:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(102,126,234,0.35);
+  box-shadow: 0 6px 20px rgba(37,99,235,0.35);
 }
 .ndv-track-btn--locked {
   background: #f8fafc;
@@ -452,18 +452,18 @@
 
 /* --- Important links section --- */
 .ndv-links {
-  background: #fff;
-  border: 1px solid rgba(0,0,0,0.06);
-  border-radius: 16px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
   padding: 1.5rem;
   margin-bottom: 1.5rem;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  box-shadow: var(--shadow-xs);
   animation: ndv-fadeUp 0.45s ease-out 0.2s both;
 }
 .ndv-links-title {
   font-size: 1.1rem;
   font-weight: 700;
-  color: #1f2937;
+  color: var(--color-heading);
   margin-bottom: 1rem;
   display: flex;
   align-items: center;
@@ -476,21 +476,21 @@
   padding: 14px 20px;
   border: none;
   border-radius: 12px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-primary) 100%);
   color: #fff;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-base);
   font-size: 1rem;
   font-weight: 600;
   text-align: center;
   text-decoration: none;
   cursor: pointer;
   transition: all 0.25s ease;
-  box-shadow: 0 4px 14px rgba(102,126,234,0.25);
+  box-shadow: 0 4px 14px rgba(15,61,145,0.25);
   margin-bottom: 1rem;
 }
 .ndv-links-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 24px rgba(102,126,234,0.35);
+  box-shadow: 0 6px 24px rgba(15,61,145,0.35);
   color: #fff;
 }
 
@@ -507,17 +507,17 @@
   border: 1.5px solid rgba(0,0,0,0.07);
   border-radius: 12px;
   text-decoration: none;
-  color: #374151;
+  color: var(--color-body);
   font-size: 0.88rem;
   font-weight: 500;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-base);
   transition: all 0.25s ease;
   background: #fafbfc;
 }
 .ndv-link-item:hover {
-  border-color: rgba(102,126,234,0.3);
-  background: rgba(102,126,234,0.04);
-  color: #4338ca;
+  border-color: rgba(15,61,145,0.3);
+  background: rgba(15,61,145,0.04);
+  color: var(--color-primary);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(0,0,0,0.06);
 }
@@ -540,16 +540,16 @@
 
 /* --- Long description --- */
 .ndv-long-desc {
-  background: #fff;
-  border: 1px solid rgba(0,0,0,0.06);
-  border-radius: 16px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
   padding: 1.5rem;
   margin-bottom: 1.5rem;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  box-shadow: var(--shadow-xs);
   overflow-wrap: break-word !important;
   word-break: normal !important;
   line-height: 1.7;
-  color: #374151;
+  color: var(--color-body);
   animation: ndv-fadeUp 0.45s ease-out 0.25s both;
 }
 
@@ -569,7 +569,7 @@
   padding: 6px 14px;
   border: none;
   border-radius: 8px;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-base);
   font-size: 0.82rem;
   font-weight: 500;
   cursor: pointer;
@@ -603,11 +603,11 @@
 /* --- Admin metadata card --- */
 .ndv-admin-meta {
   background: rgba(255,255,255,0.95);
-  border: 1px solid rgba(0,0,0,0.06);
-  border-radius: 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
   padding: 1.5rem;
   margin-bottom: 1.5rem;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  box-shadow: var(--shadow-xs);
 }
 
 /* --- Responsive --- */

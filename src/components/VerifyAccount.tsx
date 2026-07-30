@@ -50,11 +50,13 @@ const VerifyAccountPopup: React.FC<VerifyAccountPopupProps> = ({
   };
 
   return (
-    <Modal show={show} onHide={onClose} centered>
-      <Modal.Header closeButton>
-        <Modal.Title>Verify your account</Modal.Title>
+    <Modal show={show} onHide={onClose} centered contentClassName="border-0 shadow-lg rounded-4">
+      <Modal.Header closeButton className="border-0 pb-1">
+        <Modal.Title className="fs-4" style={{ fontWeight: 800, color: "var(--color-heading)" }}>
+          Verify your account
+        </Modal.Title>
       </Modal.Header>
-      <Modal.Body>
+      <Modal.Body className="pt-0 px-4 pb-4">
         <p className="mb-3">
           We have sent a verification code to <strong>{email}</strong>. Enter it
           below to activate your account.
@@ -66,26 +68,32 @@ const VerifyAccountPopup: React.FC<VerifyAccountPopupProps> = ({
             </label>
             <input
               id="code"
-              className="form-control"
+              className="form-control bg-body-tertiary"
+              style={{ borderRadius: 10, fontSize: "1.08em" }}
               placeholder="Enter code"
               value={code}
               onChange={(e) => setCode(e.target.value)}
               required
             />
           </div>
-          <Button
+          <button
             type="submit"
-            variant="primary"
-            className="w-100 mb-2"
+            className="btn w-100 mb-2 fw-bold text-white border-0"
+            style={{
+              borderRadius: "12px",
+              background: "linear-gradient(135deg, var(--color-secondary), var(--color-primary))",
+              fontSize: "1.05rem",
+            }}
             disabled={loading}
           >
             {loading ? "Verifying..." : "Verify"}
-          </Button>
+          </button>
         </form>
         <Button
           type="button"
           variant="link"
           className="p-0 mt-2"
+          style={{ color: "var(--color-primary)" }}
           onClick={handleResend}
           disabled={loading}
         >
