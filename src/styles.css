@@ -1418,7 +1418,7 @@ h1, h2, h3, h4, h5, h6 {
    ======================================== */
 
 .ai-profile-banner {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%);
   height: 140px;
   position: relative;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -1460,7 +1460,7 @@ h1, h2, h3, h4, h5, h6 {
   width: 90px;
   height: 90px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%);
+  background: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-primary) 100%);
   color: white;
   display: flex;
   align-items: center;
@@ -1468,14 +1468,14 @@ h1, h2, h3, h4, h5, h6 {
   font-size: 2.2rem;
   font-weight: 700;
   border: 4px solid #fff;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-sm);
 }
 
 .ai-profile-section-title {
   font-size: 1.1rem;
   font-weight: 700;
-  color: #374151;
-  border-bottom: 2px solid #e5e7eb;
+  color: var(--color-body);
+  border-bottom: 2px solid var(--color-border);
   padding-bottom: 8px;
   margin-bottom: 0;
   display: inline-block;
@@ -1488,24 +1488,24 @@ h1, h2, h3, h4, h5, h6 {
   align-items: center;
   gap: 16px;
   background: rgba(255, 255, 255, 0.6);
-  border: 1px solid rgba(0, 0, 0, 0.04);
+  border: 1px solid var(--color-border);
   padding: 16px;
-  border-radius: 12px;
-  transition: all 0.3s ease;
+  border-radius: var(--radius-lg);
+  transition: var(--motion-base);
 }
 
 .ai-profile-data-box:hover {
   background: #fff;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-sm);
   transform: translateY(-2px);
 }
 
 .ai-profile-data-box .icon {
   width: 44px;
   height: 44px;
-  background: rgba(102, 126, 234, 0.1);
-  color: #667eea;
-  border-radius: 10px;
+  background: rgba(37, 99, 235, 0.1);
+  color: var(--color-secondary);
+  border-radius: var(--radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1516,7 +1516,7 @@ h1, h2, h3, h4, h5, h6 {
   font-size: 0.75rem;
   text-transform: uppercase;
   font-weight: 700;
-  color: #9ca3af;
+  color: var(--color-muted);
   margin-bottom: 2px;
   display: block;
   letter-spacing: 0.5px;
@@ -1525,7 +1525,7 @@ h1, h2, h3, h4, h5, h6 {
 .ai-profile-data-box .info p {
   font-size: 1rem;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--color-heading);
   margin: 0;
 }
 
@@ -1534,24 +1534,24 @@ h1, h2, h3, h4, h5, h6 {
   font-size: 0.85rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: #4b5563;
+  color: var(--color-muted);
 }
 
 .ai-input-group .form-control,
 .ai-input-group .form-select {
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
   padding: 10px 14px;
   font-size: 0.95rem;
-  background: #f9fafb;
-  transition: all 0.2s ease;
+  background: var(--color-bg);
+  transition: var(--motion-fast);
 }
 
 .ai-input-group .form-control:focus,
 .ai-input-group .form-select:focus {
   background: #fff;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-focus);
 }
 
 /* ============ LEGAL CONTENT ============ */

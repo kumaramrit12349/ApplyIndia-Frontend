@@ -86,7 +86,7 @@ const ProfilePage: React.FC = () => {
     if (loading) {
         return (
             <div className="container py-5 text-center">
-                <div className="spinner-border text-primary" role="status">
+                <div className="spinner-border" style={{ color: "var(--color-primary)" }} role="status">
                     <span className="visually-hidden">Loading...</span>
                 </div>
             </div>
@@ -109,7 +109,7 @@ const ProfilePage: React.FC = () => {
             <div className="row justify-content-center">
                 <div className="col-lg-10 col-xl-9">
                     {/* Main Profile Card */}
-                    <div className="ai-list-card overflow-hidden" style={{ border: "1px solid rgba(255,255,255,0.2)" }}>
+                    <div className="ai-list-card overflow-hidden">
                         
                         {/* Header Banner & Avatar */}
                         <div className="position-relative ai-profile-banner">
@@ -296,7 +296,7 @@ const ProfilePage: React.FC = () => {
                                             type="submit"
                                             className="btn btn-primary px-5 py-2 fw-bold"
                                             disabled={updating || Object.keys(getChangedFields()).length === 0}
-                                            style={{ background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)", border: "none", borderRadius: "8px" }}
+                                            style={{ background: "linear-gradient(135deg, var(--color-secondary) 0%, var(--color-primary) 100%)", border: "none", borderRadius: "8px" }}
                                         >
                                             {updating ? "Saving..." : "Save Changes"}
                                         </button>
