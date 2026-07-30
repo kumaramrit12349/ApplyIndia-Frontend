@@ -294,7 +294,7 @@ const ProfilePage: React.FC = () => {
                                         </button>
                                         <button
                                             type="submit"
-                                            className="btn btn-primary px-5 py-2 fw-bold"
+                                            className="btn text-white px-5 py-2 fw-bold"
                                             disabled={updating || Object.keys(getChangedFields()).length === 0}
                                             style={{ background: "linear-gradient(135deg, var(--color-secondary) 0%, var(--color-primary) 100%)", border: "none", borderRadius: "8px" }}
                                         >

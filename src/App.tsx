@@ -48,7 +48,7 @@ const GoogleCallbackPage = lazy(() => import("./pages/GoogleCallbackPage"));
 
 const RouteFallback: React.FC = () => (
   <div className="d-flex justify-content-center align-items-center py-5">
-    <div className="spinner-border text-primary" role="status">
+    <div className="spinner-border" style={{ color: "var(--color-primary)" }} role="status">
       <span className="visually-hidden">Loading...</span>
     </div>
   </div>
@@ -190,7 +190,7 @@ const AppLayout: React.FC = () => {
   if (checkingAuth) {
     return (
       <div className="d-flex justify-content-center align-items-center min-vh-100">
-        <div className="spinner-border text-primary" role="status">
+        <div className="spinner-border" style={{ color: "var(--color-primary)" }} role="status">
           <span className="visually-hidden">Loading...</span>
         </div>
       </div>

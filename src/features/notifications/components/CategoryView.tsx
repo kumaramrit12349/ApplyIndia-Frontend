@@ -155,7 +155,7 @@ const CategoryView: React.FC = () => {
 
           {loading && items.length === 0 ? (
             <div className="text-center py-5">
-              <span className="spinner-border text-primary" />
+              <span className="spinner-border" style={{ color: "var(--color-primary)" }} />
             </div>
           ) : items.length === 0 ? (
             <div className="text-center py-5 text-muted">
@@ -168,7 +168,7 @@ const CategoryView: React.FC = () => {
               hasMore={hasMore}
               loader={
                 <div className="text-center py-4">
-                  <span className="spinner-border text-primary" />
+                  <span className="spinner-border" style={{ color: "var(--color-primary)" }} />
                 </div>
               }
               endMessage={

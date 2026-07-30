@@ -126,7 +126,7 @@ const HomePage: React.FC = () => {
 
             {searchLoading && searchResults.length === 0 ? (
               <div className="text-center py-5">
-                <span className="spinner-border text-primary" />
+                <span className="spinner-border" style={{ color: "var(--color-primary)" }} />
               </div>
             ) : searchResults.length === 0 ? (
               <div className="text-center py-5 text-muted">
@@ -139,7 +139,7 @@ const HomePage: React.FC = () => {
                 hasMore={searchHasMore}
                 loader={
                   <div className="text-center py-4">
-                    <span className="spinner-border text-primary" />
+                    <span className="spinner-border" style={{ color: "var(--color-primary)" }} />
                   </div>
                 }
                 endMessage={
@@ -214,7 +214,7 @@ const HomePage: React.FC = () => {
         <div className="row g-4">
           {groupedLoading ? (
             <div className="text-center m-auto py-5">
-              <div className="spinner-border text-primary" />
+              <div className="spinner-border" style={{ color: "var(--color-primary)" }} />
             </div>
           ) : (
             (() => {

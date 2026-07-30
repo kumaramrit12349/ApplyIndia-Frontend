@@ -37,7 +37,7 @@ const GoogleCallbackPage: React.FC = () => {
 
   return (
     <div className="d-flex flex-column justify-content-center align-items-center min-vh-100 gap-3">
-      <div className="spinner-border text-primary" role="status" style={{ width: "3rem", height: "3rem" }}>
+      <div className="spinner-border" role="status" style={{ width: "3rem", height: "3rem", color: "var(--color-primary)" }}>
         <span className="visually-hidden">Signing you in...</span>
       </div>
       <p className="text-muted fw-semibold">Completing Google sign-in…</p>

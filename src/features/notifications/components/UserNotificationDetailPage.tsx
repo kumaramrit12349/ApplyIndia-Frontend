@@ -157,7 +157,7 @@ const UserNotificationDetailPage: React.FC<UserNotificationDetailPageProps> = ({
   if (loading) {
     return (
       <div className="container mt-5 text-center">
-        <div className="spinner-border text-primary" role="status">
+        <div className="spinner-border" style={{ color: "var(--color-primary)" }} role="status">
           <span className="visually-hidden">Loading...</span>
         </div>
       </div>
