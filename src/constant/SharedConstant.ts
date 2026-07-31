@@ -181,3 +181,14 @@ export const APPLYINDIA_SOCIAL_LINKS = [
     color: "#0077b5",
   },
 ];
+
+// Friendly labels for profile field keys returned by the eligibility API's
+// missingProfileFields (used both for the single-notification Check Eligibility
+// modal and the Eligible Notifications list filter).
+export const PROFILE_FIELD_LABELS: Record<string, string> = {
+  dob: "Date of Birth",
+  qualification: "Highest Qualification",
+  specialization: "Specialization",
+  qualification_percentage: "Percentage / CGPA Obtained",
+  state: "State",
+};

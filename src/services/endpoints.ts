@@ -71,4 +71,5 @@ export const USER_ACTIVITY_API = {
 
 export const ELIGIBILITY_API = {
   CHECK: (notificationId: string) => `/api/eligibility/check/${notificationId}`,
+  ELIGIBLE_NOTIFICATIONS: "/api/eligibility/eligible-notifications",
 };

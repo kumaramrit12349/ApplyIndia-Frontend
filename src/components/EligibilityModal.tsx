@@ -2,15 +2,8 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { BsCheckCircleFill, BsXCircleFill, BsExclamationTriangleFill } from "react-icons/bs";
 import type { IEligibilityResult } from "../services/private/eligibilityApi";
+import { PROFILE_FIELD_LABELS } from "../constant/SharedConstant";
 import "./EligibilityModal.css";
-
-const FIELD_LABELS: Record<string, string> = {
-  dob: "Date of Birth",
-  qualification: "Highest Qualification",
-  specialization: "Specialization",
-  qualification_percentage: "Percentage / CGPA Obtained",
-  state: "State",
-};
 
 interface EligibilityModalProps {
   show: boolean;
@@ -51,7 +44,7 @@ const EligibilityModal: React.FC<EligibilityModalProps> = ({ show, loading, resu
             </p>
             <ul className="elig-reasons">
               {result.missingProfileFields.map((field) => (
-                <li key={field}>{FIELD_LABELS[field] || field}</li>
+                <li key={field}>{PROFILE_FIELD_LABELS[field] || field}</li>
               ))}
             </ul>
             <a href="/profile" className="elig-cta">

@@ -4,6 +4,9 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import ListView from "./ListView";
 import type { HomePageNotification } from "../../../types/notification";
 import { fetchNotificationsByCategory } from "../../../services/public/notiifcationApi";
+import { fetchEligibleNotifications } from "../../../services/private/eligibilityApi";
+import { PROFILE_FIELD_LABELS } from "../../../constant/SharedConstant";
+import { useAuth } from "../../../context/AuthContext";
 import SEO from "../../../components/SEO/SEO";
 import { buildBreadcrumbSchema, SITE_URL } from "../../../seo/site";
 
@@ -48,6 +51,7 @@ const CategoryView: React.FC = () => {
   const decodedCategory = decodeURIComponent(category ?? "");
   const query = useQuery();
   const searchValue = query.get("searchValue") ?? "";
+  const { isAuthenticated, onShowAuthPopup } = useAuth();
 
   const [items, setItems] = useState<HomePageNotification[]>([]);
   const [lastKey, setLastKey] = useState<string | undefined>(undefined);
@@ -57,6 +61,43 @@ const CategoryView: React.FC = () => {
   // ✅ prevents race conditions
   const isFetchingRef = useRef(false);
 
+  /* ================= ELIGIBLE FILTER STATE ================= */
+  const [mode, setMode] = useState<"all" | "eligible">("all");
+  const [eligLoading, setEligLoading] = useState(false);
+  const [eligItems, setEligItems] = useState<HomePageNotification[]>([]);
+  const [eligIncompleteProfile, setEligIncompleteProfile] = useState(false);
+  const [eligMissingFields, setEligMissingFields] = useState<string[]>([]);
+
+  const loadEligible = async () => {
+    setEligLoading(true);
+    setEligIncompleteProfile(false);
+    setEligMissingFields([]);
+    try {
+      const res = await fetchEligibleNotifications({ category: decodedCategory });
+      if (res.incompleteProfile) {
+        setEligIncompleteProfile(true);
+        setEligMissingFields(res.missingProfileFields);
+        setEligItems([]);
+      } else {
+        setEligItems(res.notifications || []);
+      }
+    } catch (error) {
+      console.error("Failed to load eligible notifications", error);
+      setEligItems([]);
+    } finally {
+      setEligLoading(false);
+    }
+  };
+
+  const handleShowEligible = () => {
+    if (!isAuthenticated) {
+      onShowAuthPopup();
+      return;
+    }
+    setMode("eligible");
+    loadEligible();
+  };
+
   /* ================= RESET ON CHANGE ================= */
 
   useEffect(() => {
@@ -65,6 +106,7 @@ const CategoryView: React.FC = () => {
     setHasMore(true);
     setLoading(true);
     isFetchingRef.current = false;
+    setMode("all");
     loadMore(true);
     // eslint-disable-next-line
   }, [decodedCategory, searchValue]);
@@ -114,7 +156,7 @@ const CategoryView: React.FC = () => {
 
   return (
     <div className="container py-3 px-2 px-md-4">
-      <SEO 
+      <SEO
         title={seoData.title}
         description={seoData.description}
         noindex={!!searchValue}
@@ -147,13 +189,65 @@ const CategoryView: React.FC = () => {
       />
       <div className="row justify-content-center">
         <div className="col-12 col-md-10 col-lg-8">
-          {searchValue && (
+          <div className="text-center">
+            <div className="ai-elig-toggle">
+              <button
+                type="button"
+                className={`ai-elig-toggle-btn ${mode === "all" ? "active" : ""}`}
+                onClick={() => setMode("all")}
+              >
+                All Notifications
+              </button>
+              <button
+                type="button"
+                className={`ai-elig-toggle-btn ${mode === "eligible" ? "active" : ""}`}
+                onClick={handleShowEligible}
+              >
+                ✓ Eligible Notifications
+              </button>
+            </div>
+          </div>
+
+          {searchValue && mode === "all" && (
             <p className="text-center text-muted mb-3" style={{ fontSize: "0.92rem" }}>
               Showing results for <strong>"{searchValue}"</strong>
             </p>
           )}
 
-          {loading && items.length === 0 ? (
+          {mode === "eligible" ? (
+            eligLoading ? (
+              <div className="text-center py-5">
+                <span className="spinner-border" style={{ color: "var(--color-primary)" }} />
+              </div>
+            ) : eligIncompleteProfile ? (
+              <div className="ai-elig-prompt">
+                <div className="ai-elig-prompt-icon">⚠️</div>
+                <div className="ai-elig-prompt-title">Complete Your Profile</div>
+                <p className="ai-elig-prompt-text">
+                  We need a bit more information to calculate your eligibility:
+                </p>
+                <ul className="ai-elig-prompt-fields">
+                  {eligMissingFields.map((field) => (
+                    <li key={field}>{PROFILE_FIELD_LABELS[field] || field}</li>
+                  ))}
+                </ul>
+                <a href="/profile" className="ai-elig-prompt-cta">
+                  Complete Profile
+                </a>
+              </div>
+            ) : eligItems.length === 0 ? (
+              <div className="text-center py-5 text-muted">
+                <b>No eligible notifications found based on your current profile.</b>
+              </div>
+            ) : (
+              <ListView
+                category={decodedCategory}
+                items={eligItems}
+                showSeeMore={false}
+                showAllItems={true}
+              />
+            )
+          ) : loading && items.length === 0 ? (
             <div className="text-center py-5">
               <span className="spinner-border" style={{ color: "var(--color-primary)" }} />
             </div>

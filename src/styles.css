@@ -1651,3 +1651,105 @@ h1, h2, h3, h4, h5, h6 {
 .legal-content strong {
   color: var(--color-heading);
 }
+
+/* ========================================
+   ELIGIBLE NOTIFICATIONS FILTER TOGGLE
+   ======================================== */
+.ai-elig-toggle {
+  display: inline-flex;
+  padding: 4px;
+  border-radius: 50px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  gap: 4px;
+  margin-bottom: 1.25rem;
+}
+
+.ai-elig-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  border-radius: 50px;
+  border: none;
+  background: transparent;
+  color: var(--color-body);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.ai-elig-toggle-btn:hover:not(.active) {
+  color: var(--color-heading);
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.ai-elig-toggle-btn.active {
+  background: linear-gradient(135deg, var(--color-secondary), var(--color-primary));
+  color: #fff;
+  box-shadow: 0 3px 10px rgba(37, 99, 235, 0.25);
+}
+
+.ai-elig-prompt {
+  text-align: center;
+  padding: 48px 24px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl, 16px);
+}
+
+.ai-elig-prompt-icon {
+  font-size: 2.5rem;
+  margin-bottom: 12px;
+}
+
+.ai-elig-prompt-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-heading);
+  margin-bottom: 8px;
+}
+
+.ai-elig-prompt-text {
+  font-size: 0.9rem;
+  color: var(--color-body);
+  margin-bottom: 4px;
+}
+
+.ai-elig-prompt-fields {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.ai-elig-prompt-fields li {
+  background: var(--color-bg);
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--color-heading);
+}
+
+.ai-elig-prompt-cta {
+  display: inline-block;
+  padding: 10px 24px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--color-secondary), var(--color-primary));
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.ai-elig-prompt-cta:hover {
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
+}
