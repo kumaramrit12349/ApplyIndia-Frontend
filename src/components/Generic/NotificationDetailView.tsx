@@ -22,12 +22,14 @@ import { formatCategoryTitle, formatStateName, getId } from "../../utils/utils";
 import type { INotification } from "../../interface/NotificationInterface";
 import CongratulationsPopup from "../CongratulationsPopup";
 import SupportPopup from "../SupportPopup";
+import EligibilityModal from "../EligibilityModal";
 import {
   trackActivity,
   checkActivityForNotification,
   removeActivity,
   type UserActivityStatus,
 } from "../../services/private/userActivityApi";
+import { checkEligibility, type IEligibilityResult } from "../../services/private/eligibilityApi";
 import { toast } from "react-toastify";
 import "./NotificationDetailView.css";
 
@@ -226,6 +228,9 @@ export default function NotificationDetailView({
     title: "",
     message: "",
   });
+  const [showEligibility, setShowEligibility] = useState(false);
+  const [eligibilityLoading, setEligibilityLoading] = useState(false);
+  const [eligibilityResult, setEligibilityResult] = useState<IEligibilityResult | null>(null);
 
   useEffect(() => {
     if (isAuthenticated && notification?.sk) {
@@ -315,6 +320,27 @@ export default function NotificationDetailView({
       }
     } finally {
       setIsWishlistedLoading(false);
+    }
+  };
+
+  const handleCheckEligibility = async () => {
+    if (!isAuthenticated) {
+      toast.info("🔒 Please login to check your eligibility!", { autoClose: 3000 });
+      if (onShowAuthPopup) onShowAuthPopup();
+      return;
+    }
+    setShowEligibility(true);
+    setEligibilityLoading(true);
+    setEligibilityResult(null);
+    try {
+      const id = getId(notification.sk);
+      const result = await checkEligibility(id);
+      setEligibilityResult(result);
+    } catch (error: any) {
+      setShowEligibility(false);
+      toast.error(error?.message || "Failed to check eligibility");
+    } finally {
+      setEligibilityLoading(false);
     }
   };
 
@@ -459,31 +485,45 @@ export default function NotificationDetailView({
           <h1 className="ndv-hero-title">{notification.title}</h1>
 
           {/* Hero actions */}
-          {!isAdmin &&
-            (currentStatus === 0 ||
-              (currentStatus === null && !deadlinePassed)) && (
+          {!isAdmin && (
             <div className="ndv-hero-actions">
+              {(currentStatus === 0 ||
+                (currentStatus === null && !deadlinePassed)) && (
+                <button
+                  className={`ndv-btn-wishlist ${currentStatus === 0 ? "ndv-btn-wishlist--active" : ""}`}
+                  onClick={handleWishlistToggle}
+                  disabled={isWishlistedLoading}
+                >
+                  {isWishlistedLoading ? (
+                    <span className="spinner-border spinner-border-sm" />
+                  ) : currentStatus === 0 ? (
+                    <>
+                      <BsHeartFill /> Wishlisted
+                    </>
+                  ) : (
+                    <>
+                      <BsHeart /> Add to Wishlist
+                    </>
+                  )}
+                </button>
+              )}
               <button
-                className={`ndv-btn-wishlist ${currentStatus === 0 ? "ndv-btn-wishlist--active" : ""}`}
-                onClick={handleWishlistToggle}
-                disabled={isWishlistedLoading}
+                className="ndv-btn-eligibility"
+                onClick={handleCheckEligibility}
               >
-                {isWishlistedLoading ? (
-                  <span className="spinner-border spinner-border-sm" />
-                ) : currentStatus === 0 ? (
-                  <>
-                    <BsHeartFill /> Wishlisted
-                  </>
-                ) : (
-                  <>
-                    <BsHeart /> Add to Wishlist
-                  </>
-                )}
+                <BsCheckCircle /> Check Eligibility
               </button>
             </div>
           )}
         </div>
       </section>
+
+      <EligibilityModal
+        show={showEligibility}
+        loading={eligibilityLoading}
+        result={eligibilityResult}
+        onClose={() => setShowEligibility(false)}
+      />
 
       {/* ═══════════════ CONTENT ═══════════════ */}
       <div className="ndv-content">

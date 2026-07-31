@@ -1,0 +1,144 @@
+.elig-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+  padding: 16px;
+  animation: elig-fadeIn 0.2s ease-out;
+}
+
+@keyframes elig-fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.elig-modal {
+  position: relative;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl, 16px);
+  box-shadow: var(--shadow-md, 0 10px 30px rgba(0,0,0,0.2));
+  max-width: 440px;
+  width: 100%;
+  padding: 32px 28px 24px;
+  text-align: center;
+  animation: elig-popIn 0.25s ease-out;
+}
+
+@keyframes elig-popIn {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.elig-close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  background: transparent;
+  border: none;
+  font-size: 1rem;
+  color: var(--color-body);
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease;
+}
+.elig-close:hover {
+  background: var(--color-bg);
+}
+
+.elig-loading {
+  padding: 24px 0;
+  color: var(--color-body);
+}
+
+.elig-icon {
+  font-size: 2.75rem;
+  margin-bottom: 12px;
+}
+.elig-icon--success { color: var(--color-success, #16a34a); }
+.elig-icon--danger  { color: var(--color-danger, #dc2626); }
+.elig-icon--warn    { color: var(--color-accent, #f59e0b); }
+
+.elig-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--color-heading);
+  margin-bottom: 8px;
+}
+.elig-title--success { color: var(--color-success, #16a34a); }
+.elig-title--danger  { color: var(--color-danger, #dc2626); }
+
+.elig-subtitle {
+  font-size: 0.92rem;
+  color: var(--color-body);
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+.elig-subtitle--muted {
+  margin-bottom: 4px;
+}
+
+.elig-reasons {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 8px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.elig-reasons li {
+  background: var(--color-bg);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 0.88rem;
+  color: var(--color-heading);
+  position: relative;
+  padding-left: 30px;
+}
+.elig-reasons li::before {
+  content: "•";
+  position: absolute;
+  left: 14px;
+  font-weight: 700;
+}
+.elig-reasons--danger li::before {
+  color: var(--color-danger, #dc2626);
+}
+.elig-reasons:not(.elig-reasons--danger) li::before {
+  color: var(--color-accent, #f59e0b);
+}
+
+.elig-cta {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 10px 22px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--color-secondary), var(--color-primary));
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.elig-cta:hover {
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
+}
+
+.elig-disclaimer {
+  font-size: 0.72rem;
+  color: var(--color-body);
+  opacity: 0.75;
+  margin: 16px 0 0;
+  line-height: 1.4;
+}

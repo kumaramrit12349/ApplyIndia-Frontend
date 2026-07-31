@@ -19,6 +19,7 @@ const ProfilePage: React.FC = () => {
         category: "",
         qualification: "",
         specialization: "",
+        qualification_percentage: "",
     });
 
     const fetchUser = async () => {
@@ -34,6 +35,10 @@ const ProfilePage: React.FC = () => {
                 category: user.category || "",
                 qualification: user.qualification || "",
                 specialization: user.specialization || "",
+                qualification_percentage:
+                    user.qualification_percentage !== undefined && user.qualification_percentage !== null
+                        ? String(user.qualification_percentage)
+                        : "",
             };
             setFormData(data);
             setInitialData(data);
@@ -55,7 +60,10 @@ const ProfilePage: React.FC = () => {
         const changed: any = {};
         Object.keys(formData).forEach((key) => {
             if ((formData as any)[key] !== initialData[key]) {
-                changed[key] = (formData as any)[key];
+                changed[key] =
+                    key === "qualification_percentage"
+                        ? ((formData as any)[key] === "" ? undefined : Number((formData as any)[key]))
+                        : (formData as any)[key];
             }
         });
         return changed;
@@ -205,6 +213,15 @@ const ProfilePage: React.FC = () => {
                                                 </div>
                                             </div>
                                         </div>
+                                        <div className="col-md-6">
+                                            <div className="ai-profile-data-box">
+                                                <div className="icon"><FiAward /></div>
+                                                <div className="info">
+                                                    <label>Percentage / CGPA Obtained</label>
+                                                    <p>{formData.qualification_percentage ? `${formData.qualification_percentage}%` : "Not specified"}</p>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             ) : (
@@ -275,6 +292,25 @@ const ProfilePage: React.FC = () => {
                                             <div className="form-group ai-input-group">
                                                 <label className="form-label">Specialization</label>
                                                 <input type="text" name="specialization" className="form-control" value={formData.specialization} onChange={handleChange} />
+                                            </div>
+                                        </div>
+                                        <div className="col-md-6">
+                                            <div className="form-group ai-input-group">
+                                                <label className="form-label">Percentage / CGPA Obtained (%)</label>
+                                                <input
+                                                    type="number"
+                                                    name="qualification_percentage"
+                                                    className="form-control"
+                                                    min={0}
+                                                    max={100}
+                                                    step="0.01"
+                                                    value={formData.qualification_percentage}
+                                                    onChange={handleChange}
+                                                    placeholder="e.g. 72.5"
+                                                />
+                                                <div className="form-text text-muted small mt-1">
+                                                    Used to check eligibility for notifications with a minimum percentage requirement.
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

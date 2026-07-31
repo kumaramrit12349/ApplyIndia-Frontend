@@ -135,6 +135,30 @@
   color: #ff8e96;
 }
 
+/* --- Check Eligibility button (hero) --- */
+.ndv-btn-eligibility {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 22px;
+  border-radius: 50px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  font-family: var(--font-base);
+  border: 1.5px solid rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  backdrop-filter: blur(6px);
+}
+.ndv-btn-eligibility:hover {
+  background: rgba(34,197,94,0.2);
+  border-color: #22c55e;
+  color: #86efac;
+  transform: translateY(-1px);
+}
+
 /* --- Content area --- */
 .ndv-content {
   max-width: 920px;

@@ -68,3 +68,7 @@ export const USER_ACTIVITY_API = {
   REMOVE: (notificationSk: string) =>
     `/api/user-activity/remove/${encodeURIComponent(notificationSk)}`,
 };
+
+export const ELIGIBILITY_API = {
+  CHECK: (notificationId: string) => `/api/eligibility/check/${notificationId}`,
+};
