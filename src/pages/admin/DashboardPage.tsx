@@ -10,10 +10,11 @@ import {
   fetchNotifications,
   unarchiveNotification,
   bulkPermanentDeleteNotifications,
+  bulkArchiveNotifications,
 } from "../../services/private/notificationApi";
 import { NOTIFICATION_CATEGORIES, INDIAN_STATES } from "../../constant/SharedConstant";
 import { Dropdown, Form } from "react-bootstrap";
-import { FiTrash2 } from "react-icons/fi";
+import { FiTrash2, FiArchive } from "react-icons/fi";
 
 /* ============ Role helpers ============ */
 type AdminRole = "creator" | "reviewer" | "senior_reviewer" | "admin";
@@ -69,6 +70,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
   const [loading, setLoading] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [isBulkDeleting, setIsBulkDeleting] = useState(false);
+  const [isBulkArchiving, setIsBulkArchiving] = useState(false);
 
   /* Search & Filter state */
   const [searchInput, setSearchInput] = useState("");
@@ -180,6 +182,23 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
       showToast(err?.message || "Bulk delete failed", "error");
     } finally {
       setIsBulkDeleting(false);
+    }
+  };
+
+  const performBulkArchive = async () => {
+    if (selectedIds.length === 0) return;
+    setIsBulkArchiving(true);
+    setModal(m => ({ ...m, show: false }));
+    try {
+      const idsToArchive = selectedIds.map(sk => getId(sk)).filter(Boolean);
+      await bulkArchiveNotifications(idsToArchive);
+      showToast(`${idsToArchive.length} notifications archived`, "success");
+      setSelectedIds([]);
+      loadNotifications(search, timeRange, categoryFilter, stateFilter);
+    } catch (err: any) {
+      showToast(err?.message || "Bulk archive failed", "error");
+    } finally {
+      setIsBulkArchiving(false);
     }
   };
 
@@ -311,6 +330,10 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
   const fullList = tabConfig.find((t) => t.key === tab)?.list || [];
   const displayList = fullList.slice(0, visibleCount);
   const hasMore = visibleCount < fullList.length;
+
+  // Bulk-select is available on the Archived tab (permanent delete) and,
+  // for roles with archive permission, on the other tabs too (bulk archive).
+  const canBulkSelect = tab === "archived" || can(role, "archive");
 
   /* Intersection observer for infinite scroll */
   const lastElementRef = useCallback(
@@ -634,8 +657,8 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
         ))}
       </div>
 
-      {/* Select All Toggle (Archived Tab only for now as per plan) */}
-      {tab === "archived" && displayList.length > 0 && (
+      {/* Select All Toggle */}
+      {canBulkSelect && displayList.length > 0 && (
         <div className="mb-3 px-1">
           <label 
             className="d-flex align-items-center gap-2" 
@@ -709,7 +732,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                 >
                   <div className="card-body p-3 d-flex gap-3 align-items-start">
                     {/* Checkbox for Selection */}
-                    {tab === "archived" && (
+                    {canBulkSelect && (
                       <div 
                         onClick={(e) => {
                           e.stopPropagation();
@@ -1024,29 +1047,57 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                 Cancel
               </button>
               
-              <button
-                className="btn btn-sm rounded-pill px-4 d-flex align-items-center gap-2 fw-bold"
-                disabled={isBulkDeleting}
-                onClick={() => {
-                  setModal({
-                    show: true,
-                    title: "Confirm Bulk Permanent Delete",
-                    message: `Are you sure you want to permanently delete these ${selectedIds.length} notifications? This action is absolutely irreversible.`,
-                    confirmText: isBulkDeleting ? "Deleting..." : "Delete Permanently",
-                    confirmVariant: "danger",
-                    onConfirm: performBulkDelete
-                  });
-                }}
-                style={{
-                  background: "var(--color-danger)",
-                  color: "#fff",
-                  border: "none",
-                  boxShadow: "0 4px 12px rgba(220, 38, 38, 0.3)",
-                  fontSize: "0.8rem",
-                }}
-              >
-                <FiTrash2 size={16} /> Delete
-              </button>
+              {tab === "archived" ? (
+                <button
+                  className="btn btn-sm rounded-pill px-4 d-flex align-items-center gap-2 fw-bold"
+                  disabled={isBulkDeleting}
+                  onClick={() => {
+                    setModal({
+                      show: true,
+                      title: "Confirm Bulk Permanent Delete",
+                      message: `Are you sure you want to permanently delete these ${selectedIds.length} notifications? This action is absolutely irreversible.`,
+                      confirmText: isBulkDeleting ? "Deleting..." : "Delete Permanently",
+                      confirmVariant: "danger",
+                      onConfirm: performBulkDelete
+                    });
+                  }}
+                  style={{
+                    background: "var(--color-danger)",
+                    color: "#fff",
+                    border: "none",
+                    boxShadow: "0 4px 12px rgba(220, 38, 38, 0.3)",
+                    fontSize: "0.8rem",
+                  }}
+                >
+                  <FiTrash2 size={16} /> Delete
+                </button>
+              ) : (
+                can(role, "archive") && (
+                  <button
+                    className="btn btn-sm rounded-pill px-4 d-flex align-items-center gap-2 fw-bold"
+                    disabled={isBulkArchiving}
+                    onClick={() => {
+                      setModal({
+                        show: true,
+                        title: "Confirm Bulk Archive",
+                        message: `Are you sure you want to archive these ${selectedIds.length} notifications?`,
+                        confirmText: isBulkArchiving ? "Archiving..." : "Archive",
+                        confirmVariant: "danger",
+                        onConfirm: performBulkArchive
+                      });
+                    }}
+                    style={{
+                      background: "var(--color-danger)",
+                      color: "#fff",
+                      border: "none",
+                      boxShadow: "0 4px 12px rgba(220, 38, 38, 0.3)",
+                      fontSize: "0.8rem",
+                    }}
+                  >
+                    <FiArchive size={16} /> Archive
+                  </button>
+                )
+              )}
             </div>
           </div>
         </div>

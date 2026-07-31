@@ -29,6 +29,7 @@ export const PRIVATE_API = {
     ADD_COMMENT: (id: string) => `api/notification/comment/${id}`,
     GET_COMMENTS: (id: string) => `api/notification/comments/${id}`,
     DELETE_BULK_PERMANENT: "api/notification/bulk-permanent-delete",
+    ARCHIVE_BULK: "api/notification/bulk-archive",
   },
   SCRAPER: {
     RUN: "api/scraper/run",

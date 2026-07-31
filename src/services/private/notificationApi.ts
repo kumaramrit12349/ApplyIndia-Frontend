@@ -90,3 +90,11 @@ export const bulkPermanentDeleteNotifications = (ids: string[]) => {
     body: JSON.stringify({ ids }),
   });
 };
+
+// Bulk archive notifications
+export const bulkArchiveNotifications = (ids: string[]) => {
+  return privateFetch<any>(PRIVATE_API.NOTIFICATION.ARCHIVE_BULK, {
+    method: "DELETE",
+    body: JSON.stringify({ ids }),
+  });
+};
