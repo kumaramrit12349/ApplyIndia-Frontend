@@ -4,6 +4,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import ListView from "./ListView";
 import type { HomePageNotification } from "../../../types/notification";
 import { fetchNotificationsByCategory } from "../../../services/public/notiifcationApi";
+import { getUserActivities } from "../../../services/private/userActivityApi";
 import { fetchEligibleNotifications } from "../../../services/private/eligibilityApi";
 import { PROFILE_FIELD_LABELS } from "../../../constant/SharedConstant";
 import { useAuth } from "../../../context/AuthContext";
@@ -60,6 +61,23 @@ const CategoryView: React.FC = () => {
 
   // ✅ prevents race conditions
   const isFetchingRef = useRef(false);
+
+  /* ================= ACTIVITY STATUS (fetched once, shared across all cards) ================= */
+  const [activityMap, setActivityMap] = useState<Map<string, number> | undefined>(undefined);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setActivityMap(undefined);
+      return;
+    }
+    getUserActivities({ redirectOn401: false })
+      .then((res) => {
+        const map = new Map<string, number>();
+        (res.data || []).forEach((activity) => map.set(activity.sk, activity.status));
+        setActivityMap(map);
+      })
+      .catch(() => setActivityMap(undefined));
+  }, [isAuthenticated]);
 
   /* ================= ELIGIBLE FILTER STATE ================= */
   const [mode, setMode] = useState<"all" | "eligible">("all");
@@ -245,6 +263,7 @@ const CategoryView: React.FC = () => {
                 items={eligItems}
                 showSeeMore={false}
                 showAllItems={true}
+                activityMap={activityMap}
               />
             )
           ) : loading && items.length === 0 ? (
@@ -278,6 +297,7 @@ const CategoryView: React.FC = () => {
                 items={items}
                 showSeeMore={false}
                 showAllItems={true}
+                activityMap={activityMap}
               />
             </InfiniteScroll>
           )}

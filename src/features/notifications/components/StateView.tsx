@@ -4,6 +4,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import ListView from "./ListView";
 import type { HomePageNotification } from "../../../types/notification";
 import { fetchNotificationsByState } from "../../../services/public/notiifcationApi";
+import { getUserActivities } from "../../../services/private/userActivityApi";
 import { fetchEligibleNotifications } from "../../../services/private/eligibilityApi";
 import { INDIAN_STATES, PROFILE_FIELD_LABELS } from "../../../constant/SharedConstant";
 import { useAuth } from "../../../context/AuthContext";
@@ -30,6 +31,23 @@ const StateView: React.FC = () => {
 
     // ✅ prevents race conditions
     const isFetchingRef = useRef(false);
+
+    /* ================= ACTIVITY STATUS (fetched once, shared across all cards) ================= */
+    const [activityMap, setActivityMap] = useState<Map<string, number> | undefined>(undefined);
+
+    useEffect(() => {
+        if (!isAuthenticated) {
+            setActivityMap(undefined);
+            return;
+        }
+        getUserActivities({ redirectOn401: false })
+            .then((res) => {
+                const map = new Map<string, number>();
+                (res.data || []).forEach((activity) => map.set(activity.sk, activity.status));
+                setActivityMap(map);
+            })
+            .catch(() => setActivityMap(undefined));
+    }, [isAuthenticated]);
 
     /* ================= ELIGIBLE FILTER STATE ================= */
     const [mode, setMode] = useState<"all" | "eligible">("all");
@@ -209,6 +227,7 @@ const StateView: React.FC = () => {
                                 items={eligItems}
                                 showSeeMore={false}
                                 showAllItems={true}
+                                activityMap={activityMap}
                             />
                         )
                     ) : loading && items.length === 0 ? (
@@ -242,6 +261,7 @@ const StateView: React.FC = () => {
                                 items={items}
                                 showSeeMore={false}
                                 showAllItems={true}
+                                activityMap={activityMap}
                             />
                         </InfiniteScroll>
                     )}

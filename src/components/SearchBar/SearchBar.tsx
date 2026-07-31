@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { NOTIFICATION_CATEGORIES, INDIAN_STATES } from "../../constant/SharedConstant";
-import { fetchAvailableFilters } from "../../services/public/notiifcationApi";
 
 interface SearchBarProps {
   onSearch?: (query: string, filter: string) => void;
   placeholder?: string;
+  availableStates: string[];
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({
   onSearch,
   placeholder = "Search notifications...",
+  availableStates,
 }) => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -27,22 +28,11 @@ const SearchBar: React.FC<SearchBarProps> = ({
 
   const [query, setQuery] = useState(urlSearchValue);
   const [filter, setFilter] = useState(currentFilter);
-  const [availableStates, setAvailableStates] = useState<string[]>([]);
 
   useEffect(() => {
     setFilter(currentFilter);
     setQuery(urlSearchValue);
   }, [currentFilter, urlSearchValue]);
-
-  useEffect(() => {
-    fetchAvailableFilters()
-      .then((res: any) => {
-        if (res.states) {
-          setAvailableStates(res.states.map((s: string) => s.toLowerCase()));
-        }
-      })
-      .catch((err) => console.error("Failed to load available filters", err));
-  }, []);
 
   const visibleStates = INDIAN_STATES.filter(state =>
     availableStates.includes(state.value.toLowerCase())

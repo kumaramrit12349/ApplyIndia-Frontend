@@ -27,6 +27,7 @@ import ForgotPasswordPopup from "./components/ForgotPasswordPopup";
 import ResetPasswordPopup from "./components/ResetPasswordPopup";
 import { ToastContainer, toast } from "react-toastify";
 import { checkAuthStatus, logoutUser } from "./services/authApi";
+import { fetchAvailableFilters } from "./services/public/notiifcationApi";
 import { AuthProvider } from "./context/AuthContext";
 import { ThemeProvider } from "./context/ThemeContext";
 import ScrollToTop from "./components/ScrollToTop";
@@ -84,11 +85,25 @@ const AppLayout: React.FC = () => {
   const [authPopupError, setAuthPopupError] = useState<string>("");
   const [userCategory, setUserCategory] = useState<string | undefined>(undefined);
 
+  // Fetched once here (instead of independently by Navigation and SearchBar,
+  // which used to each fire their own duplicate request on every page).
+  const [availableStates, setAvailableStates] = useState<string[]>([]);
+
   // Global event listener for forcing auth popup
   useEffect(() => {
     const handleOpenAuthPopup = () => setShowAuthPopup(true);
     window.addEventListener("openAuthPopup", handleOpenAuthPopup);
     return () => window.removeEventListener("openAuthPopup", handleOpenAuthPopup);
+  }, []);
+
+  useEffect(() => {
+    fetchAvailableFilters()
+      .then((res: any) => {
+        if (res.states) {
+          setAvailableStates(res.states.map((s: string) => s.toLowerCase()));
+        }
+      })
+      .catch((err) => console.error("Failed to load available filters", err));
   }, []);
 
   // Check auth status on first load; also handle Google OAuth error redirects
@@ -216,9 +231,9 @@ const AppLayout: React.FC = () => {
         onShowSignUpPopup={() => { setShowSignUpTab(true); setShowAuthPopup(true); }}
       />
 
-      {!isAdminRoute && <Navigation />}
+      {!isAdminRoute && <Navigation availableStates={availableStates} />}
       {location.pathname === "/" && <Hero />}
-      {showSearchBarBanner && <SearchBar />}
+      {showSearchBarBanner && <SearchBar availableStates={availableStates} />}
       {!isAdminRoute && <JobBanner />}
 
       <main className="flex-grow-1">

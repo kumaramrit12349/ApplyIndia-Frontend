@@ -8,7 +8,7 @@ import { BsHeart, BsHeartFill } from "react-icons/bs";
 import { useAuth } from "../../../context/AuthContext";
 import SupportPopup from "../../../components/SupportPopup";
 
-const WishlistButton = ({ notification, category, onWishlisted, onLimitReached }: { notification: HomePageNotification; category: string; onWishlisted?: () => void; onLimitReached?: () => void }) => {
+const WishlistButton = ({ notification, category, onWishlisted, onLimitReached, activityMap }: { notification: HomePageNotification; category: string; onWishlisted?: () => void; onLimitReached?: () => void; activityMap?: Map<string, number> }) => {
   const { isAuthenticated, onShowAuthPopup } = useAuth();
   const [loading, setLoading] = useState(false);
   const [isWishlisted, setIsWishlisted] = useState(false);
@@ -30,6 +30,16 @@ const WishlistButton = ({ notification, category, onWishlisted, onLimitReached }
       setHasChecked(true);
       return;
     }
+    // When the parent already fetched all of the user's activity statuses in
+    // one batched call (see HomePage), use that instead of a per-card fetch —
+    // the same notification often renders in several sections (e.g. a job
+    // that's also flagged as "Admit Card"/"Result"), which used to trigger a
+    // duplicate check per section.
+    if (activityMap) {
+      setIsWishlisted(activityMap.get(fullSk) === 0);
+      setHasChecked(true);
+      return;
+    }
     checkActivityForNotification(fullSk)
       .then((res) => {
         if (res.tracked && res.data) {
@@ -38,7 +48,7 @@ const WishlistButton = ({ notification, category, onWishlisted, onLimitReached }
       })
       .catch(() => { })
       .finally(() => setHasChecked(true));
-  }, [isAuthenticated, fullSk]);
+  }, [isAuthenticated, fullSk, activityMap]);
 
   const handleWishlistClick = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -71,6 +81,8 @@ const WishlistButton = ({ notification, category, onWishlisted, onLimitReached }
       const msg = error?.message || "Failed to update wishlist.";
       if (msg.includes("ATTEMPT_LIMIT_REACHED")) {
         onLimitReached?.();
+      } else if (msg.includes("DEADLINE_PASSED")) {
+        toast.error("Applications for this notification have closed.");
       } else {
         toast.error(msg);
       }
@@ -114,6 +126,8 @@ interface ListViewProps {
   onItemClick?: (item: Notification) => void;
   showSeeMore?: boolean;
   showAllItems?: boolean;
+  /** Pre-fetched map of notification sk -> activity status, to avoid each card re-fetching its own wishlist status. */
+  activityMap?: Map<string, number>;
 }
 
 interface StatusBadge {
@@ -153,6 +167,7 @@ const ListView: React.FC<ListViewProps> = ({
   loading = false,
   showSeeMore = true,
   showAllItems = false,
+  activityMap,
 }) => {
   const [showAll, setShowAll] = useState(false);
   const [showWishlistPopup, setShowWishlistPopup] = useState(false);
@@ -224,6 +239,7 @@ const ListView: React.FC<ListViewProps> = ({
                         category={category}
                         onWishlisted={() => setShowWishlistPopup(true)}
                         onLimitReached={() => setShowSupport(true)}
+                        activityMap={activityMap}
                       />
                     </div>
                     <div className="ai-list-chevron">

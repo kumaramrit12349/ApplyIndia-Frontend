@@ -4,6 +4,8 @@ import { useLocation } from "react-router-dom";
 import InfiniteScroll from "react-infinite-scroll-component";
 import type { HomePageNotification } from "../../types/notification";
 import { fetchHomePageNotifications, fetchNotificationsByCategory } from "../../services/public/notiifcationApi";
+import { getUserActivities } from "../../services/private/userActivityApi";
+import { useAuth } from "../../context/AuthContext";
 import SEO from "../../components/SEO/SEO";
 import WhyChoose from "../../components/WhyChoose/WhyChoose";
 import FAQ from "../../components/FAQ/FAQ";
@@ -28,6 +30,27 @@ function useQuery() {
 const HomePage: React.FC = () => {
   const query = useQuery();
   const searchValue = query.get("searchValue") ?? "";
+  const { isAuthenticated } = useAuth();
+
+  /* ================= ACTIVITY STATUS (fetched once, shared across all sections) ================= */
+  // Avoids each ListView section re-checking wishlist status per card — a
+  // notification can appear in several sections at once (e.g. its primary
+  // category plus "Admit Card"/"Result" virtual categories).
+  const [activityMap, setActivityMap] = useState<Map<string, number> | undefined>(undefined);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setActivityMap(undefined);
+      return;
+    }
+    getUserActivities({ redirectOn401: false })
+      .then((res) => {
+        const map = new Map<string, number>();
+        (res.data || []).forEach((activity) => map.set(activity.sk, activity.status));
+        setActivityMap(map);
+      })
+      .catch(() => setActivityMap(undefined));
+  }, [isAuthenticated]);
 
   /* ================= SEARCH MODE ================= */
 
@@ -157,6 +180,7 @@ const HomePage: React.FC = () => {
                   items={searchResults}
                   showSeeMore={false}
                   showAllItems={true}
+                  activityMap={activityMap}
                 />
               </InfiniteScroll>
             )}
@@ -248,6 +272,7 @@ const HomePage: React.FC = () => {
                         category={category}
                         items={notifications}
                         loading={groupedLoading}
+                        activityMap={activityMap}
                       />
                     </div>
                   </div>
