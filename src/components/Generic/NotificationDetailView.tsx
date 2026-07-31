@@ -15,6 +15,7 @@ import {
   BsLockFill,
   BsHeart,
   BsHeartFill,
+  BsBarChartFill,
 } from "react-icons/bs";
 import { FcViewDetails } from "react-icons/fc";
 import { formatCategoryTitle, formatStateName, getId } from "../../utils/utils";
@@ -140,6 +141,18 @@ const TRACKING_STEPS: {
 ];
 
 const STATUS_ORDER: UserActivityStatus[] = [1, 2, 3, 4];
+
+const ACTIVITY_STAT_ITEMS: {
+  field: "count_wishlisted" | "count_applied" | "count_admit_card" | "count_result" | "count_selected";
+  label: string;
+  emoji: string;
+}[] = [
+  { field: "count_wishlisted", label: "Wishlisted", emoji: "❤️" },
+  { field: "count_applied", label: "Applied", emoji: "📝" },
+  { field: "count_admit_card", label: "Admit Card", emoji: "🎫" },
+  { field: "count_result", label: "Result Checked", emoji: "📊" },
+  { field: "count_selected", label: "Selected", emoji: "🏆" },
+];
 
 const isDeadlinePassed = (lastDateToApply?: string): boolean => {
   if (!lastDateToApply) return false;
@@ -698,6 +711,34 @@ export default function NotificationDetailView({
             )}
           </div>
         )}
+
+        {/* ═══════════════ APPLICANT ACTIVITY ═══════════════ */}
+        <div className="row g-3 mb-3">
+          <div className="col-12">
+            <div className="ndv-card" style={{ animationDelay: "0.3s" }}>
+              <div className="ndv-card-header ndv-card-header--teal">
+                <div className="ndv-card-icon ndv-card-icon--teal">
+                  <BsBarChartFill />
+                </div>
+                <h3 className="ndv-card-title">Applicant Activity</h3>
+              </div>
+              <div className="ndv-card-body">
+                <div className="ndv-stats-grid">
+                  {ACTIVITY_STAT_ITEMS.map((item) => (
+                    <div className="ndv-stat-pill" key={item.field}>
+                      <span className="ndv-stat-value">
+                        {notification[item.field] ?? 0}
+                      </span>
+                      <span className="ndv-stat-label">
+                        {item.emoji} {item.label}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
         {/* ═══════════════ TRACK YOUR PROGRESS ═══════════════ */}
         {!isAdmin && (

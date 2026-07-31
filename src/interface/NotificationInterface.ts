@@ -41,6 +41,13 @@ export interface INotification {
   modified_at?: number;
   review_status?: 'pending' | 'changes_requested' | 'approved';
   review_comments?: IReviewComment[];
+
+  /* Aggregate user activity counts */
+  count_wishlisted?: number;
+  count_applied?: number;
+  count_admit_card?: number;
+  count_result?: number;
+  count_selected?: number;
 }
 
 export interface INotificationDetails {
