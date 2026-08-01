@@ -5,7 +5,11 @@ import { INDIAN_STATES, EDUCATIONAL_QUALIFICATIONS } from "../constant/SharedCon
 import { FiEdit2, FiUser, FiCalendar, FiMapPin, FiBriefcase, FiAward, FiBook } from "react-icons/fi";
 import { BsGenderAmbiguous } from "react-icons/bs";
 
-const ProfilePage: React.FC = () => {
+interface ProfilePageProps {
+    onProfileUpdated?: () => void;
+}
+
+const ProfilePage: React.FC<ProfilePageProps> = ({ onProfileUpdated }) => {
     const [loading, setLoading] = useState(true);
     const [updating, setUpdating] = useState(false);
     const [isEditMode, setIsEditMode] = useState(false);
@@ -84,6 +88,7 @@ const ProfilePage: React.FC = () => {
             toast.success("Profile updated successfully!");
             setIsEditMode(false);
             await fetchUser();
+            onProfileUpdated?.();
         } catch (error: any) {
             toast.error(error.message || "Failed to update profile");
         } finally {

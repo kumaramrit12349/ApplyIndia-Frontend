@@ -147,8 +147,10 @@ const AppLayout: React.FC = () => {
     verifyAuth();
   }, []);
 
-  const handleAuthSuccess = async () => {
-    // immediately fetch user info after login
+  // Re-fetches the authenticated user's profile and syncs it into app-level
+  // state. Called after login, and after a profile edit (e.g. state change)
+  // so pages like the homepage reflect it without needing a full reload.
+  const refreshUserData = async () => {
     const { isAuthenticated, user } = await checkAuthStatus();
     setIsAuthenticated(isAuthenticated);
 
@@ -161,7 +163,11 @@ const AppLayout: React.FC = () => {
       setUserState(user.state);
       setUserCategory(user.category);
     }
+  };
 
+  const handleAuthSuccess = async () => {
+    // immediately fetch user info after login
+    await refreshUserData();
     setShowAuthPopup(false);
     setShowSignUpTab(false);
     setShowVerifyPopup(false);
@@ -239,7 +245,7 @@ const AppLayout: React.FC = () => {
       <main className="flex-grow-1">
         <Suspense fallback={<RouteFallback />}>
           <Routes>
-            <Route path="/" element={<HomePage />} />
+            <Route path="/" element={<HomePage userState={userState} />} />
 
             {/* Admin routes – protected */}
             <Route
@@ -381,7 +387,7 @@ const AppLayout: React.FC = () => {
                   isAuthenticated={isAuthenticated}
                   checkingAuth={checkingAuth}
                 >
-                  <ProfilePage />
+                  <ProfilePage onProfileUpdated={refreshUserData} />
                 </ProtectedRoute>
               }
             />

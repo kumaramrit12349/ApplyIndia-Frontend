@@ -16,9 +16,14 @@ import {
   SITE_URL,
   WEBSITE_SCHEMA,
 } from "../../seo/site";
+import { INDIAN_STATES } from "../../constant/SharedConstant";
 
 interface GroupedNotifications {
   [category: string]: HomePageNotification[];
+}
+
+interface HomePageProps {
+  userState?: string;
 }
 
 const PAGE_SIZE = 100;
@@ -27,10 +32,17 @@ function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
 
-const HomePage: React.FC = () => {
+const HomePage: React.FC<HomePageProps> = ({ userState }) => {
   const query = useQuery();
   const searchValue = query.get("searchValue") ?? "";
   const { isAuthenticated } = useAuth();
+
+  /* ================= STATE PERSONALIZATION ================= */
+  const hasState = !!userState && userState.toUpperCase() !== "CT";
+  const [stateView, setStateView] = useState<"personalized" | "all">("personalized");
+  // Effective filter sent to the API: "all" disables filtering; a state code
+  // scopes to Central + that state; undefined falls back to Central only.
+  const effectiveStateFilter = stateView === "all" ? "all" : userState;
 
   /* ================= ACTIVITY STATUS (fetched once, shared across all sections) ================= */
   // Avoids each ListView section re-checking wishlist status per card — a
@@ -75,14 +87,14 @@ const HomePage: React.FC = () => {
 
     setGroupedLoading(true);
 
-    fetchHomePageNotifications()
+    fetchHomePageNotifications(effectiveStateFilter)
       .then(res => setGrouped(res.data))
       .catch(err => {
         console.error("Failed to fetch homepage notifications", err);
         setGrouped({});
       })
       .finally(() => setGroupedLoading(false));
-  }, [searchValue]);
+  }, [searchValue, effectiveStateFilter]);
 
   /* ================= RESET SEARCH ================= */
 
@@ -193,6 +205,9 @@ const HomePage: React.FC = () => {
   /* ================= DEFAULT GROUPED UI ================= */
 
   const currentYear = new Date().getFullYear();
+  const stateLabel = hasState
+    ? INDIAN_STATES.find((s) => s.value === userState!.toUpperCase())?.label || userState
+    : undefined;
 
   return (
     <div className="page">
@@ -236,6 +251,48 @@ const HomePage: React.FC = () => {
           },
         ]}
       />
+      <div className="container pt-4">
+        <div className="d-flex flex-wrap align-items-center justify-content-center gap-3 mb-3">
+          <div className="ai-elig-toggle">
+            <button
+              type="button"
+              className={`ai-elig-toggle-btn ${stateView === "personalized" ? "active" : ""}`}
+              onClick={() => setStateView("personalized")}
+            >
+              📍 {hasState ? `${stateLabel} + Central` : "Central Only"}
+            </button>
+            <button
+              type="button"
+              className={`ai-elig-toggle-btn ${stateView === "all" ? "active" : ""}`}
+              onClick={() => setStateView("all")}
+            >
+              🌐 All States
+            </button>
+          </div>
+        </div>
+
+        {stateView === "personalized" && !hasState && (
+          <div className="ai-state-banner">
+            {isAuthenticated ? (
+              <>
+                <span>📍 Set your state to see notifications relevant to you, alongside Central Government notifications.</span>
+                <a href="/profile" className="ai-state-banner-cta">Set Your State</a>
+              </>
+            ) : (
+              <>
+                <span>📍 Sign in and set your state to personalize your feed with notifications relevant to you.</span>
+                <button
+                  type="button"
+                  className="ai-state-banner-cta ai-state-banner-cta--btn"
+                  onClick={() => window.dispatchEvent(new Event("openAuthPopup"))}
+                >
+                  Sign In
+                </button>
+              </>
+            )}
+          </div>
+        )}
+      </div>
       <div className="container py-4">
         <div className="row g-4">
           {groupedLoading ? (

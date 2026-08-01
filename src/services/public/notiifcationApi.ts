@@ -3,9 +3,11 @@ import { apiFetch } from "../client";
 import { PUBLIC_API } from "../endpoints";
 
 
-// Fetch all notifications
-export const fetchHomePageNotifications = () => {
-  return apiFetch<any>(PUBLIC_API.HOME.HOME);
+// Fetch all notifications, optionally personalized by state.
+// state: a state code ("br") -> Central + that state; "all" -> unfiltered; omitted -> Central only.
+export const fetchHomePageNotifications = (state?: string) => {
+  const query = state ? `?state=${encodeURIComponent(state)}` : "";
+  return apiFetch<any>(`${PUBLIC_API.HOME.HOME}${query}`);
 };
 
 // Fetch latest notifications
