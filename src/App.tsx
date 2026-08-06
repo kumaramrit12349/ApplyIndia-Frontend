@@ -39,6 +39,7 @@ const ReviewNotificationPage = lazy(() => import("./pages/admin/ReviewNotificati
 const AdminFeedbackPage = lazy(() => import("./pages/admin/AdminFeedbackPage"));
 const ScraperDashboard = lazy(() => import("./pages/admin/ScraperDashboard"));
 const AdminRolesPage = lazy(() => import("./pages/admin/AdminRolesPage"));
+const EmailTemplatesPage = lazy(() => import("./pages/admin/EmailTemplatesPage"));
 const PrivacyPolicy = lazy(() => import("./pages/legal/PrivacyPolicy"));
 const TermsAndConditions = lazy(() => import("./pages/legal/TermsAndConditions"));
 const Disclaimer = lazy(() => import("./pages/legal/Disclaimer"));
@@ -331,6 +332,17 @@ const AppLayout: React.FC = () => {
                   checkingAuth={checkingAuth}
                 >
                   <AdminRolesPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/email-templates"
+              element={
+                <ProtectedRoute
+                  isAuthenticated={isAuthenticated}
+                  checkingAuth={checkingAuth}
+                >
+                  <EmailTemplatesPage />
                 </ProtectedRoute>
               }
             />

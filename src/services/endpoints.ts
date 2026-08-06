@@ -46,6 +46,11 @@ export const PRIVATE_API = {
     ASSIGN: "api/admin-roles/assign",
     REMOVE: (sub: string) => `api/admin-roles/${sub}`,
   },
+  EMAIL_TEMPLATES: {
+    LIST: "api/email-templates",
+    TEMPLATE_BY_KEY: (key: string) => `api/email-templates/${key}`,
+    PREVIEW: (key: string) => `api/email-templates/${key}/preview`,
+  },
 };
 
 export const AUTH_API = {
