@@ -46,6 +46,7 @@ const Disclaimer = lazy(() => import("./pages/legal/Disclaimer"));
 const AboutUs = lazy(() => import("./pages/legal/AboutUs"));
 const FeedbackPage = lazy(() => import("./pages/feedback/FeedbackPage"));
 const ProfilePage = lazy(() => import("./pages/ProfilePage"));
+const NotificationPreferencesPage = lazy(() => import("./pages/NotificationPreferencesPage"));
 const MyDashboard = lazy(() => import("./pages/MyDashboard"));
 const GoogleCallbackPage = lazy(() => import("./pages/GoogleCallbackPage"));
 
@@ -400,6 +401,19 @@ const AppLayout: React.FC = () => {
                   checkingAuth={checkingAuth}
                 >
                   <ProfilePage onProfileUpdated={refreshUserData} />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Notification Preferences page – protected */}
+            <Route
+              path="/notification-preferences"
+              element={
+                <ProtectedRoute
+                  isAuthenticated={isAuthenticated}
+                  checkingAuth={checkingAuth}
+                >
+                  <NotificationPreferencesPage onProfileUpdated={refreshUserData} />
                 </ProtectedRoute>
               }
             />

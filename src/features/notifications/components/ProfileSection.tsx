@@ -185,6 +185,13 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({
             </button>
 
             <button
+              className="ai-dropdown-item"
+              onClick={() => { setOpen(false); navigate("/notification-preferences"); }}
+            >
+              🔔 Notification Preferences
+            </button>
+
+            <button
               className="ai-dropdown-item danger"
               onClick={() => { setOpen(false); onLogout(); }}
             >

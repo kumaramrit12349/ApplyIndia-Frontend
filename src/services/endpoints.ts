@@ -64,6 +64,8 @@ export const AUTH_API = {
   RESET_PASSWORD: "/auth/reset-password",
   UPDATE_PROFILE: "/auth/profile",
   GET_PROFILE: "/auth/profile",
+  GET_NOTIFICATION_PREFERENCES: "/auth/notification-preferences",
+  UPDATE_NOTIFICATION_PREFERENCES: "/auth/notification-preferences",
 };
 
 export const USER_ACTIVITY_API = {

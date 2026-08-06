@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { fetchProfile, updateProfile } from "../services/authApi";
 import { INDIAN_STATES, EDUCATIONAL_QUALIFICATIONS } from "../constant/SharedConstant";
-import { FiEdit2, FiUser, FiCalendar, FiMapPin, FiBriefcase, FiAward, FiBook } from "react-icons/fi";
+import { FiEdit2, FiUser, FiCalendar, FiMapPin, FiBriefcase, FiAward, FiBook, FiPhone } from "react-icons/fi";
 import { BsGenderAmbiguous } from "react-icons/bs";
 
 interface ProfilePageProps {
@@ -24,6 +24,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onProfileUpdated }) => {
         qualification: "",
         specialization: "",
         qualification_percentage: "",
+        phone: "",
     });
 
     const fetchUser = async () => {
@@ -43,6 +44,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onProfileUpdated }) => {
                     user.qualification_percentage !== undefined && user.qualification_percentage !== null
                         ? String(user.qualification_percentage)
                         : "",
+                phone: user.phone || "",
             };
             setFormData(data);
             setInitialData(data);
@@ -123,7 +125,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onProfileUpdated }) => {
                 <div className="col-lg-10 col-xl-9">
                     {/* Main Profile Card */}
                     <div className="ai-list-card overflow-hidden">
-                        
+
                         {/* Header Banner & Avatar */}
                         <div className="position-relative ai-profile-banner">
                             <div className="d-flex justify-content-between align-items-start position-relative z-index-2 w-100 p-4">
@@ -137,7 +139,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onProfileUpdated }) => {
                                     </button>
                                 )}
                             </div>
-                            
+
                             {/* Avatar pushing up into the banner */}
                             <div className="ai-profile-avatar-container">
                                 <div className="ai-profile-avatar">
@@ -193,6 +195,15 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onProfileUpdated }) => {
                                                 <div className="info">
                                                     <label>Category</label>
                                                     <p>{formData.category || "Not specified"}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="col-md-6">
+                                            <div className="ai-profile-data-box">
+                                                <div className="icon"><FiPhone /></div>
+                                                <div className="info">
+                                                    <label>Phone Number</label>
+                                                    <p>{formData.phone || "Not specified"}</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -286,6 +297,22 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onProfileUpdated }) => {
                                         </div>
                                         <div className="col-md-6">
                                             <div className="form-group ai-input-group">
+                                                <label className="form-label">Phone Number</label>
+                                                <input
+                                                    type="tel"
+                                                    name="phone"
+                                                    className="form-control"
+                                                    value={formData.phone}
+                                                    onChange={handleChange}
+                                                    placeholder="e.g. +919876543210"
+                                                />
+                                                <div className="form-text text-muted small mt-1">
+                                                    Include country code. Required to receive WhatsApp notifications.
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="col-md-6">
+                                            <div className="form-group ai-input-group">
                                                 <label className="form-label">Highest Qualification</label>
                                                 <select name="qualification" className="form-select" value={formData.qualification} onChange={handleChange} required>
                                                     <option value="">Select Qualification</option>
@@ -319,7 +346,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onProfileUpdated }) => {
                                             </div>
                                         </div>
                                     </div>
-                                    
+
                                     <div className="mt-5 d-flex gap-3 justify-content-end border-top pt-4">
                                         <button
                                             type="button"

@@ -51,6 +51,18 @@ export const INDIAN_STATES = [
   { value: "WB", label: "West Bengal" },
 ] as const;
 
+export const NOTIFICATION_TOPICS = [
+  { value: "ssc", label: "SSC" },
+  { value: "railway", label: "Railway" },
+  { value: "banking", label: "Banking" },
+  { value: "defence", label: "Defence" },
+  { value: "state-govt-jobs", label: "State Government Jobs" },
+  { value: "admissions", label: "Admissions" },
+  { value: "scholarships", label: "Scholarships" },
+  { value: "results", label: "Results" },
+  { value: "admit-cards", label: "Admit Cards" },
+] as const;
+
 export const EDUCATIONAL_QUALIFICATIONS = [
   { value: "10th", label: "10th (Matriculation)" },
   { value: "12th", label: "12th (Intermediate)" },
