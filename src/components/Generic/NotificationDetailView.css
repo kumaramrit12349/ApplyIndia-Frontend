@@ -668,6 +668,84 @@
   box-shadow: var(--shadow-xs);
 }
 
+/* --- Delivery status panel --- */
+.ndv-delivery-status {
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--color-border);
+}
+.ndv-delivery-status-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+.ndv-delivery-status-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--color-text);
+}
+.ndv-retry-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--radius-lg, 10px);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.ndv-retry-btn:hover:not(:disabled) {
+  background: var(--color-bg-alt, rgba(0,0,0,0.04));
+}
+.ndv-retry-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.ndv-spin {
+  animation: ndv-spin 1s linear infinite;
+}
+@keyframes ndv-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.ndv-delivery-badges {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+.ndv-delivery-badge {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-radius: var(--radius-lg, 10px);
+  border: 1px solid var(--color-border);
+  font-size: 0.82rem;
+}
+.ndv-delivery-badge-channel {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+.ndv-delivery-badge-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 600;
+}
+.ndv-badge--sent .ndv-delivery-badge-status { color: #22c55e; }
+.ndv-badge--failed .ndv-delivery-badge-status { color: #ef4444; }
+.ndv-badge--pending .ndv-delivery-badge-status { color: #f59e0b; }
+.ndv-badge--skipped .ndv-delivery-badge-status { color: var(--color-text-muted, #9ca3af); }
+
 /* --- Responsive --- */
 @media (max-width: 767px) {
   .ndv-hero { padding: 2rem 0 1.5rem; }
@@ -677,6 +755,7 @@
   .ndv-lv-value { text-align: left; }
   .ndv-links-grid { grid-template-columns: 1fr; }
   .ndv-stepper { gap: 0; }
+  .ndv-delivery-badges { grid-template-columns: 1fr; }
 }
 
 /* --- Force word wrap behavior for description content --- */

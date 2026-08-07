@@ -23,6 +23,7 @@ const EmailTemplatesPage: React.FC = () => {
   const [description, setDescription] = useState<string>("");
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [submitting, setSubmitting] = useState<boolean>(false);
+  const [originalValues, setOriginalValues] = useState<{ subject: string; body: string; description: string } | null>(null);
 
   // Delete confirm modal state
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
@@ -56,6 +57,7 @@ const EmailTemplatesPage: React.FC = () => {
     setSubject(template.subject);
     setBody(template.body);
     setDescription(template.description || "");
+    setOriginalValues({ subject: template.subject, body: template.body, description: template.description || "" });
   };
 
   const handleClearForm = () => {
@@ -64,7 +66,15 @@ const EmailTemplatesPage: React.FC = () => {
     setSubject("");
     setBody("");
     setDescription("");
+    setOriginalValues(null);
   };
+
+  const isUnchanged =
+    isEditing &&
+    originalValues !== null &&
+    subject === originalValues.subject &&
+    body === originalValues.body &&
+    description === originalValues.description;
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -335,7 +345,7 @@ const EmailTemplatesPage: React.FC = () => {
                     type="submit"
                     className="btn w-100 d-flex align-items-center justify-content-center gap-2 py-2 fw-semibold text-white border-0"
                     style={{ background: "var(--color-primary)" }}
-                    disabled={submitting}
+                    disabled={submitting || isUnchanged}
                   >
                     {submitting ? (
                       <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true" />

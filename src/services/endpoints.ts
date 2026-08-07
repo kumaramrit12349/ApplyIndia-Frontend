@@ -30,6 +30,8 @@ export const PRIVATE_API = {
     GET_COMMENTS: (id: string) => `api/notification/comments/${id}`,
     DELETE_BULK_PERMANENT: "api/notification/bulk-permanent-delete",
     ARCHIVE_BULK: "api/notification/bulk-archive",
+    DISTRIBUTION_STATUS: (id: string) => `api/notification/${id}/distribution-status`,
+    RETRY_DISTRIBUTION: (id: string) => `api/notification/${id}/retry-distribution`,
   },
   SCRAPER: {
     RUN: "api/scraper/run",

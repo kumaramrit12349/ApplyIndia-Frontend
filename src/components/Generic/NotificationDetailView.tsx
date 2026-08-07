@@ -16,6 +16,11 @@ import {
   BsHeart,
   BsHeartFill,
   BsBarChartFill,
+  BsEnvelopeFill,
+  BsXCircleFill,
+  BsClockHistory,
+  BsArrowRepeat,
+  BsDashCircle,
 } from "react-icons/bs";
 import { FcViewDetails } from "react-icons/fc";
 import { formatCategoryTitle, formatStateName, getId } from "../../utils/utils";
@@ -30,6 +35,12 @@ import {
   type UserActivityStatus,
 } from "../../services/private/userActivityApi";
 import { checkEligibility, type IEligibilityResult } from "../../services/private/eligibilityApi";
+import {
+  getDistributionStatus,
+  retryDistribution,
+  type IDistributionLog,
+  type ChannelStatus,
+} from "../../services/private/notificationApi";
 import { toast } from "react-toastify";
 import "./NotificationDetailView.css";
 
@@ -197,6 +208,38 @@ const LabelValue = ({
   );
 };
 
+const DELIVERY_STATUS_META: Record<
+  ChannelStatus,
+  { label: string; icon: React.ReactNode; className: string }
+> = {
+  sent: { label: "Sent", icon: <BsCheckCircleFill />, className: "ndv-badge--sent" },
+  failed: { label: "Failed", icon: <BsXCircleFill />, className: "ndv-badge--failed" },
+  pending: { label: "Pending", icon: <BsClockHistory />, className: "ndv-badge--pending" },
+  skipped: { label: "Not Configured", icon: <BsDashCircle />, className: "ndv-badge--skipped" },
+};
+
+const DeliveryBadge = ({
+  icon,
+  label,
+  status,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  status?: ChannelStatus;
+}) => {
+  const meta = DELIVERY_STATUS_META[status ?? "pending"];
+  return (
+    <div className={`ndv-delivery-badge ${meta.className}`}>
+      <span className="ndv-delivery-badge-channel">
+        {icon} {label}
+      </span>
+      <span className="ndv-delivery-badge-status">
+        {meta.icon} {meta.label}
+      </span>
+    </div>
+  );
+};
+
 /* ──────────────── Main Component ──────────────── */
 
 export default function NotificationDetailView({
@@ -231,6 +274,9 @@ export default function NotificationDetailView({
   const [showEligibility, setShowEligibility] = useState(false);
   const [eligibilityLoading, setEligibilityLoading] = useState(false);
   const [eligibilityResult, setEligibilityResult] = useState<IEligibilityResult | null>(null);
+  const [distribution, setDistribution] = useState<IDistributionLog | null>(null);
+  const [distributionLoading, setDistributionLoading] = useState(false);
+  const [retrying, setRetrying] = useState(false);
 
   useEffect(() => {
     if (isAuthenticated && notification?.sk) {
@@ -243,6 +289,32 @@ export default function NotificationDetailView({
         .catch(() => {});
     }
   }, [isAuthenticated, notification?.sk]);
+
+  useEffect(() => {
+    if (isAdmin && notification?.approved_at && notification?.sk) {
+      setDistributionLoading(true);
+      getDistributionStatus(getId(notification.sk))
+        .then((res) => {
+          if (res.success) setDistribution(res.distribution);
+        })
+        .catch(() => {})
+        .finally(() => setDistributionLoading(false));
+    }
+  }, [isAdmin, notification?.approved_at, notification?.sk]);
+
+  const handleRetryDistribution = async () => {
+    if (!notification?.sk) return;
+    setRetrying(true);
+    try {
+      const res = await retryDistribution(getId(notification.sk));
+      if (res.success) setDistribution(res.distribution);
+      toast.success("Retry triggered");
+    } catch {
+      toast.error("Retry failed");
+    } finally {
+      setRetrying(false);
+    }
+  };
 
   const handleTrackAction = async (step: (typeof TRACKING_STEPS)[number]) => {
     if (!isAuthenticated) {
@@ -951,6 +1023,35 @@ export default function NotificationDetailView({
                   : "Pending approval"
               }
             />
+
+            {notification.approved_at && (
+              <div className="ndv-delivery-status">
+                <div className="ndv-delivery-status-header">
+                  <h4 className="ndv-delivery-status-title">Delivery Status</h4>
+                  <button
+                    type="button"
+                    className="ndv-retry-btn"
+                    onClick={handleRetryDistribution}
+                    disabled={retrying || distributionLoading}
+                  >
+                    <BsArrowRepeat className={retrying ? "ndv-spin" : ""} />
+                    {retrying ? "Retrying..." : "Retry Failed"}
+                  </button>
+                </div>
+
+                {distributionLoading ? (
+                  <p className="ndv-lv-value--muted">Loading delivery status...</p>
+                ) : (
+                  <div className="ndv-delivery-badges">
+                    <DeliveryBadge
+                      icon={<BsEnvelopeFill />}
+                      label="Email"
+                      status={distribution?.email?.status}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
       </div>
