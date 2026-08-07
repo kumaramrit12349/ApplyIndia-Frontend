@@ -11,6 +11,7 @@ import {
   deleteScraperSource,
   permanentlyDeleteScraperSource,
   bulkDeleteScraperSources,
+  bulkUpdateScraperSourcesStatus,
   unarchiveScraperSource,
 } from "../../services/private/scraperApi";
 import type {
@@ -1302,6 +1303,7 @@ const ScraperDashboard: React.FC = () => {
   const [deletingSource, setDeletingSource] = useState<ScraperSource | null>(null);
   const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
   const [isBulkDeleting, setIsBulkDeleting] = useState(false);
+  const [isBulkUpdatingStatus, setIsBulkUpdatingStatus] = useState(false);
   const [viewMode, setViewMode] = useState<"active" | "archived">("active");
 
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -1329,6 +1331,21 @@ const ScraperDashboard: React.FC = () => {
       getScraperSources(viewMode === "archived").then((res) => setSources(res.sources || []));
     } catch (err: any) {
       showToast(err?.message || "Bulk delete failed", "error");
+    }
+  };
+
+  const performBulkStatusUpdate = async (isActive: boolean) => {
+    if (selectedKeys.length === 0) return;
+    setIsBulkUpdatingStatus(true);
+    try {
+      await bulkUpdateScraperSourcesStatus(selectedKeys, isActive);
+      showToast(`${selectedKeys.length} sources ${isActive ? "activated" : "deactivated"}`, "success");
+      setSelectedKeys([]);
+      getScraperSources(viewMode === "archived").then((res) => setSources(res.sources || []));
+    } catch (err: any) {
+      showToast(err?.message || "Bulk status update failed", "error");
+    } finally {
+      setIsBulkUpdatingStatus(false);
     }
   };
 
@@ -2082,7 +2099,21 @@ const ScraperDashboard: React.FC = () => {
             >
               Cancel
             </button>
-            <button 
+            <button
+              onClick={() => performBulkStatusUpdate(true)}
+              disabled={isBulkUpdatingStatus}
+              style={{ background: "#10b981", border: "none", color: "#fff", padding: "8px 16px", borderRadius: 10, fontWeight: 700, fontSize: "0.85rem", cursor: isBulkUpdatingStatus ? "not-allowed" : "pointer", opacity: isBulkUpdatingStatus ? 0.7 : 1, boxShadow: "0 4px 12px rgba(16,185,129,0.3)", display: "flex", alignItems: "center", gap: 6 }}
+            >
+              <FiZap size={14} /> Activate
+            </button>
+            <button
+              onClick={() => performBulkStatusUpdate(false)}
+              disabled={isBulkUpdatingStatus}
+              style={{ background: "#64748b", border: "none", color: "#fff", padding: "8px 16px", borderRadius: 10, fontWeight: 700, fontSize: "0.85rem", cursor: isBulkUpdatingStatus ? "not-allowed" : "pointer", opacity: isBulkUpdatingStatus ? 0.7 : 1, boxShadow: "0 4px 12px rgba(100,116,139,0.3)", display: "flex", alignItems: "center", gap: 6 }}
+            >
+              <FiZap size={14} /> Deactivate
+            </button>
+            <button
               onClick={() => setIsBulkDeleting(true)}
               style={{ background: "#ef4444", border: "none", color: "#fff", padding: "8px 16px", borderRadius: 10, fontWeight: 700, fontSize: "0.85rem", cursor: "pointer", boxShadow: "0 4px 12px rgba(239,68,68,0.3)" }}
             >

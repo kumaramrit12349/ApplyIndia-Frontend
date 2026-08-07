@@ -64,3 +64,12 @@ export async function deleteEmailTemplate(key: string): Promise<{
 export function getEmailTemplatePreviewUrl(key: string): string {
   return `${CONFIG.API_BASE_URL}/${PRIVATE_API.EMAIL_TEMPLATES.PREVIEW(key)}`;
 }
+
+/**
+ * Full URL for the shared header/footer theme, rendered with a sample body
+ * and no DynamoDB lookup — lets you check the overall design (logo, colors,
+ * social icons) without needing any real template saved first.
+ */
+export function getEmailSamplePreviewUrl(): string {
+  return `${CONFIG.API_BASE_URL}/${PRIVATE_API.EMAIL_TEMPLATES.SAMPLE_PREVIEW}`;
+}

@@ -126,6 +126,16 @@ export async function bulkDeleteScraperSources(keys: string[]): Promise<{
   });
 }
 
+export async function bulkUpdateScraperSourcesStatus(keys: string[], isActive: boolean): Promise<{
+  success: boolean;
+  message: string;
+}> {
+  return privateFetch(PRIVATE_API.SCRAPER.SOURCES_BULK_STATUS, {
+    method: "PUT",
+    body: JSON.stringify({ keys, isActive }),
+  });
+}
+
 export async function unarchiveScraperSource(key: string): Promise<{
   success: boolean;
   message: string;
