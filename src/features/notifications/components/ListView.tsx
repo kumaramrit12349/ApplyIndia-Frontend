@@ -8,7 +8,7 @@ import { BsHeart, BsHeartFill } from "react-icons/bs";
 import { useAuth } from "../../../context/AuthContext";
 import SupportPopup from "../../../components/SupportPopup";
 
-const WishlistButton = ({ notification, category, onWishlisted, onLimitReached }: { notification: HomePageNotification; category: string; onWishlisted?: () => void; onLimitReached?: () => void }) => {
+const WishlistButton = ({ notification, category, onWishlisted, onLimitReached, activityMap }: { notification: HomePageNotification; category: string; onWishlisted?: () => void; onLimitReached?: () => void; activityMap?: Map<string, number> }) => {
   const { isAuthenticated, onShowAuthPopup } = useAuth();
   const [loading, setLoading] = useState(false);
   const [isWishlisted, setIsWishlisted] = useState(false);
@@ -18,8 +18,25 @@ const WishlistButton = ({ notification, category, onWishlisted, onLimitReached }
     ? notification.sk
     : `Notification#${notification.sk}#META`;
 
+  const deadlinePassed = (() => {
+    if (!notification.last_date_to_apply) return false;
+    const deadline = new Date(notification.last_date_to_apply as string).getTime();
+    if (isNaN(deadline)) return false;
+    return deadline < Date.now();
+  })();
+
   useEffect(() => {
     if (!isAuthenticated || !fullSk) {
+      setHasChecked(true);
+      return;
+    }
+    // When the parent already fetched all of the user's activity statuses in
+    // one batched call (see HomePage), use that instead of a per-card fetch —
+    // the same notification often renders in several sections (e.g. a job
+    // that's also flagged as "Admit Card"/"Result"), which used to trigger a
+    // duplicate check per section.
+    if (activityMap) {
+      setIsWishlisted(activityMap.get(fullSk) === 0);
       setHasChecked(true);
       return;
     }
@@ -31,7 +48,7 @@ const WishlistButton = ({ notification, category, onWishlisted, onLimitReached }
       })
       .catch(() => { })
       .finally(() => setHasChecked(true));
-  }, [isAuthenticated, fullSk]);
+  }, [isAuthenticated, fullSk, activityMap]);
 
   const handleWishlistClick = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -40,6 +57,11 @@ const WishlistButton = ({ notification, category, onWishlisted, onLimitReached }
     if (!isAuthenticated) {
       toast.info("🔒 Please login to add to wishlist");
       onShowAuthPopup();
+      return;
+    }
+
+    if (deadlinePassed && !isWishlisted) {
+      toast.warning("Applications for this notification have closed.");
       return;
     }
 
@@ -59,6 +81,8 @@ const WishlistButton = ({ notification, category, onWishlisted, onLimitReached }
       const msg = error?.message || "Failed to update wishlist.";
       if (msg.includes("ATTEMPT_LIMIT_REACHED")) {
         onLimitReached?.();
+      } else if (msg.includes("DEADLINE_PASSED")) {
+        toast.error("Applications for this notification have closed.");
       } else {
         toast.error(msg);
       }
@@ -74,9 +98,15 @@ const WishlistButton = ({ notification, category, onWishlisted, onLimitReached }
   return (
     <button
       onClick={handleWishlistClick}
-      disabled={loading}
+      disabled={loading || (deadlinePassed && !isWishlisted)}
       className={`ai-btn-wishlist ${isWishlisted ? 'active' : ''}`}
-      title={isWishlisted ? "Remove from Wishlist" : "Add to Wishlist"}
+      title={
+        deadlinePassed && !isWishlisted
+          ? "Applications closed"
+          : isWishlisted
+            ? "Remove from Wishlist"
+            : "Add to Wishlist"
+      }
     >
       {loading ? (
         <span className="spinner-border spinner-border-sm text-danger" role="status" aria-hidden="true" style={{ width: 14, height: 14 }}></span>
@@ -96,7 +126,40 @@ interface ListViewProps {
   onItemClick?: (item: Notification) => void;
   showSeeMore?: boolean;
   showAllItems?: boolean;
+  /** Pre-fetched map of notification sk -> activity status, to avoid each card re-fetching its own wishlist status. */
+  activityMap?: Map<string, number>;
 }
+
+interface StatusBadge {
+  label: string;
+  color: string;
+  bg: string;
+}
+
+const CLOSING_SOON_WINDOW_DAYS = 3;
+
+const CATEGORY_STATUS_BADGE: Record<string, StatusBadge> = {
+  "admit-card": { label: "Admit Card", color: "var(--status-admit-card)", bg: "var(--status-admit-card-bg)" },
+  "result": { label: "Result Out", color: "var(--status-result)", bg: "var(--status-result-bg)" },
+};
+
+const getStatusBadge = (category: string, item: HomePageNotification): StatusBadge | null => {
+  const fixed = CATEGORY_STATUS_BADGE[category?.toLowerCase()];
+  if (fixed) return fixed;
+
+  if (!item.last_date_to_apply) return null;
+  const deadline = new Date(item.last_date_to_apply as string).getTime();
+  if (isNaN(deadline)) return null;
+
+  const daysLeft = (deadline - Date.now()) / (1000 * 60 * 60 * 24);
+  if (daysLeft < 0) {
+    return { label: "Closed", color: "var(--status-closed)", bg: "var(--status-closed-bg)" };
+  }
+  if (daysLeft <= CLOSING_SOON_WINDOW_DAYS) {
+    return { label: "Closing Soon", color: "var(--status-closing)", bg: "var(--status-closing-bg)" };
+  }
+  return { label: "Open", color: "var(--status-open)", bg: "var(--status-open-bg)" };
+};
 
 const ListView: React.FC<ListViewProps> = ({
   category,
@@ -104,6 +167,7 @@ const ListView: React.FC<ListViewProps> = ({
   loading = false,
   showSeeMore = true,
   showAllItems = false,
+  activityMap,
 }) => {
   const [showAll, setShowAll] = useState(false);
   const [showWishlistPopup, setShowWishlistPopup] = useState(false);
@@ -132,7 +196,7 @@ const ListView: React.FC<ListViewProps> = ({
       <div className="ai-list-body">
         {loading ? (
           <div className="text-center py-5">
-            <div className="spinner-border text-primary" role="status">
+            <div className="spinner-border" style={{ color: "var(--color-primary)" }} role="status">
               <span className="visually-hidden">Loading...</span>
             </div>
           </div>
@@ -144,6 +208,7 @@ const ListView: React.FC<ListViewProps> = ({
           <div>
             {displayedItems.map((item, index) => {
               const itemUrl = `/notification/${makeSlug(item.title, item.sk)}`;
+              const statusBadge = getStatusBadge(category, item);
 
               return (
                 <a
@@ -157,6 +222,14 @@ const ListView: React.FC<ListViewProps> = ({
                     <span className="ai-list-item-title">
                       {item.title}
                     </span>
+                    {statusBadge && (
+                      <span
+                        className="ai-status-badge"
+                        style={{ color: statusBadge.color, background: statusBadge.bg }}
+                      >
+                        {statusBadge.label}
+                      </span>
+                    )}
                   </div>
 
                   <div className="d-flex align-items-center gap-2">
@@ -166,6 +239,7 @@ const ListView: React.FC<ListViewProps> = ({
                         category={category}
                         onWishlisted={() => setShowWishlistPopup(true)}
                         onLimitReached={() => setShowSupport(true)}
+                        activityMap={activityMap}
                       />
                     </div>
                     <div className="ai-list-chevron">

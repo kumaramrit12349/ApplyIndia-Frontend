@@ -157,7 +157,7 @@ const UserNotificationDetailPage: React.FC<UserNotificationDetailPageProps> = ({
   if (loading) {
     return (
       <div className="container mt-5 text-center">
-        <div className="spinner-border text-primary" role="status">
+        <div className="spinner-border" style={{ color: "var(--color-primary)" }} role="status">
           <span className="visually-hidden">Loading...</span>
         </div>
       </div>
@@ -210,9 +210,9 @@ const UserNotificationDetailPage: React.FC<UserNotificationDetailPageProps> = ({
         className="btn btn-sm mb-3"
         style={{
           background: "transparent",
-          border: "1px solid #dee2e6",
+          border: "1px solid var(--color-border)",
           borderRadius: "20px",
-          color: "#6b7280",
+          color: "var(--color-muted)",
           padding: "4px 14px",
           fontWeight: 500,
           fontSize: "0.88rem",
@@ -223,12 +223,12 @@ const UserNotificationDetailPage: React.FC<UserNotificationDetailPageProps> = ({
           transition: "all 0.2s",
         }}
         onMouseOver={(e) => {
-          e.currentTarget.style.background = "#f3f4f6";
-          e.currentTarget.style.color = "#374151";
+          e.currentTarget.style.background = "var(--color-bg)";
+          e.currentTarget.style.color = "var(--color-body)";
         }}
         onMouseOut={(e) => {
           e.currentTarget.style.background = "transparent";
-          e.currentTarget.style.color = "#6b7280";
+          e.currentTarget.style.color = "var(--color-muted)";
         }}
       >
         ← Back

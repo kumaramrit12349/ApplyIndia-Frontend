@@ -3,26 +3,56 @@
    ============================================ */
 
 .dashboard-title {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    font-family: var(--font-base);
+    background: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-primary) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
 }
 
+/* Filter tabs */
+.dashboard-filter-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 16px;
+    border-radius: var(--radius-pill);
+    font-size: 0.85rem;
+    font-weight: 500;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+    color: var(--color-body);
+    cursor: pointer;
+    transition: var(--motion-base);
+}
+
+.dashboard-filter-btn:hover {
+    border-color: rgba(15, 61, 145, 0.3);
+    background: rgba(15, 61, 145, 0.05);
+    color: var(--color-primary);
+}
+
+.dashboard-filter-btn--active,
+.dashboard-filter-btn--active:hover {
+    background: var(--color-primary);
+    border-color: transparent;
+    color: #fff;
+}
+
 /* Stat Cards */
 .dashboard-stat-card {
-    border-radius: 16px;
+    border-radius: var(--radius-xl);
     padding: 20px 16px;
     text-align: center;
     color: #fff;
     cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: transform var(--motion-base), box-shadow var(--motion-base);
     user-select: none;
 }
 
 .dashboard-stat-card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    box-shadow: var(--shadow-md);
 }
 
 .dashboard-stat-emoji {
@@ -50,5 +80,5 @@
 
 .dashboard-activity-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-md);
 }

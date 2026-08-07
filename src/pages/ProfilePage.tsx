@@ -2,10 +2,14 @@ import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { fetchProfile, updateProfile } from "../services/authApi";
 import { INDIAN_STATES, EDUCATIONAL_QUALIFICATIONS } from "../constant/SharedConstant";
-import { FiEdit2, FiUser, FiCalendar, FiMapPin, FiBriefcase, FiAward, FiBook } from "react-icons/fi";
+import { FiEdit2, FiUser, FiCalendar, FiMapPin, FiBriefcase, FiAward, FiBook, FiPhone } from "react-icons/fi";
 import { BsGenderAmbiguous } from "react-icons/bs";
 
-const ProfilePage: React.FC = () => {
+interface ProfilePageProps {
+    onProfileUpdated?: () => void;
+}
+
+const ProfilePage: React.FC<ProfilePageProps> = ({ onProfileUpdated }) => {
     const [loading, setLoading] = useState(true);
     const [updating, setUpdating] = useState(false);
     const [isEditMode, setIsEditMode] = useState(false);
@@ -19,6 +23,8 @@ const ProfilePage: React.FC = () => {
         category: "",
         qualification: "",
         specialization: "",
+        qualification_percentage: "",
+        phone: "",
     });
 
     const fetchUser = async () => {
@@ -34,6 +40,11 @@ const ProfilePage: React.FC = () => {
                 category: user.category || "",
                 qualification: user.qualification || "",
                 specialization: user.specialization || "",
+                qualification_percentage:
+                    user.qualification_percentage !== undefined && user.qualification_percentage !== null
+                        ? String(user.qualification_percentage)
+                        : "",
+                phone: user.phone || "",
             };
             setFormData(data);
             setInitialData(data);
@@ -55,7 +66,10 @@ const ProfilePage: React.FC = () => {
         const changed: any = {};
         Object.keys(formData).forEach((key) => {
             if ((formData as any)[key] !== initialData[key]) {
-                changed[key] = (formData as any)[key];
+                changed[key] =
+                    key === "qualification_percentage"
+                        ? ((formData as any)[key] === "" ? undefined : Number((formData as any)[key]))
+                        : (formData as any)[key];
             }
         });
         return changed;
@@ -76,6 +90,7 @@ const ProfilePage: React.FC = () => {
             toast.success("Profile updated successfully!");
             setIsEditMode(false);
             await fetchUser();
+            onProfileUpdated?.();
         } catch (error: any) {
             toast.error(error.message || "Failed to update profile");
         } finally {
@@ -86,7 +101,7 @@ const ProfilePage: React.FC = () => {
     if (loading) {
         return (
             <div className="container py-5 text-center">
-                <div className="spinner-border text-primary" role="status">
+                <div className="spinner-border" style={{ color: "var(--color-primary)" }} role="status">
                     <span className="visually-hidden">Loading...</span>
                 </div>
             </div>
@@ -109,8 +124,8 @@ const ProfilePage: React.FC = () => {
             <div className="row justify-content-center">
                 <div className="col-lg-10 col-xl-9">
                     {/* Main Profile Card */}
-                    <div className="ai-list-card overflow-hidden" style={{ border: "1px solid rgba(255,255,255,0.2)" }}>
-                        
+                    <div className="ai-list-card overflow-hidden">
+
                         {/* Header Banner & Avatar */}
                         <div className="position-relative ai-profile-banner">
                             <div className="d-flex justify-content-between align-items-start position-relative z-index-2 w-100 p-4">
@@ -124,7 +139,7 @@ const ProfilePage: React.FC = () => {
                                     </button>
                                 )}
                             </div>
-                            
+
                             {/* Avatar pushing up into the banner */}
                             <div className="ai-profile-avatar-container">
                                 <div className="ai-profile-avatar">
@@ -183,6 +198,15 @@ const ProfilePage: React.FC = () => {
                                                 </div>
                                             </div>
                                         </div>
+                                        <div className="col-md-6">
+                                            <div className="ai-profile-data-box">
+                                                <div className="icon"><FiPhone /></div>
+                                                <div className="info">
+                                                    <label>Phone Number</label>
+                                                    <p>{formData.phone || "Not specified"}</p>
+                                                </div>
+                                            </div>
+                                        </div>
 
                                         <div className="col-12 mt-5">
                                             <h6 className="ai-profile-section-title">Education & Skills</h6>
@@ -202,6 +226,15 @@ const ProfilePage: React.FC = () => {
                                                 <div className="info">
                                                     <label>Specialization</label>
                                                     <p>{formData.specialization || "Not specified"}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="col-md-6">
+                                            <div className="ai-profile-data-box">
+                                                <div className="icon"><FiAward /></div>
+                                                <div className="info">
+                                                    <label>Percentage / CGPA Obtained</label>
+                                                    <p>{formData.qualification_percentage ? `${formData.qualification_percentage}%` : "Not specified"}</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -264,6 +297,22 @@ const ProfilePage: React.FC = () => {
                                         </div>
                                         <div className="col-md-6">
                                             <div className="form-group ai-input-group">
+                                                <label className="form-label">Phone Number</label>
+                                                <input
+                                                    type="tel"
+                                                    name="phone"
+                                                    className="form-control"
+                                                    value={formData.phone}
+                                                    onChange={handleChange}
+                                                    placeholder="e.g. +919876543210"
+                                                />
+                                                <div className="form-text text-muted small mt-1">
+                                                    Include country code. Required to receive WhatsApp notifications.
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="col-md-6">
+                                            <div className="form-group ai-input-group">
                                                 <label className="form-label">Highest Qualification</label>
                                                 <select name="qualification" className="form-select" value={formData.qualification} onChange={handleChange} required>
                                                     <option value="">Select Qualification</option>
@@ -277,8 +326,27 @@ const ProfilePage: React.FC = () => {
                                                 <input type="text" name="specialization" className="form-control" value={formData.specialization} onChange={handleChange} />
                                             </div>
                                         </div>
+                                        <div className="col-md-6">
+                                            <div className="form-group ai-input-group">
+                                                <label className="form-label">Percentage / CGPA Obtained (%)</label>
+                                                <input
+                                                    type="number"
+                                                    name="qualification_percentage"
+                                                    className="form-control"
+                                                    min={0}
+                                                    max={100}
+                                                    step="0.01"
+                                                    value={formData.qualification_percentage}
+                                                    onChange={handleChange}
+                                                    placeholder="e.g. 72.5"
+                                                />
+                                                <div className="form-text text-muted small mt-1">
+                                                    Used to check eligibility for notifications with a minimum percentage requirement.
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                    
+
                                     <div className="mt-5 d-flex gap-3 justify-content-end border-top pt-4">
                                         <button
                                             type="button"
@@ -294,9 +362,9 @@ const ProfilePage: React.FC = () => {
                                         </button>
                                         <button
                                             type="submit"
-                                            className="btn btn-primary px-5 py-2 fw-bold"
+                                            className="btn text-white px-5 py-2 fw-bold"
                                             disabled={updating || Object.keys(getChangedFields()).length === 0}
-                                            style={{ background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)", border: "none", borderRadius: "8px" }}
+                                            style={{ background: "linear-gradient(135deg, var(--color-secondary) 0%, var(--color-primary) 100%)", border: "none", borderRadius: "8px" }}
                                         >
                                             {updating ? "Saving..." : "Save Changes"}
                                         </button>

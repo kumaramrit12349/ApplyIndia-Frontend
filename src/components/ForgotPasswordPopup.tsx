@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import Modal from "react-bootstrap/Modal";
-import Button from "react-bootstrap/Button";
 import { forgotPassword } from "../services/authApi";
 
 interface ForgotPasswordPopupProps {
@@ -36,7 +35,7 @@ const ForgotPasswordPopup: React.FC<ForgotPasswordPopupProps> = ({
     return (
         <Modal show={show} onHide={onClose} centered contentClassName="border-0 shadow-lg rounded-4">
             <Modal.Header closeButton className="border-0 pb-1">
-                <Modal.Title className="w-100 fs-2" style={{ fontWeight: 700 }}>
+                <Modal.Title className="w-100 fs-2" style={{ fontWeight: 700, color: "var(--color-heading)" }}>
                     Forgot Password
                 </Modal.Title>
             </Modal.Header>
@@ -61,15 +60,18 @@ const ForgotPasswordPopup: React.FC<ForgotPasswordPopupProps> = ({
                             autoFocus
                         />
                     </div>
-                    <Button
+                    <button
                         type="submit"
-                        variant="primary"
-                        className="w-100 py-2 fw-bold"
-                        style={{ borderRadius: "13px", fontSize: "1.1em" }}
+                        className="btn w-100 py-2 fw-bold text-white border-0"
+                        style={{
+                            borderRadius: "13px",
+                            fontSize: "1.1em",
+                            background: "linear-gradient(135deg, var(--color-secondary), var(--color-primary))",
+                        }}
                         disabled={loading}
                     >
                         {loading ? "Sending..." : "Send Reset Code"}
-                    </Button>
+                    </button>
                 </form>
                 {error && (
                     <div className="text-danger mt-3 text-center fs-6">{error}</div>

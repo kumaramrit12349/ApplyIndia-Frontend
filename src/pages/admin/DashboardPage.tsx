@@ -10,30 +10,42 @@ import {
   fetchNotifications,
   unarchiveNotification,
   bulkPermanentDeleteNotifications,
+  bulkArchiveNotifications,
 } from "../../services/private/notificationApi";
 import { NOTIFICATION_CATEGORIES, INDIAN_STATES } from "../../constant/SharedConstant";
 import { Dropdown, Form } from "react-bootstrap";
-import { FiTrash2 } from "react-icons/fi";
+import { FiTrash2, FiArchive } from "react-icons/fi";
 
 /* ============ Role helpers ============ */
-type AdminRole = "creator" | "reviewer" | "admin";
+type AdminRole = "creator" | "reviewer" | "senior_reviewer" | "admin";
 
 const can = (role: AdminRole | undefined, action: string): boolean => {
   if (!role) return false;
   const perms: Record<string, AdminRole[]> = {
-    create: ["creator", "admin"],
-    edit: ["creator", "admin"],
-    approve: ["reviewer", "admin"],
-    archive: ["admin"],
-    unarchive: ["admin"],
+    create: ["creator", "senior_reviewer", "admin"],
+    edit: ["creator", "senior_reviewer", "admin"],
+    approve: ["reviewer", "senior_reviewer", "admin"],
+    archive: ["senior_reviewer", "admin"],
+    unarchive: ["senior_reviewer", "admin"],
   };
   return (perms[action] || []).includes(role);
 };
 
+/** Editing an already-approved notification is limited to Senior Reviewer/Admin. */
+const canEditNotification = (
+  role: AdminRole | undefined,
+  notification: { approved_at?: number | null }
+): boolean => {
+  if (!can(role, "edit")) return false;
+  if (role === "admin" || role === "senior_reviewer") return true;
+  return !notification.approved_at;
+};
+
 const ROLE_COLORS: Record<string, string> = {
-  admin: "linear-gradient(135deg, #667eea, #764ba2)",
-  reviewer: "linear-gradient(135deg, #f093fb, #f5576c)",
-  creator: "linear-gradient(135deg, #4facfe, #00f2fe)",
+  admin: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))",
+  senior_reviewer: "linear-gradient(135deg, #7c3aed, #5b21b6)",
+  reviewer: "linear-gradient(135deg, var(--color-accent), #d97706)",
+  creator: "linear-gradient(135deg, var(--color-secondary), var(--status-result))",
 };
 
 const PAGE_SIZE = 20;
@@ -58,6 +70,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
   const [loading, setLoading] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [isBulkDeleting, setIsBulkDeleting] = useState(false);
+  const [isBulkArchiving, setIsBulkArchiving] = useState(false);
 
   /* Search & Filter state */
   const [searchInput, setSearchInput] = useState("");
@@ -169,6 +182,23 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
       showToast(err?.message || "Bulk delete failed", "error");
     } finally {
       setIsBulkDeleting(false);
+    }
+  };
+
+  const performBulkArchive = async () => {
+    if (selectedIds.length === 0) return;
+    setIsBulkArchiving(true);
+    setModal(m => ({ ...m, show: false }));
+    try {
+      const idsToArchive = selectedIds.map(sk => getId(sk)).filter(Boolean);
+      await bulkArchiveNotifications(idsToArchive);
+      showToast(`${idsToArchive.length} notifications archived`, "success");
+      setSelectedIds([]);
+      loadNotifications(search, timeRange, categoryFilter, stateFilter);
+    } catch (err: any) {
+      showToast(err?.message || "Bulk archive failed", "error");
+    } finally {
+      setIsBulkArchiving(false);
     }
   };
 
@@ -301,6 +331,10 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
   const displayList = fullList.slice(0, visibleCount);
   const hasMore = visibleCount < fullList.length;
 
+  // Bulk-select is available on the Archived tab (permanent delete) and,
+  // for roles with archive permission, on the other tabs too (bulk archive).
+  const canBulkSelect = tab === "archived" || can(role, "archive");
+
   /* Intersection observer for infinite scroll */
   const lastElementRef = useCallback(
     (node: HTMLDivElement | null) => {
@@ -318,11 +352,30 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
 
   return (
     <div className="container-fluid px-3 px-lg-4 px-xxl-5 py-3 py-md-4">
-      {/* CSS to hide default Bootstrap dropdown carets */}
+      {/* CSS to hide default Bootstrap dropdown carets + brand-color overrides */}
       <style>
         {`
           .dropdown-toggle::after {
             display: none !important;
+          }
+          .dropdown-menu {
+            --bs-dropdown-link-active-bg: var(--color-primary);
+            --bs-dropdown-link-active-color: #fff;
+          }
+          .admin-tab-btn {
+            border: 1px solid var(--color-border);
+            background: var(--color-surface);
+            color: var(--color-body);
+          }
+          .admin-tab-btn:hover {
+            border-color: rgba(15, 61, 145, 0.3);
+            background: rgba(15, 61, 145, 0.05);
+          }
+          .admin-tab-btn--active,
+          .admin-tab-btn--active:hover {
+            background: var(--color-primary);
+            border-color: var(--color-primary);
+            color: #fff;
           }
         `}
       </style>
@@ -378,15 +431,30 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
             <Link
               to="/admin/roles"
               className="btn fw-semibold shadow-sm w-100"
-              style={{ 
-                borderRadius: 12, 
-                maxWidth: '200px', 
-                background: 'rgba(255,255,255,0.15)', 
-                color: '#fff', 
-                border: '1px solid rgba(255,255,255,0.3)' 
+              style={{
+                borderRadius: 12,
+                maxWidth: '200px',
+                background: 'rgba(255,255,255,0.15)',
+                color: '#fff',
+                border: '1px solid rgba(255,255,255,0.3)'
               }}
             >
               🔑 Manage Roles
+            </Link>
+          )}
+          {role === "admin" && (
+            <Link
+              to="/admin/email-templates"
+              className="btn fw-semibold shadow-sm w-100"
+              style={{
+                borderRadius: 12,
+                maxWidth: '200px',
+                background: 'rgba(255,255,255,0.15)',
+                color: '#fff',
+                border: '1px solid rgba(255,255,255,0.3)'
+              }}
+            >
+              ✉️ Email Templates
             </Link>
           )}
         </div>
@@ -395,11 +463,11 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
       {/* Search & Filter Bar */}
       <div 
         className="p-3 mb-4 rounded-4" 
-        style={{ 
-          background: 'rgba(255, 255, 255, 0.7)', 
+        style={{
+          background: 'var(--color-surface)',
           backdropFilter: 'blur(10px)',
-          border: '1px solid rgba(0,0,0,0.05)',
-          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)',
+          border: '1px solid var(--color-border)',
+          boxShadow: 'var(--shadow-sm)',
           position: 'relative',
           zIndex: 1020
         }}
@@ -417,7 +485,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
               <input
                 id="notification-search"
                 type="text"
-                className="form-control border-0 bg-white shadow-sm"
+                className="form-control border-0 shadow-sm"
                 placeholder="Search by title or notification ID..."
                 value={searchInput}
                 onChange={handleSearchChange}
@@ -425,7 +493,9 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                   borderRadius: 14,
                   paddingLeft: 46,
                   height: 48,
-                  fontSize: '0.95rem'
+                  fontSize: '0.95rem',
+                  background: 'var(--color-bg)',
+                  color: 'var(--color-heading)',
                 }}
               />
             </div>
@@ -439,8 +509,8 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                  <Dropdown.Toggle 
                   as="div" 
                   role="button"
-                  className="input-group input-group-sm shadow-sm justify-content-center bg-white" 
-                  style={{ borderRadius: 14, overflow: 'hidden', height: 48 }}
+                  className="input-group input-group-sm shadow-sm justify-content-center"
+                  style={{ borderRadius: 14, overflow: 'hidden', height: 48, background: 'var(--color-bg)' }}
                 >
                   <div className="d-flex align-items-center gap-2 px-3 text-muted" style={{ fontSize: '0.9rem' }}>
                     <span>📁</span>
@@ -478,8 +548,8 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                 <Dropdown.Toggle 
                   as="div" 
                   role="button"
-                  className="input-group input-group-sm shadow-sm justify-content-center bg-white" 
-                  style={{ borderRadius: 14, overflow: 'hidden', height: 48 }}
+                  className="input-group input-group-sm shadow-sm justify-content-center"
+                  style={{ borderRadius: 14, overflow: 'hidden', height: 48, background: 'var(--color-bg)' }}
                 >
                   <div className="d-flex align-items-center gap-2 px-3 text-muted" style={{ fontSize: '0.9rem' }}>
                     <span>🕒</span>
@@ -512,8 +582,8 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                 <Dropdown.Toggle 
                   as="div" 
                   role="button"
-                  className="input-group input-group-sm shadow-sm justify-content-center bg-white" 
-                  style={{ borderRadius: 14, overflow: 'hidden', height: 48 }}
+                  className="input-group input-group-sm shadow-sm justify-content-center"
+                  style={{ borderRadius: 14, overflow: 'hidden', height: 48, background: 'var(--color-bg)' }}
                 >
                   <div className="d-flex align-items-center gap-2 px-3 text-muted text-truncate" style={{ fontSize: '0.9rem' }}>
                     <span>📍</span>
@@ -534,7 +604,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                     zIndex: 1050
                   }}
                 >
-                  <div className="px-3 py-2 sticky-top bg-white border-bottom mb-1">
+                  <div className="px-3 py-2 sticky-top border-bottom mb-1" style={{ background: "var(--color-surface)" }}>
                     <Form.Control
                       size="sm"
                       type="text"
@@ -577,10 +647,10 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
           <button
             key={t.key}
             onClick={() => setTab(t.key)}
-            className={`btn rounded-pill d-flex align-items-center gap-1 flex-grow-0 py-1 py-md-2 px-2 px-md-3 ${
+            className={`admin-tab-btn btn rounded-pill d-flex align-items-center gap-1 flex-grow-0 py-1 py-md-2 px-2 px-md-3 ${
               tab === t.key
-                ? "btn-dark border-dark fw-semibold"
-                : "btn-outline-secondary"
+                ? "admin-tab-btn--active fw-semibold"
+                : ""
             }`}
             style={{ 
               transition: "all 0.2s ease",
@@ -589,8 +659,12 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
           >
             {t.icon} {t.label}{" "}
             <span
-              className="badge bg-white bg-opacity-25 text-dark ms-1"
-              style={{ fontSize: "0.7rem" }}
+              className="badge ms-1"
+              style={{
+                fontSize: "0.7rem",
+                background: tab === t.key ? "rgba(255,255,255,0.25)" : "var(--color-bg)",
+                color: tab === t.key ? "#fff" : "var(--color-muted)",
+              }}
             >
               {t.list.length}
             </span>
@@ -598,8 +672,8 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
         ))}
       </div>
 
-      {/* Select All Toggle (Archived Tab only for now as per plan) */}
-      {tab === "archived" && displayList.length > 0 && (
+      {/* Select All Toggle */}
+      {canBulkSelect && displayList.length > 0 && (
         <div className="mb-3 px-1">
           <label 
             className="d-flex align-items-center gap-2" 
@@ -611,9 +685,9 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                 width: 20,
                 height: 20,
                 borderRadius: 6,
-                border: "2px solid #cbd5e1",
-                background: displayList.slice(0, visibleCount).every(n => selectedIds.includes(n.sk)) ? "#000" : "transparent",
-                borderColor: displayList.slice(0, visibleCount).every(n => selectedIds.includes(n.sk)) ? "#000" : "#cbd5e1",
+                border: "2px solid var(--color-border)",
+                background: displayList.slice(0, visibleCount).every(n => selectedIds.includes(n.sk)) ? "var(--color-primary)" : "transparent",
+                borderColor: displayList.slice(0, visibleCount).every(n => selectedIds.includes(n.sk)) ? "var(--color-primary)" : "var(--color-border)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -633,7 +707,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
       {/* Content */}
       {loading ? (
         <div className="text-center py-5">
-          <div className="spinner-border text-primary" role="status">
+          <div className="spinner-border" style={{ color: "var(--color-primary)" }} role="status">
             <span className="visually-hidden">Loading...</span>
           </div>
         </div>
@@ -673,7 +747,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                 >
                   <div className="card-body p-3 d-flex gap-3 align-items-start">
                     {/* Checkbox for Selection */}
-                    {tab === "archived" && (
+                    {canBulkSelect && (
                       <div 
                         onClick={(e) => {
                           e.stopPropagation();
@@ -683,8 +757,8 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                           width: 22,
                           height: 22,
                           borderRadius: 7,
-                          border: `2px solid ${selectedIds.includes(n.sk) ? "#000" : "#cbd5e1"}`,
-                          background: selectedIds.includes(n.sk) ? "#000" : "transparent",
+                          border: `2px solid ${selectedIds.includes(n.sk) ? "var(--color-primary)" : "var(--color-border)"}`,
+                          background: selectedIds.includes(n.sk) ? "var(--color-primary)" : "transparent",
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
@@ -702,15 +776,15 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                     <div className="flex-grow-1 d-flex flex-column gap-3">
                     {/* Top: Info Row */}
                     <div>
-                      <h6 className="mb-2 fw-bold" style={{ fontSize: "1rem", lineHeight: 1.4, color: "#1e293b" }}>
+                      <h6 className="mb-2 fw-bold" style={{ fontSize: "1rem", lineHeight: 1.4, color: "var(--color-heading)" }}>
                         {n.title}
                       </h6>
                       <div className="d-flex flex-wrap align-items-center gap-2">
                         <span
                           className="badge border"
                           style={{
-                            backgroundColor: "#f8fafc",
-                            color: "#64748b",
+                            backgroundColor: "var(--color-bg)",
+                            color: "var(--color-muted)",
                             fontSize: "0.65rem",
                             fontFamily: "monospace",
                             padding: "4px 8px",
@@ -723,8 +797,8 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                         <span
                           className="badge"
                           style={{
-                            background: "rgba(99, 102, 241, 0.1)",
-                            color: "#6366f1",
+                            background: "rgba(37, 99, 235, 0.1)",
+                            color: "var(--color-secondary)",
                             fontSize: "0.7rem",
                             padding: "4px 10px",
                             borderRadius: 6,
@@ -736,8 +810,8 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                         <span
                           className="badge"
                           style={{
-                            background: "rgba(102, 126, 234, 0.1)",
-                            color: "#475569",
+                            background: "rgba(2, 132, 199, 0.1)",
+                            color: "var(--color-info)",
                             fontSize: "0.7rem",
                             padding: "4px 10px",
                             borderRadius: 6,
@@ -751,8 +825,8 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                           <span
                             className="badge"
                             style={{
-                              background: "rgba(16, 185, 129, 0.1)",
-                              color: "#059669",
+                              background: "rgba(22, 163, 74, 0.1)",
+                              color: "var(--color-success)",
                               fontSize: "0.7rem",
                               padding: "4px 10px",
                               borderRadius: 6,
@@ -785,8 +859,8 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                           borderRadius: '10px', 
                           fontSize: "0.8rem", 
                           fontWeight: 600,
-                          backgroundColor: "#f1f5f9",
-                          color: '#475569',
+                          backgroundColor: "var(--color-bg)",
+                          color: 'var(--color-body)',
                           border: 'none',
                           padding: '0.5rem'
                         }}
@@ -794,7 +868,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                         👁️ View
                       </Link>
 
-                      {can(role, "edit") && !n.is_archived && (
+                      {canEditNotification(role, n) && !n.is_archived && (
                         <Link
                           to={`/admin/edit/${getId(n.sk)}`}
                           className="btn btn-sm flex-grow-1"
@@ -802,8 +876,8 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                             borderRadius: '10px', 
                             fontSize: "0.8rem", 
                             fontWeight: 600,
-                            backgroundColor: "rgba(99, 102, 241, 0.08)",
-                            color: '#6366f1',
+                            backgroundColor: "rgba(37, 99, 235, 0.08)",
+                            color: 'var(--color-secondary)',
                             border: 'none',
                             padding: '0.5rem'
                           }}
@@ -820,8 +894,8 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                             borderRadius: '10px',
                             fontSize: "0.8rem",
                             fontWeight: 600,
-                            backgroundColor: 'rgba(23, 162, 184, 0.08)',
-                            color: '#0891b2',
+                            backgroundColor: 'rgba(2, 132, 199, 0.08)',
+                            color: 'var(--color-info)',
                             border: 'none',
                             padding: '0.5rem'
                           }}
@@ -837,11 +911,11 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                             borderRadius: '10px', 
                             fontSize: "0.80rem", 
                             fontWeight: 700,
-                            background: 'linear-gradient(135deg, #10b981, #059669)',
+                            background: 'linear-gradient(135deg, var(--color-success), #15803d)',
                             color: '#fff',
                             border: 'none',
                             padding: '0.5rem',
-                            boxShadow: '0 4px 6px -1px rgba(16, 185, 129, 0.2)'
+                            boxShadow: '0 4px 6px -1px rgba(22, 163, 74, 0.2)'
                           }}
                           onClick={() => handleApprove(getId(n.sk))}
                         >
@@ -856,8 +930,8 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                             borderRadius: '10px', 
                             fontSize: "0.8rem", 
                             fontWeight: 600,
-                            backgroundColor: 'rgba(239, 68, 68, 0.08)',
-                            color: '#ef4444',
+                            backgroundColor: 'rgba(220, 38, 38, 0.08)',
+                            color: 'var(--color-danger)',
                             border: 'none',
                             padding: '0.5rem'
                           }}
@@ -875,7 +949,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                             fontSize: "0.8rem", 
                             fontWeight: 600,
                             backgroundColor: 'rgba(245, 158, 11, 0.15)',
-                            color: '#d97706',
+                            color: 'var(--color-accent)',
                             border: 'none',
                             padding: '0.5rem'
                           }}
@@ -892,7 +966,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                             borderRadius: '10px', 
                             fontSize: "0.8rem", 
                             fontWeight: 700,
-                            backgroundColor: 'rgba(220, 53, 69, 0.12)',
+                            backgroundColor: 'rgba(220, 38, 38, 0.12)',
                             color: '#b91c1c',
                             border: 'none',
                             padding: '0.5rem'
@@ -915,7 +989,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
       {/* Infinite scroll loading indicator */}
       {hasMore && !loading && (
         <div className="d-flex justify-content-center mt-4">
-          <div className="spinner-border text-primary spinner-border-sm" role="status">
+          <div className="spinner-border spinner-border-sm" style={{ color: "var(--color-primary)" }} role="status">
             <span className="visually-hidden">Loading more...</span>
           </div>
         </div>
@@ -988,23 +1062,57 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                 Cancel
               </button>
               
-              <button 
-                className="btn btn-sm btn-danger rounded-pill px-4 d-flex align-items-center gap-2 fw-bold"
-                disabled={isBulkDeleting}
-                onClick={() => {
-                  setModal({
-                    show: true,
-                    title: "Confirm Bulk Permanent Delete",
-                    message: `Are you sure you want to permanently delete these ${selectedIds.length} notifications? This action is absolutely irreversible.`,
-                    confirmText: isBulkDeleting ? "Deleting..." : "Delete Permanently",
-                    confirmVariant: "danger",
-                    onConfirm: performBulkDelete
-                  });
-                }}
-                style={{ boxShadow: "0 4px 12px rgba(239, 68, 68, 0.3)", fontSize: "0.8rem" }}
-              >
-                <FiTrash2 size={16} /> Delete
-              </button>
+              {tab === "archived" ? (
+                <button
+                  className="btn btn-sm rounded-pill px-4 d-flex align-items-center gap-2 fw-bold"
+                  disabled={isBulkDeleting}
+                  onClick={() => {
+                    setModal({
+                      show: true,
+                      title: "Confirm Bulk Permanent Delete",
+                      message: `Are you sure you want to permanently delete these ${selectedIds.length} notifications? This action is absolutely irreversible.`,
+                      confirmText: isBulkDeleting ? "Deleting..." : "Delete Permanently",
+                      confirmVariant: "danger",
+                      onConfirm: performBulkDelete
+                    });
+                  }}
+                  style={{
+                    background: "var(--color-danger)",
+                    color: "#fff",
+                    border: "none",
+                    boxShadow: "0 4px 12px rgba(220, 38, 38, 0.3)",
+                    fontSize: "0.8rem",
+                  }}
+                >
+                  <FiTrash2 size={16} /> Delete
+                </button>
+              ) : (
+                can(role, "archive") && (
+                  <button
+                    className="btn btn-sm rounded-pill px-4 d-flex align-items-center gap-2 fw-bold"
+                    disabled={isBulkArchiving}
+                    onClick={() => {
+                      setModal({
+                        show: true,
+                        title: "Confirm Bulk Archive",
+                        message: `Are you sure you want to archive these ${selectedIds.length} notifications?`,
+                        confirmText: isBulkArchiving ? "Archiving..." : "Archive",
+                        confirmVariant: "danger",
+                        onConfirm: performBulkArchive
+                      });
+                    }}
+                    style={{
+                      background: "var(--color-danger)",
+                      color: "#fff",
+                      border: "none",
+                      boxShadow: "0 4px 12px rgba(220, 38, 38, 0.3)",
+                      fontSize: "0.8rem",
+                    }}
+                  >
+                    <FiArchive size={16} /> Archive
+                  </button>
+                )
+              )}
             </div>
           </div>
         </div>

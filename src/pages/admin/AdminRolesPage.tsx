@@ -43,9 +43,10 @@ const WINDOW_LABELS: Record<string, string> = {
 };
 
 const ROLE_STYLES: Record<string, { bg: string; text: string; label: string }> = {
-  admin: { bg: "#fee2e2", text: "#991b1b", label: "Admin" },
-  reviewer: { bg: "#fef3c7", text: "#92400e", label: "Reviewer" },
-  creator: { bg: "#dcfce7", text: "#166534", label: "Creator" },
+  admin: { bg: "rgba(15, 61, 145, 0.12)", text: "var(--color-primary)", label: "Admin" },
+  senior_reviewer: { bg: "rgba(124, 58, 237, 0.14)", text: "#7c3aed", label: "Senior Reviewer" },
+  reviewer: { bg: "rgba(245, 158, 11, 0.15)", text: "#d97706", label: "Reviewer" },
+  creator: { bg: "rgba(37, 99, 235, 0.12)", text: "var(--color-secondary)", label: "Creator" },
 };
 
 const AdminRolesPage: React.FC = () => {
@@ -55,7 +56,7 @@ const AdminRolesPage: React.FC = () => {
 
   // Form State
   const [email, setEmail] = useState<string>("");
-  const [role, setRole] = useState<"creator" | "reviewer" | "admin">("creator");
+  const [role, setRole] = useState<"creator" | "reviewer" | "senior_reviewer" | "admin">("creator");
   const [allCategories, setAllCategories] = useState<boolean>(true);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [allStates, setAllStates] = useState<boolean>(true);
@@ -95,7 +96,7 @@ const AdminRolesPage: React.FC = () => {
   const handleEditClick = (user: AdminUser) => {
     setIsEditing(true);
     setEmail(user.email);
-    setRole(user.admin_role as "creator" | "reviewer" | "admin");
+    setRole(user.admin_role as "creator" | "reviewer" | "senior_reviewer" | "admin");
 
     const perms = user.admin_permissions;
     if (perms) {
@@ -235,20 +236,20 @@ const AdminRolesPage: React.FC = () => {
   );
 
   return (
-    <div className="min-vh-100 bg-light py-5">
+    <div className="min-vh-100 py-5" style={{ background: "var(--color-bg)" }}>
       <div className="container">
         {/* Header Section */}
-        <div className="card shadow-sm border-0 mb-4 bg-white rounded-3">
+        <div className="card shadow-sm border-0 mb-4 rounded-3" style={{ background: "var(--color-surface)" }}>
           <div className="card-body p-4">
             <div className="d-flex align-items-center gap-3 mb-2">
               <div
                 className="rounded-circle p-3 d-flex align-items-center justify-content-center"
-                style={{ backgroundColor: "#e0e7ff", color: "#4f46e5" }}
+                style={{ backgroundColor: "rgba(15, 61, 145, 0.12)", color: "var(--color-primary)" }}
               >
                 <FiShield size={28} />
               </div>
               <div>
-                <h2 className="h4 mb-1 fw-bold text-dark">
+                <h2 className="h4 mb-1 fw-bold" style={{ color: "var(--color-heading)" }}>
                   Admin Roles & Permissions
                 </h2>
                 <p className="text-muted mb-0 small">
@@ -270,13 +271,13 @@ const AdminRolesPage: React.FC = () => {
           {/* Left Column: Admin Users List */}
           <div className="col-lg-7">
             <div className="card shadow-sm border-0 h-100">
-              <div className="card-header bg-white py-3 border-0">
-                <h5 className="mb-0 fw-bold text-dark">Active Administrators</h5>
+              <div className="card-header py-3 border-0" style={{ background: "var(--color-surface)" }}>
+                <h5 className="mb-0 fw-bold" style={{ color: "var(--color-heading)" }}>Active Administrators</h5>
               </div>
               <div className="card-body p-0">
                 {loading ? (
                   <div className="d-flex justify-content-center py-5">
-                    <div className="spinner-border text-indigo" role="status">
+                    <div className="spinner-border" style={{ color: "var(--color-primary)" }} role="status">
                       <span className="visually-hidden">Loading...</span>
                     </div>
                   </div>
@@ -288,7 +289,7 @@ const AdminRolesPage: React.FC = () => {
                 ) : (
                   <div className="table-responsive">
                     <table className="table table-hover align-middle mb-0">
-                      <thead className="table-light">
+                      <thead style={{ background: "var(--color-bg)" }}>
                         <tr>
                           <th className="px-4">User</th>
                           <th>Role</th>
@@ -331,7 +332,7 @@ const AdminRolesPage: React.FC = () => {
                           return (
                             <tr key={u.sub || u.email}>
                               <td className="px-4">
-                                <div className="fw-semibold text-dark">
+                                <div className="fw-semibold" style={{ color: "var(--color-heading)" }}>
                                   {u.given_name
                                     ? `${u.given_name} ${u.family_name || ""}`
                                     : "Registered User"}
@@ -413,8 +414,8 @@ const AdminRolesPage: React.FC = () => {
           {/* Right Column: Add / Edit Form */}
           <div className="col-lg-5">
             <div className="card shadow-sm border-0">
-              <div className="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center">
-                <h5 className="mb-0 fw-bold text-dark">
+              <div className="card-header py-3 border-0 d-flex justify-content-between align-items-center" style={{ background: "var(--color-surface)" }}>
+                <h5 className="mb-0 fw-bold" style={{ color: "var(--color-heading)" }}>
                   {isEditing ? "Update Administrator" : "Assign Admin Role"}
                 </h5>
                 {isEditing && (
@@ -461,11 +462,12 @@ const AdminRolesPage: React.FC = () => {
                       className="form-select"
                       value={role}
                       onChange={(e) =>
-                        setRole(e.target.value as "creator" | "reviewer" | "admin")
+                        setRole(e.target.value as "creator" | "reviewer" | "senior_reviewer" | "admin")
                       }
                     >
                       <option value="creator">Creator (Add/Edit notifications)</option>
                       <option value="reviewer">Reviewer (Approve notifications)</option>
+                      <option value="senior_reviewer">Senior Reviewer (Create, edit, approve & archive)</option>
                       <option value="admin">Admin (All actions, full control)</option>
                     </select>
                   </div>
@@ -492,7 +494,7 @@ const AdminRolesPage: React.FC = () => {
                     </div>
 
                     {!allCategories && (
-                      <div className="p-3 border rounded bg-light">
+                      <div className="p-3 border rounded" style={{ background: "var(--color-bg)" }}>
                         <div className="row g-2">
                           {SELECTABLE_CATEGORIES.map((cat) => (
                             <div key={cat.value} className="col-6">
@@ -542,10 +544,10 @@ const AdminRolesPage: React.FC = () => {
                     </div>
 
                     {!allStates && (
-                      <div className="p-3 border rounded bg-light">
+                      <div className="p-3 border rounded" style={{ background: "var(--color-bg)" }}>
                         {/* Search states */}
                         <div className="input-group input-group-sm mb-2 shadow-xs">
-                          <span className="input-group-text bg-white border-end-0">
+                          <span className="input-group-text border-end-0" style={{ background: "var(--color-surface)" }}>
                             <FiSearch size={12} className="text-secondary" />
                           </span>
                           <input
@@ -621,10 +623,20 @@ const AdminRolesPage: React.FC = () => {
                     </div>
                   </div>
 
+                  {(role === "creator" || role === "reviewer") && (
+                    <div className="mb-4 p-3 border rounded d-flex align-items-start gap-2" style={{ background: "var(--color-bg)" }}>
+                      <FiInfo className="flex-shrink-0 mt-1 text-muted" size={14} />
+                      <div className="form-text text-muted small mb-0">
+                        {role === "reviewer" ? "Reviewers" : "Creators"} can only edit notifications that haven't been approved yet, and can't archive notifications. Assign the "Senior Reviewer" role for full edit/archive access.
+                      </div>
+                    </div>
+                  )}
+
                   {/* Action Buttons */}
                   <button
                     type="submit"
-                    className="btn btn-primary w-100 d-flex align-items-center justify-content-center gap-2 py-2 fw-semibold"
+                    className="btn w-100 d-flex align-items-center justify-content-center gap-2 py-2 fw-semibold text-white border-0"
+                    style={{ background: "var(--color-primary)" }}
                     disabled={submitting}
                   >
                     {submitting ? (

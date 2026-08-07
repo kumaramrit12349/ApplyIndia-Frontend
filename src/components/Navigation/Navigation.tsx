@@ -1,27 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { NOTIFICATION_CATEGORIES, INDIAN_STATES } from "../../constant/SharedConstant";
-import { fetchAvailableFilters } from "../../services/public/notiifcationApi";
 
-const Navigation: React.FC = () => {
+interface NavigationProps {
+  availableStates: string[];
+}
+
+const Navigation: React.FC<NavigationProps> = ({ availableStates }) => {
   const location = useLocation();
   const categoryMatch = location.pathname.match(/\/notification\/category\/([^/]+)/i);
   const activeCategory = categoryMatch ? decodeURIComponent(categoryMatch[1]) : "all";
 
   const stateMatch = location.pathname.match(/\/notification\/state\/([^/]+)/i);
   const activeState = stateMatch ? decodeURIComponent(stateMatch[1]) : null;
-
-  const [availableStates, setAvailableStates] = useState<string[]>([]);
-
-  useEffect(() => {
-    fetchAvailableFilters()
-      .then((res: any) => {
-        if (res.states) {
-          setAvailableStates(res.states.map((s: string) => s.toLowerCase()));
-        }
-      })
-      .catch((err) => console.error("Failed to load available filters", err));
-  }, []);
 
   const visibleStates = INDIAN_STATES.filter(state =>
     availableStates.includes(state.value.toLowerCase())

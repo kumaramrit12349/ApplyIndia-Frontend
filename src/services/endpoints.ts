@@ -29,6 +29,9 @@ export const PRIVATE_API = {
     ADD_COMMENT: (id: string) => `api/notification/comment/${id}`,
     GET_COMMENTS: (id: string) => `api/notification/comments/${id}`,
     DELETE_BULK_PERMANENT: "api/notification/bulk-permanent-delete",
+    ARCHIVE_BULK: "api/notification/bulk-archive",
+    DISTRIBUTION_STATUS: (id: string) => `api/notification/${id}/distribution-status`,
+    RETRY_DISTRIBUTION: (id: string) => `api/notification/${id}/retry-distribution`,
   },
   SCRAPER: {
     RUN: "api/scraper/run",
@@ -45,6 +48,11 @@ export const PRIVATE_API = {
     ASSIGN: "api/admin-roles/assign",
     REMOVE: (sub: string) => `api/admin-roles/${sub}`,
   },
+  EMAIL_TEMPLATES: {
+    LIST: "api/email-templates",
+    TEMPLATE_BY_KEY: (key: string) => `api/email-templates/${key}`,
+    PREVIEW: (key: string) => `api/email-templates/${key}/preview`,
+  },
 };
 
 export const AUTH_API = {
@@ -58,6 +66,8 @@ export const AUTH_API = {
   RESET_PASSWORD: "/auth/reset-password",
   UPDATE_PROFILE: "/auth/profile",
   GET_PROFILE: "/auth/profile",
+  GET_NOTIFICATION_PREFERENCES: "/auth/notification-preferences",
+  UPDATE_NOTIFICATION_PREFERENCES: "/auth/notification-preferences",
 };
 
 export const USER_ACTIVITY_API = {
@@ -67,4 +77,9 @@ export const USER_ACTIVITY_API = {
     `/api/user-activity/check/${encodeURIComponent(notificationSk)}`,
   REMOVE: (notificationSk: string) =>
     `/api/user-activity/remove/${encodeURIComponent(notificationSk)}`,
+};
+
+export const ELIGIBILITY_API = {
+  CHECK: (notificationId: string) => `/api/eligibility/check/${notificationId}`,
+  ELIGIBLE_NOTIFICATIONS: "/api/eligibility/eligible-notifications",
 };

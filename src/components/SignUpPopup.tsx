@@ -138,10 +138,11 @@ const AuthPopup: React.FC<AuthPopupProps> = ({
       <Modal.Header closeButton className="border-0 pb-1">
         <Modal.Title
           className="w-100 fs-2"
-          style={{ 
-            fontWeight: 800, 
+          style={{
+            fontWeight: 800,
             textAlign: "left",
-            background: "linear-gradient(135deg, #667eea, #764ba2)",
+            fontFamily: "var(--font-base)",
+            background: "linear-gradient(135deg, var(--color-secondary), var(--color-primary))",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent"
           }}
@@ -156,7 +157,7 @@ const AuthPopup: React.FC<AuthPopupProps> = ({
               <span className="text-muted">New user?</span>
               <a
                 className="fw-bold text-decoration-none"
-                style={{ cursor: "pointer", color: "#764ba2", transition: "color 0.2s" }}
+                style={{ cursor: "pointer", color: "var(--color-primary)", transition: "color 0.2s" }}
                 onClick={() => swapTab("register")}
               >
                 Register Now
@@ -167,7 +168,7 @@ const AuthPopup: React.FC<AuthPopupProps> = ({
               <span className="text-muted">Already have an account?</span>
               <a
                 className="fw-bold text-decoration-none"
-                style={{ cursor: "pointer", color: "#764ba2", transition: "color 0.2s" }}
+                style={{ cursor: "pointer", color: "var(--color-primary)", transition: "color 0.2s" }}
                 onClick={() => swapTab("login")}
               >
                 Log in
@@ -322,7 +323,7 @@ const AuthPopup: React.FC<AuthPopupProps> = ({
             {tab === "login" && (
               <a
                 className="fw-bold text-decoration-none"
-                style={{ fontSize: "0.95rem", cursor: "pointer", color: "#764ba2", transition: "color 0.2s" }}
+                style={{ fontSize: "0.95rem", cursor: "pointer", color: "var(--color-primary)", transition: "color 0.2s" }}
                 onClick={onForgotPassword}
               >
                 Forgot Password?
@@ -336,7 +337,7 @@ const AuthPopup: React.FC<AuthPopupProps> = ({
             className="btn w-100 py-2 fw-bold text-white shadow-sm border-0"
             style={{
               borderRadius: "12px",
-              background: "linear-gradient(135deg, #667eea, #764ba2)",
+              background: "linear-gradient(135deg, var(--color-secondary), var(--color-primary))",
               fontSize: "1.15rem",
               letterSpacing: "0.5px",
               marginTop: 2,
@@ -345,7 +346,7 @@ const AuthPopup: React.FC<AuthPopupProps> = ({
             disabled={loading}
             onMouseOver={(e) => {
               e.currentTarget.style.transform = "translateY(-1px)";
-              e.currentTarget.style.boxShadow = "0 4px 12px rgba(102, 126, 234, 0.4)";
+              e.currentTarget.style.boxShadow = "0 4px 12px rgba(15, 61, 145, 0.4)";
             }}
             onMouseOut={(e) => {
               e.currentTarget.style.transform = "translateY(0)";

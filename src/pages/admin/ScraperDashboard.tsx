@@ -78,7 +78,7 @@ const StatCard: React.FC<{
 }> = ({ label, value, color, icon }) => (
   <div
     style={{
-      background: "#fff",
+      background: "var(--color-surface)",
       borderRadius: 16,
       padding: "1rem 1.25rem",
       boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
@@ -94,7 +94,7 @@ const StatCard: React.FC<{
     <div style={{ fontSize: "1.6rem", fontWeight: 700, color, lineHeight: 1 }}>
       {value}
     </div>
-    <div style={{ fontSize: "0.78rem", color: "#888", marginTop: 4 }}>{label}</div>
+    <div style={{ fontSize: "0.78rem", color: "var(--color-muted)", marginTop: 4 }}>{label}</div>
   </div>
 );
 
@@ -143,7 +143,7 @@ const ConfirmDeleteModal: React.FC<{
     >
       <div
         style={{
-          background: "#fff",
+          background: "var(--color-surface)",
           padding: "2rem",
           borderRadius: 20,
           width: 420,
@@ -157,22 +157,22 @@ const ConfirmDeleteModal: React.FC<{
           style={{
             width: 80,
             height: 80,
-            background: "#fef2f2",
+            background: "rgba(239, 68, 68, 0.12)",
             color: "#ef4444",
             borderRadius: "50%",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             margin: "0 auto 1.5rem",
-            boxShadow: "0 0 0 8px #fff5f5",
+            boxShadow: "0 0 0 8px rgba(239, 68, 68, 0.06)",
           }}
         >
           <FiAlertTriangle size={40} />
         </div>
-        <h3 style={{ margin: "0 0 0.5rem 0", color: "#1e293b", fontWeight: 850, fontSize: "1.5rem", letterSpacing: "-0.025em" }}>
+        <h3 style={{ margin: "0 0 0.5rem 0", color: "var(--color-heading)", fontWeight: 850, fontSize: "1.5rem", letterSpacing: "-0.025em" }}>
           {isBulk ? `Delete ${count} Sources?` : "Delete Permanently?"}
         </h3>
-        <p style={{ color: "#64748b", fontSize: "0.95rem", lineHeight: 1.6, marginBottom: "2rem" }}>
+        <p style={{ color: "var(--color-muted)", fontSize: "0.95rem", lineHeight: 1.6, marginBottom: "2rem" }}>
           {isBulk ? (
             <>This will permanently remove <strong>{count} selected sources</strong> and all their configurations from the database. This action cannot be undone.</>
           ) : (
@@ -180,7 +180,7 @@ const ConfirmDeleteModal: React.FC<{
           )}
           <br />
           {!isBulk && (
-            <span style={{ fontSize: "0.85rem", color: "#94a3b8", display: "block", marginTop: 8 }}>
+            <span style={{ fontSize: "0.85rem", color: "var(--color-muted)", display: "block", marginTop: 8 }}>
               (To hide this source without deleting it, use the <strong>Archive</strong> button on the dashboard instead.)
             </span>
           )}
@@ -220,13 +220,13 @@ const ConfirmDeleteModal: React.FC<{
               fontWeight: 600,
               fontSize: "0.95rem",
               background: "transparent",
-              color: "#94a3b8",
+              color: "var(--color-muted)",
               border: "none",
               cursor: "pointer",
               transition: "all 0.2s",
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.color = "#64748b"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.color = "#94a3b8"; }}
+            onMouseEnter={(e) => { e.currentTarget.style.color = "var(--color-muted)"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = "var(--color-muted)"; }}
           >
             Cancel
           </button>
@@ -264,7 +264,7 @@ const DryRunPreviewModal: React.FC<{
     >
       <div
         style={{
-          background: "#fff",
+          background: "var(--color-surface)",
           borderRadius: 24,
           width: 800,
           maxWidth: "100%",
@@ -276,7 +276,7 @@ const DryRunPreviewModal: React.FC<{
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div style={{ padding: "1.5rem 2rem", background: "linear-gradient(135deg, #667eea, #764ba2)", color: "#fff" }}>
+        <div style={{ padding: "1.5rem 2rem", background: "linear-gradient(135deg, var(--color-secondary), var(--color-primary))", color: "#fff" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
             <div>
               <h3 style={{ margin: 0, fontWeight: 800, fontSize: "1.4rem" }}>Dry Run Preview</h3>
@@ -314,7 +314,7 @@ const DryRunPreviewModal: React.FC<{
 
         <div style={{ flex: 1, overflowY: "auto", padding: "1.5rem 2rem" }}>
           {filteredItems.length === 0 ? (
-            <div style={{ textAlign: "center", padding: "3rem 0", color: "#64748b" }}>
+            <div style={{ textAlign: "center", padding: "3rem 0", color: "var(--color-muted)" }}>
               <div style={{ fontSize: "3rem", marginBottom: "1rem" }}>🔍</div>
               <p>No matching items found</p>
             </div>
@@ -326,8 +326,8 @@ const DryRunPreviewModal: React.FC<{
                   style={{
                     padding: "1rem",
                     borderRadius: 16,
-                    border: "1.5px solid #f1f5f9",
-                    background: "#f8fafc",
+                    border: "1.5px solid var(--color-border)",
+                    background: "var(--color-bg)",
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
@@ -335,11 +335,11 @@ const DryRunPreviewModal: React.FC<{
                   }}
                 >
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontWeight: 700, color: "#1e293b", marginBottom: 4, fontSize: "0.95rem" }}>
+                    <div style={{ fontWeight: 700, color: "var(--color-heading)", marginBottom: 4, fontSize: "0.95rem" }}>
                       {item.title}
                     </div>
                     <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                      <span style={{ fontSize: "0.75rem", background: "#667eea15", color: "#667eea", padding: "2px 8px", borderRadius: 6, fontWeight: 600 }}>
+                      <span style={{ fontSize: "0.75rem", background: "rgba(37, 99, 235, 0.1)", color: "var(--color-secondary)", padding: "2px 8px", borderRadius: 6, fontWeight: 600 }}>
                         {item.siteName}
                       </span>
                     </div>
@@ -349,11 +349,11 @@ const DryRunPreviewModal: React.FC<{
                     target="_blank"
                     rel="noreferrer"
                     style={{
-                      background: "#fff",
-                      border: "1.5px solid #e2e8f0",
+                      background: "var(--color-surface)",
+                      border: "1.5px solid var(--color-border)",
                       borderRadius: 10,
                       padding: "6px 14px",
-                      color: "#667eea",
+                      color: "var(--color-secondary)",
                       fontSize: "0.8rem",
                       fontWeight: 700,
                       textDecoration: "none",
@@ -368,19 +368,19 @@ const DryRunPreviewModal: React.FC<{
           )}
         </div>
 
-        <div style={{ padding: "1.25rem 2rem", background: "#f8fafc", borderTop: "1.5px solid #f1f5f9", textAlign: "right" }}>
+        <div style={{ padding: "1.25rem 2rem", background: "var(--color-bg)", borderTop: "1.5px solid var(--color-border)", textAlign: "right" }}>
           <button
             onClick={onClose}
             style={{
               padding: "10px 24px",
-              background: "#667eea",
+              background: "var(--color-primary)",
               color: "#fff",
               border: "none",
               borderRadius: 12,
               fontWeight: 700,
               fontSize: "0.9rem",
               cursor: "pointer",
-              boxShadow: "0 4px 12px rgba(102,126,234,0.3)",
+              boxShadow: "0 4px 12px rgba(15,61,145,0.3)",
             }}
           >
             Got it
@@ -409,10 +409,10 @@ const SiteCard: React.FC<{
     <div
       className="site-card-container"
       style={{
-        background: isSelected ? "#f0f7ff" : (isArchived ? "#f8fafc" : "#fff"),
+        background: isSelected ? "rgba(var(--color-secondary-rgb), 0.1)" : (isArchived ? "var(--color-bg)" : "var(--color-surface)"),
         borderRadius: 12,
         padding: "0.85rem 1.25rem",
-        border: isSelected ? "1px solid #3b82f6" : "1px solid rgba(0,0,0,0.05)",
+        border: isSelected ? "1px solid var(--color-secondary)" : "1px solid var(--color-border)",
         boxShadow: isSelected ? "0 4px 12px rgba(59, 130, 246, 0.08)" : (isArchived ? "none" : "0 1px 2px rgba(0,0,0,0.02)"),
         transition: "all 0.2s ease",
         opacity: isArchived ? 0.8 : 1,
@@ -433,8 +433,8 @@ const SiteCard: React.FC<{
           width: 22,
           height: 22,
           borderRadius: 6,
-          border: `2px solid ${isSelected ? "#3b82f6" : "#cbd5e1"}`,
-          background: isSelected ? "#3b82f6" : "transparent",
+          border: `2px solid ${isSelected ? "var(--color-secondary)" : "var(--color-border)"}`,
+          background: isSelected ? "var(--color-secondary)" : "transparent",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -454,8 +454,8 @@ const SiteCard: React.FC<{
             width: 48,
             height: 48,
             borderRadius: 12,
-            background: isArchived ? "rgba(203, 213, 225, 0.4)" : "#f8fafc",
-            border: "1px solid #e2e8f0",
+            background: isArchived ? "rgba(148, 163, 184, 0.2)" : "var(--color-bg)",
+            border: "1px solid var(--color-border)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -466,7 +466,7 @@ const SiteCard: React.FC<{
           {CATEGORY_EMOJI[source.defaultCategory] || "🌐"}
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 3, flex: 1, minWidth: 0, paddingRight: 64 }}>
-          <div style={{ fontWeight: 700, fontSize: "1.1rem", color: "#1e293b", lineHeight: 1.2 }}>
+          <div style={{ fontWeight: 700, fontSize: "1.1rem", color: "var(--color-heading)", lineHeight: 1.2 }}>
             {source.name}
           </div>
           <div className="site-info-row">
@@ -477,7 +477,7 @@ const SiteCard: React.FC<{
                 rel="noopener noreferrer"
                 style={{
                   fontSize: "0.85rem",
-                  color: "#94a3b8",
+                  color: "var(--color-muted)",
                   textDecoration: "none",
                   fontWeight: 500,
                   transition: "color 0.2s",
@@ -486,8 +486,8 @@ const SiteCard: React.FC<{
                   textOverflow: "ellipsis",
                   maxWidth: "200px"
                 }}
-                onMouseEnter={(e) => { e.currentTarget.style.color = "#64748b"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.color = "#94a3b8"; }}
+                onMouseEnter={(e) => { e.currentTarget.style.color = "var(--color-muted)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = "var(--color-muted)"; }}
               >
                 {source.listingUrl.replace(/^https?:\/\//, "")}
               </a>
@@ -495,8 +495,8 @@ const SiteCard: React.FC<{
               <div style={{ display: "flex", gap: 6 }}>
                 <span
                   style={{
-                    background: "#f1f5f9",
-                    color: "#64748b",
+                    background: "var(--color-bg)",
+                    color: "var(--color-muted)",
                     borderRadius: 6,
                     padding: "3px 8px",
                     fontSize: "0.65rem",
@@ -509,8 +509,8 @@ const SiteCard: React.FC<{
                 </span>
                 <span
                   style={{
-                    background: "#f1f5f9",
-                    color: "#64748b",
+                    background: "var(--color-bg)",
+                    color: "var(--color-muted)",
                     borderRadius: 6,
                     padding: "3px 8px",
                     fontSize: "0.65rem",
@@ -532,7 +532,7 @@ const SiteCard: React.FC<{
                     style={{
                       border: "none",
                       background: "transparent",
-                      color: source.isActive ? "#10b981" : "#64748b",
+                      color: source.isActive ? "#10b981" : "var(--color-muted)",
                       fontWeight: 600,
                       fontSize: "0.85rem",
                       cursor: "pointer",
@@ -542,8 +542,8 @@ const SiteCard: React.FC<{
                       padding: 0,
                       transition: "all 0.2s"
                     }}
-                    onMouseEnter={(e) => { e.currentTarget.style.color = source.isActive ? "#059669" : "#1e293b"; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.color = source.isActive ? "#10b981" : "#64748b"; }}
+                    onMouseEnter={(e) => { e.currentTarget.style.color = source.isActive ? "#059669" : "var(--color-heading)"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.color = source.isActive ? "#10b981" : "var(--color-muted)"; }}
                     title={source.isActive ? "Deactivate Source" : "Activate Source"}
                   >
                     <FiZap size={14} fill={source.isActive ? "currentColor" : "none"} /> 
@@ -555,7 +555,7 @@ const SiteCard: React.FC<{
                     style={{
                       border: "none",
                       background: "transparent",
-                      color: "#3b82f6",
+                      color: "var(--color-secondary)",
                       fontWeight: 600,
                       fontSize: "0.85rem",
                       cursor: previewing ? "not-allowed" : "pointer",
@@ -567,7 +567,7 @@ const SiteCard: React.FC<{
                       transition: "color 0.2s"
                     }}
                     onMouseEnter={(e) => { if(!previewing) e.currentTarget.style.color = "#2563eb"; }}
-                    onMouseLeave={(e) => { if(!previewing) e.currentTarget.style.color = "#3b82f6"; }}
+                    onMouseLeave={(e) => { if(!previewing) e.currentTarget.style.color = "var(--color-secondary)"; }}
                   >
                     <FiEye size={15} /> {previewing ? "Previewing..." : "Preview"}
                   </button>
@@ -576,7 +576,7 @@ const SiteCard: React.FC<{
                     style={{
                       border: "none",
                       background: "transparent",
-                      color: "#475569",
+                      color: "var(--color-body)",
                       fontWeight: 600,
                       fontSize: "0.85rem",
                       cursor: "pointer",
@@ -586,8 +586,8 @@ const SiteCard: React.FC<{
                       padding: 0,
                       transition: "color 0.2s"
                     }}
-                    onMouseEnter={(e) => { e.currentTarget.style.color = "#1e293b"; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.color = "#475569"; }}
+                    onMouseEnter={(e) => { e.currentTarget.style.color = "var(--color-heading)"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.color = "var(--color-body)"; }}
                   >
                     <FiEdit2 size={15} /> Edit
                   </button>
@@ -596,7 +596,7 @@ const SiteCard: React.FC<{
                     style={{
                       border: "none",
                       background: "transparent",
-                      color: "#64748b",
+                      color: "var(--color-muted)",
                       fontWeight: 600,
                       fontSize: "0.85rem",
                       cursor: "pointer",
@@ -606,8 +606,8 @@ const SiteCard: React.FC<{
                       padding: 0,
                       transition: "color 0.2s"
                     }}
-                    onMouseEnter={(e) => { e.currentTarget.style.color = "#1e293b"; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.color = "#64748b"; }}
+                    onMouseEnter={(e) => { e.currentTarget.style.color = "var(--color-heading)"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.color = "var(--color-muted)"; }}
                     title="Archive Source"
                   >
                     <FiArchive size={15} /> Archive
@@ -690,8 +690,8 @@ const SiteCard: React.FC<{
           top: 0, 
           right: 0, 
           padding: "6px 16px",
-          background: isArchived ? "#f1f5f9" : (source.isActive ? "#ecfdf5" : "#fef2f2"),
-          color: isArchived ? "#64748b" : (source.isActive ? "#10b981" : "#ef4444"),
+          background: isArchived ? "var(--color-bg)" : (source.isActive ? "rgba(16, 185, 129, 0.12)" : "rgba(239, 68, 68, 0.12)"),
+          color: isArchived ? "var(--color-muted)" : (source.isActive ? "#10b981" : "#ef4444"),
           fontSize: "0.65rem",
           fontWeight: 800,
           textTransform: "uppercase",
@@ -730,7 +730,7 @@ const PreviewModal: React.FC<{
   >
     <div
       style={{
-        background: "#fff",
+        background: "var(--color-surface)",
         borderRadius: 20,
         padding: "1.5rem",
         maxWidth: 720,
@@ -753,7 +753,7 @@ const PreviewModal: React.FC<{
           <h5 style={{ margin: 0, fontWeight: 700 }}>
             <FiEye size={18} style={{ marginRight: 8 }} /> Preview — {siteName}
           </h5>
-          <p style={{ margin: 0, color: "#888", fontSize: "0.82rem", marginTop: 2 }}>
+          <p style={{ margin: 0, color: "var(--color-muted)", fontSize: "0.82rem", marginTop: 2 }}>
             Found {totalFound} listings · Showing top {items.length}
           </p>
         </div>
@@ -764,7 +764,7 @@ const PreviewModal: React.FC<{
             border: "none",
             fontSize: "1.4rem",
             cursor: "pointer",
-            color: "#888",
+            color: "var(--color-muted)",
             lineHeight: 1,
           }}
         >
@@ -777,7 +777,7 @@ const PreviewModal: React.FC<{
           <div
             key={i}
             style={{
-              border: "1px solid rgba(0,0,0,0.07)",
+              border: "1px solid var(--color-border)",
               borderRadius: 10,
               padding: "0.75rem 1rem",
             }}
@@ -805,7 +805,7 @@ const PreviewModal: React.FC<{
                 <span
                   style={{
                     background: "rgba(255,193,7,0.12)",
-                    color: "#856404",
+                    color: "var(--color-accent)",
                     borderRadius: 6,
                     padding: "1px 8px",
                     fontSize: "0.7rem",
@@ -853,11 +853,11 @@ const CustomSelect: React.FC<{
         onClick={() => setIsOpen(!isOpen)}
         style={{
           borderRadius: 10,
-          border: "1px solid #e2e8f0",
+          border: "1px solid var(--color-border)",
           padding: "10px 14px",
           fontSize: "0.92rem",
-          background: "#f8fafc",
-          color: value ? "#1e293b" : "#94a3b8",
+          background: "var(--color-bg)",
+          color: value ? "var(--color-heading)" : "var(--color-muted)",
           cursor: "pointer",
           display: "flex",
           justifyContent: "space-between",
@@ -875,7 +875,7 @@ const CustomSelect: React.FC<{
           transform: isOpen ? "rotate(180deg)" : "rotate(0deg)", 
           transition: "transform 0.2s",
           fontSize: "0.6rem",
-          color: "#94a3b8",
+          color: "var(--color-muted)",
           marginLeft: 8
         }}>▼</span>
       </div>
@@ -886,8 +886,8 @@ const CustomSelect: React.FC<{
           top: "calc(100% + 4px)",
           left: 0,
           right: 0,
-          background: "#fff",
-          border: "1px solid #e2e8f0",
+          background: "var(--color-surface)",
+          border: "1px solid var(--color-border)",
           borderRadius: 12,
           boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)",
           zIndex: 10000,
@@ -913,13 +913,13 @@ const CustomSelect: React.FC<{
                   borderRadius: 8,
                   cursor: "pointer",
                   background: isSelected ? "#6366f1" : "transparent",
-                  color: isSelected ? "#fff" : "#475569",
+                  color: isSelected ? "#fff" : "var(--color-body)",
                   fontWeight: isSelected ? 700 : 500,
                   transition: "all 0.2s",
                   marginBottom: 2
                 }}
                 onMouseEnter={(e) => {
-                  if (!isSelected) e.currentTarget.style.background = "#f1f5f9";
+                  if (!isSelected) e.currentTarget.style.background = "var(--color-bg)";
                 }}
                 onMouseLeave={(e) => {
                   if (!isSelected) e.currentTarget.style.background = "transparent";
@@ -1017,33 +1017,33 @@ const SourceModal: React.FC<{
     gap: 6,
     fontSize: "0.85rem",
     fontWeight: 600,
-    color: "#64748b",
+    color: "var(--color-muted)",
   };
 
   const inputStyle: React.CSSProperties = {
     borderRadius: 10,
-    border: "1px solid #e2e8f0",
+    border: "1px solid var(--color-border)",
     padding: "10px 12px",
     fontSize: "0.92rem",
     outline: "none",
     transition: "all 0.2s ease",
     width: "100%",
     boxSizing: "border-box",
-    background: "#f8fafc",
-    color: "#1e293b",
+    background: "var(--color-bg)",
+    color: "var(--color-heading)",
   };
 
   return (
     <div style={{ position: "fixed", inset: 0, background: "rgba(15, 23, 42, 0.6)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", backdropFilter: "blur(6px)" }}>
-      <div style={{ background: "#fff", padding: "2.5rem", borderRadius: 24, width: 540, maxWidth: "95%", boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.15)", position: "relative" }} onClick={e => e.stopPropagation()}>
-        <h3 style={{ margin: "0 0 1.8rem 0", fontWeight: 850, letterSpacing: "-0.03em", color: "#0f172a", fontSize: "1.6rem" }}>{isNew ? "Add New Source" : "Edit Source"}</h3>
+      <div style={{ background: "var(--color-surface)", padding: "2.5rem", borderRadius: 24, width: 540, maxWidth: "95%", boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.15)", position: "relative" }} onClick={e => e.stopPropagation()}>
+        <h3 style={{ margin: "0 0 1.8rem 0", fontWeight: 850, letterSpacing: "-0.03em", color: "var(--color-heading)", fontSize: "1.6rem" }}>{isNew ? "Add New Source" : "Edit Source"}</h3>
         <form 
           onSubmit={handleSubmit} 
           style={{ display: "flex", flexDirection: "column", gap: 18 }}
           onChange={() => setError(null)}
         >
           {error && (
-            <div style={{ background: "#fef2f2", color: "#ef4444", padding: "10px 14px", borderRadius: 12, fontSize: "0.85rem", fontWeight: 600, border: "1px solid rgba(239, 68, 68, 0.1)" }}>
+            <div style={{ background: "rgba(239, 68, 68, 0.12)", color: "#ef4444", padding: "10px 14px", borderRadius: 12, fontSize: "0.85rem", fontWeight: 600, border: "1px solid rgba(239, 68, 68, 0.25)" }}>
               ⚠️ {error}
             </div>
           )}
@@ -1051,7 +1051,7 @@ const SourceModal: React.FC<{
           <label style={labelStyle}>
             Site Display Name
             <div style={{ position: "relative" }}>
-              <FiType style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", color: "#94a3b8" }} />
+              <FiType style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", color: "var(--color-muted)" }} />
               <input 
                 required 
                 placeholder="e.g. UPSC Official" 
@@ -1066,7 +1066,7 @@ const SourceModal: React.FC<{
             <label style={labelStyle}>
               Unique Site Key
               <div style={{ position: "relative" }}>
-                <FiKey style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", color: "#94a3b8" }} />
+                <FiKey style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", color: "var(--color-muted)" }} />
                 <input 
                   required 
                   placeholder="e.g. upsc-main" 
@@ -1084,7 +1084,7 @@ const SourceModal: React.FC<{
           <label style={labelStyle}>
             Listing URL
             <div style={{ position: "relative" }}>
-              <FiGlobe style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", color: "#94a3b8" }} />
+              <FiGlobe style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", color: "var(--color-muted)" }} />
               <input 
                 required 
                 type="url" 
@@ -1094,7 +1094,7 @@ const SourceModal: React.FC<{
                 style={{ 
                   ...inputStyle, 
                   paddingLeft: 40,
-                  borderColor: formData.listingUrl && !urlValid ? "#ef4444" : "#e2e8f0"
+                  borderColor: formData.listingUrl && !urlValid ? "#ef4444" : "var(--color-border)"
                 }} 
               />
               {formData.listingUrl && (
@@ -1132,23 +1132,23 @@ const SourceModal: React.FC<{
           </div>
 
           <label style={{ display: "flex", alignItems: "center", gap: 12, cursor: "pointer", userSelect: "none", marginTop: 6, width: "fit-content" }}>
-            <input type="checkbox" checked={formData.isActive} onChange={(e) => setFormData({...formData, isActive: e.target.checked})} style={{ width: 20, height: 20, cursor: "pointer", accentColor: "#6366f1" }} />
-            <span style={{ fontSize: "0.95rem", fontWeight: 700, color: "#334155" }}>Active and Enabled for Tracking</span>
+            <input type="checkbox" checked={formData.isActive} onChange={(e) => setFormData({...formData, isActive: e.target.checked})} style={{ width: 20, height: 20, cursor: "pointer", accentColor: "var(--color-primary)" }} />
+            <span style={{ fontSize: "0.95rem", fontWeight: 700, color: "var(--color-heading)" }}>Active and Enabled for Tracking</span>
           </label>
 
           <div style={{ display: "flex", justifyContent: "flex-end", gap: 14, marginTop: 12, alignItems: "center" }}>
-            <button type="button" onClick={onClose} style={{ background: "none", border: "none", color: "#94a3b8", fontWeight: 700, cursor: "pointer", padding: "10px 16px", fontSize: "0.95rem", transition: "color 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.color = "#64748b"} onMouseLeave={(e) => e.currentTarget.style.color = "#94a3b8"}>Cancel</button>
+            <button type="button" onClick={onClose} style={{ background: "none", border: "none", color: "var(--color-muted)", fontWeight: 700, cursor: "pointer", padding: "10px 16px", fontSize: "0.95rem", transition: "color 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.color = "var(--color-muted)"} onMouseLeave={(e) => e.currentTarget.style.color = "var(--color-muted)"}>Cancel</button>
             <button 
               type="submit" 
               disabled={!canSave} 
               style={{ 
                 borderRadius: 12, 
                 padding: "12px 28px", 
-                background: canSave ? "linear-gradient(135deg, #667eea, #764ba2)" : "#e2e8f0", 
-                color: canSave ? "#fff" : "#94a3b8", 
-                fontWeight: 800, 
-                border: "none", 
-                boxShadow: canSave ? "0 10px 15px -3px rgba(102, 126, 234, 0.3)" : "none", 
+                background: canSave ? "linear-gradient(135deg, var(--color-secondary), var(--color-primary))" : "var(--color-border)",
+                color: canSave ? "#fff" : "var(--color-muted)",
+                fontWeight: 800,
+                border: "none",
+                boxShadow: canSave ? "0 10px 15px -3px rgba(15, 61, 145, 0.3)" : "none",
                 cursor: canSave ? "pointer" : "not-allowed", 
                 fontSize: "0.95rem", 
                 transition: "all 0.2s",
@@ -1265,7 +1265,7 @@ const ScraperDashboard: React.FC = () => {
           width: 100%;
           justify-content: space-between;
           padding-top: 12px;
-          border-top: 1px solid rgba(0,0,0,0.05);
+          border-top: 1px solid var(--color-border);
         }
         .ribbon-container, .ribbon-banner {
           display: none !important; /* Managed purely via inline styles now for straight look */
@@ -1491,7 +1491,7 @@ const ScraperDashboard: React.FC = () => {
     <div
       style={{
         minHeight: "100vh",
-        background: "linear-gradient(135deg, #f0f4ff 0%, #fafafa 100%)",
+        background: "var(--color-bg)",
         padding: "1rem",
       }}
     >
@@ -1502,7 +1502,7 @@ const ScraperDashboard: React.FC = () => {
         <div
           className="header-container"
           style={{
-            background: "linear-gradient(135deg, #667eea, #764ba2)",
+            background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))",
             borderRadius: 20,
             padding: "1.5rem 2rem",
             color: "#fff",
@@ -1545,7 +1545,7 @@ const ScraperDashboard: React.FC = () => {
         {status.isRunning && (
           <div
             style={{
-              background: "linear-gradient(135deg, #fff3cd, #ffeaa7)",
+              background: "rgba(245, 158, 11, 0.15)",
               border: "1px solid #ffc107",
               borderRadius: 14,
               padding: "0.85rem 1.25rem",
@@ -1561,7 +1561,7 @@ const ScraperDashboard: React.FC = () => {
             />
             <div>
               <strong>Scraper is running…</strong>
-              <span style={{ color: "#777", fontSize: "0.82rem", marginLeft: 8 }}>
+              <span style={{ color: "var(--color-muted)", fontSize: "0.82rem", marginLeft: 8 }}>
                 Auto-refreshing every 5 seconds
               </span>
             </div>
@@ -1572,7 +1572,7 @@ const ScraperDashboard: React.FC = () => {
         <div
           className="controls-container"
           style={{
-            background: "#fff",
+            background: "var(--color-surface)",
             borderRadius: 16,
             padding: "1.25rem 1.5rem",
             boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
@@ -1581,7 +1581,7 @@ const ScraperDashboard: React.FC = () => {
         >
           <div style={{ flex: 1, minWidth: 200 }}>
             <h6 style={{ margin: 0, fontWeight: 700 }}>Manual Controls</h6>
-            <p style={{ margin: 0, color: "#888", fontSize: "0.8rem", marginTop: 2 }}>
+            <p style={{ margin: 0, color: "var(--color-muted)", fontSize: "0.8rem", marginTop: 2 }}>
               Trigger a scrape run immediately or test with dry-run mode
             </p>
           </div>
@@ -1591,11 +1591,11 @@ const ScraperDashboard: React.FC = () => {
               onClick={() => handleRun(true)}
               disabled={triggering || status.isRunning}
               style={{
-                border: "1.5px solid #667eea",
+                border: "1.5px solid var(--color-primary)",
                 borderRadius: 10,
                 padding: "8px 18px",
-                background: "rgba(102,126,234,0.07)",
-                color: "#667eea",
+                background: "rgba(15,61,145,0.07)",
+                color: "var(--color-primary)",
                 fontWeight: 600,
                 fontSize: "0.85rem",
                 cursor:
@@ -1616,8 +1616,8 @@ const ScraperDashboard: React.FC = () => {
                 padding: "8px 22px",
                 background:
                   triggering || status.isRunning
-                    ? "#ccc"
-                    : "linear-gradient(135deg, #667eea, #764ba2)",
+                    ? "var(--color-border)"
+                    : "linear-gradient(135deg, var(--color-secondary), var(--color-primary))",
                 color: "#fff",
                 fontWeight: 700,
                 fontSize: "0.85rem",
@@ -1626,7 +1626,7 @@ const ScraperDashboard: React.FC = () => {
                 boxShadow:
                   triggering || status.isRunning
                     ? "none"
-                    : "0 4px 14px rgba(102,126,234,0.35)",
+                    : "0 4px 14px rgba(15,61,145,0.35)",
                 transition: "all 0.2s",
               }}
             >
@@ -1638,7 +1638,7 @@ const ScraperDashboard: React.FC = () => {
         {/* ─── Last Run Summary ── */}
         <div
           style={{
-            background: "#fff",
+            background: "var(--color-surface)",
             borderRadius: 16,
             padding: "1.25rem 1.5rem",
             boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
@@ -1661,9 +1661,9 @@ const ScraperDashboard: React.FC = () => {
                 <button
                   onClick={() => setShowPreview(true)}
                   style={{
-                    background: "rgba(102,126,234,0.1)",
-                    border: "1px solid #667eea",
-                    color: "#667eea",
+                    background: "rgba(15,61,145,0.1)",
+                    border: "1px solid var(--color-primary)",
+                    color: "var(--color-primary)",
                     borderRadius: 8,
                     padding: "4px 12px",
                     fontSize: "0.75rem",
@@ -1683,12 +1683,12 @@ const ScraperDashboard: React.FC = () => {
               disabled={loadingStatus}
               style={{
                 background: "none",
-                border: "1px solid rgba(0,0,0,0.1)",
+                border: "1px solid var(--color-border)",
                 borderRadius: 8,
                 padding: "4px 12px",
                 fontSize: "0.8rem",
                 cursor: loadingStatus ? "not-allowed" : "pointer",
-                color: "#555",
+                color: "var(--color-muted)",
               }}
             >
               {loadingStatus ? "⏳" : "🔄"} Refresh
@@ -1697,14 +1697,14 @@ const ScraperDashboard: React.FC = () => {
 
           {loadingStatus ? (
             <div className="text-center py-4">
-              <div className="spinner-border text-primary spinner-border-sm" role="status" />
+              <div className="spinner-border spinner-border-sm" style={{ color: "var(--color-primary)" }} role="status" />
             </div>
           ) : !lastRun ? (
             <div
               style={{
                 textAlign: "center",
                 padding: "2rem",
-                color: "#aaa",
+                color: "var(--color-muted)",
                 fontSize: "0.9rem",
               }}
             >
@@ -1721,13 +1721,13 @@ const ScraperDashboard: React.FC = () => {
                   flexWrap: "wrap",
                   marginBottom: "1rem",
                   fontSize: "0.8rem",
-                  color: "#666",
+                  color: "var(--color-muted)",
                 }}
               >
                 <span>🕐 Started: {fmtTime(lastRun.startedAt)}</span>
                 <span
                   style={{
-                    background: "rgba(0,0,0,0.04)",
+                    background: "var(--color-bg)",
                     borderRadius: 6,
                     padding: "0 8px",
                   }}
@@ -1742,7 +1742,7 @@ const ScraperDashboard: React.FC = () => {
 
               {/* Stat cards */}
               <div className="stat-grid" style={{ marginBottom: "1rem", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))" }}>
-                <StatCard label="Found" value={lastRun.totalFound} color="#667eea" icon="🔍" />
+                <StatCard label="Found" value={lastRun.totalFound} color="var(--color-secondary)" icon="🔍" />
                 <StatCard label="New Notifications" value={lastRun.totalInserted} color="#28a745" icon="✅" />
                 <StatCard label="Portal Updates" value={lastRun.totalVirtual ?? 0} color="#17a2b8" icon="🔔" />
                 <StatCard label="Already in DB" value={lastRun.totalSkipped} color="#ffc107" icon="⏭️" />
@@ -1757,7 +1757,7 @@ const ScraperDashboard: React.FC = () => {
                     style={{
                       fontSize: "0.8rem",
                       fontWeight: 600,
-                      color: "#555",
+                      color: "var(--color-muted)",
                       marginBottom: 8,
                     }}
                   >
@@ -1772,7 +1772,7 @@ const ScraperDashboard: React.FC = () => {
                           gap: 8,
                           flexWrap: "wrap",
                           alignItems: "center",
-                          background: "rgba(0,0,0,0.02)",
+                          background: "var(--color-bg)",
                           borderRadius: 8,
                           padding: "6px 12px",
                           fontSize: "0.8rem",
@@ -1781,7 +1781,7 @@ const ScraperDashboard: React.FC = () => {
                         <span style={{ fontWeight: 600, flex: 1, minWidth: 140 }}>
                           {s.siteKey}
                         </span>
-                        <span style={{ color: "#667eea" }}>🔍 {s.found}</span>
+                        <span style={{ color: "var(--color-secondary)" }}>🔍 {s.found}</span>
                         <span style={{ color: "#28a745" }}>✅ {s.inserted}</span>
                         {(s.virtual ?? 0) > 0 && (
                           <span style={{ color: "#17a2b8" }}>🔔 {s.virtual}</span>
@@ -1816,8 +1816,8 @@ const ScraperDashboard: React.FC = () => {
                   <div
                     style={{
                       marginTop: 8,
-                      background: "#fff5f5",
-                      border: "1px solid #ffcdd2",
+                      background: "rgba(239, 68, 68, 0.08)",
+                      border: "1px solid rgba(239, 68, 68, 0.25)",
                       borderRadius: 8,
                       padding: "0.75rem",
                       maxHeight: 200,
@@ -1829,7 +1829,7 @@ const ScraperDashboard: React.FC = () => {
                         key={i}
                         style={{
                           fontSize: "0.75rem",
-                          color: "#c62828",
+                          color: "var(--color-danger)",
                           fontFamily: "monospace",
                           marginBottom: 4,
                         }}
@@ -1857,7 +1857,7 @@ const ScraperDashboard: React.FC = () => {
                     gap: 8,
                   }}
                 >
-                  <span style={{ fontSize: "0.85rem", color: "#155724" }}>
+                  <span style={{ fontSize: "0.85rem", color: "var(--color-success)" }}>
                     🎉 <strong>{lastRun.totalInserted}</strong> new notification
                     {lastRun.totalInserted !== 1 ? "s" : ""} added — pending review
                   </span>
@@ -1884,7 +1884,7 @@ const ScraperDashboard: React.FC = () => {
         {/* ─── Source Sites ── */}
         <div
           style={{
-            background: "#fff",
+            background: "var(--color-surface)",
             borderRadius: 16,
             padding: "1.25rem 1.5rem",
             boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
@@ -1892,11 +1892,11 @@ const ScraperDashboard: React.FC = () => {
         >
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.25rem", flexWrap: "wrap", gap: 12 }}>
             <div>
-              <h6 style={{ margin: 0, fontWeight: 800, color: "#1e293b", fontSize: "1rem" }}>
+              <h6 style={{ margin: 0, fontWeight: 800, color: "var(--color-heading)", fontSize: "1rem" }}>
                 🌐 Configured Sources
               </h6>
               <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 8 }}>
-                <div style={{ display: "flex", gap: 4, background: "#f1f5f9", padding: 4, borderRadius: 10, width: "fit-content" }}>
+                <div style={{ display: "flex", gap: 4, background: "var(--color-bg)", padding: 4, borderRadius: 10, width: "fit-content" }}>
                   <button
                     onClick={() => { setViewMode("active"); setSelectedKeys([]); }}
                     style={{
@@ -1905,8 +1905,8 @@ const ScraperDashboard: React.FC = () => {
                       padding: "4px 12px",
                       fontSize: "0.75rem",
                       fontWeight: 700,
-                      background: viewMode === "active" ? "#fff" : "transparent",
-                      color: viewMode === "active" ? "#6366f1" : "#64748b",
+                      background: viewMode === "active" ? "var(--color-surface)" : "transparent",
+                      color: viewMode === "active" ? "var(--color-secondary)" : "var(--color-muted)",
                       boxShadow: viewMode === "active" ? "0 2px 4px rgba(0,0,0,0.05)" : "none",
                       cursor: "pointer",
                       transition: "all 0.2s"
@@ -1922,8 +1922,8 @@ const ScraperDashboard: React.FC = () => {
                       padding: "4px 12px",
                       fontSize: "0.75rem",
                       fontWeight: 700,
-                      background: viewMode === "archived" ? "#fff" : "transparent",
-                      color: viewMode === "archived" ? "#6366f1" : "#64748b",
+                      background: viewMode === "archived" ? "var(--color-surface)" : "transparent",
+                      color: viewMode === "archived" ? "var(--color-secondary)" : "var(--color-muted)",
                       boxShadow: viewMode === "archived" ? "0 2px 4px rgba(0,0,0,0.05)" : "none",
                       cursor: "pointer",
                       transition: "all 0.2s"
@@ -1941,7 +1941,7 @@ const ScraperDashboard: React.FC = () => {
                         width: 18,
                         height: 18,
                         borderRadius: 5,
-                        border: `2px solid ${selectedKeys.length === sources.length ? "#6366f1" : "#cbd5e1"}`,
+                        border: `2px solid ${selectedKeys.length === sources.length ? "#6366f1" : "var(--color-border)"}`,
                         background: selectedKeys.length === sources.length ? "#6366f1" : "transparent",
                         display: "flex",
                         alignItems: "center",
@@ -1953,7 +1953,7 @@ const ScraperDashboard: React.FC = () => {
                       {selectedKeys.length === sources.length && <span style={{ fontSize: 10, fontWeight: 900 }}>✓</span>}
                       {selectedKeys.length > 0 && selectedKeys.length < sources.length && <div style={{ width: 8, height: 2, background: "#6366f1", borderRadius: 1 }} />}
                     </div>
-                    <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "#64748b" }}>
+                    <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--color-muted)" }}>
                       {selectedKeys.length === sources.length ? "Deselect All" : "Select All"}
                     </span>
                   </label>
@@ -1963,13 +1963,13 @@ const ScraperDashboard: React.FC = () => {
             <button 
               onClick={() => setEditingSource({})}
               className="btn btn-sm"
-              style={{ 
-                borderRadius: 10, 
-                padding: "8px 16px", 
-                background: "linear-gradient(135deg, #667eea, #764ba2)", 
-                color: "#fff", 
+              style={{
+                borderRadius: 10,
+                padding: "8px 16px",
+                background: "linear-gradient(135deg, var(--color-secondary), var(--color-primary))",
+                color: "#fff",
                 fontWeight: 700,
-                boxShadow: "0 4px 12px rgba(102, 126, 234, 0.25)",
+                boxShadow: "0 4px 12px rgba(15, 61, 145, 0.25)",
                 border: "none"
               }}
             >
@@ -1979,7 +1979,7 @@ const ScraperDashboard: React.FC = () => {
 
           {loadingSources ? (
             <div className="text-center py-4">
-              <div className="spinner-border text-primary spinner-border-sm" role="status" />
+              <div className="spinner-border spinner-border-sm" style={{ color: "var(--color-primary)" }} role="status" />
             </div>
           ) : (
             <div
@@ -2008,12 +2008,12 @@ const ScraperDashboard: React.FC = () => {
           )}
           
           {!loadingSources && sources.length === 0 && (
-            <div style={{ padding: "3rem 1rem", textAlign: "center", background: "#f8fafc", borderRadius: 12, border: "2px dashed #e2e8f0" }}>
+            <div style={{ padding: "3rem 1rem", textAlign: "center", background: "var(--color-bg)", borderRadius: 12, border: "2px dashed var(--color-border)" }}>
               <div style={{ fontSize: "2rem", marginBottom: "1rem" }}>{viewMode === "active" ? "🏜️" : "📁"}</div>
-              <div style={{ fontWeight: 700, color: "#475569" }}>
+              <div style={{ fontWeight: 700, color: "var(--color-body)" }}>
                 {viewMode === "active" ? "No Sources Configured" : "No Archived Sources"}
               </div>
-              <p style={{ color: "#64748b", fontSize: "0.85rem", marginTop: 4 }}>
+              <p style={{ color: "var(--color-muted)", fontSize: "0.85rem", marginTop: 4 }}>
                 {viewMode === "active" 
                   ? "Tracking list is empty. Add a government site to get started."
                   : "Items you delete will appear here for restoration."}
@@ -2071,7 +2071,7 @@ const ScraperDashboard: React.FC = () => {
           }}
         >
           <div style={{ color: "#fff", fontSize: "0.9rem", fontWeight: 700 }}>
-            <span style={{ background: "#3b82f6", color: "#fff", padding: "2px 8px", borderRadius: 6, marginRight: 8 }}>{selectedKeys.length}</span>
+            <span style={{ background: "var(--color-secondary)", color: "#fff", padding: "2px 8px", borderRadius: 6, marginRight: 8 }}>{selectedKeys.length}</span>
             Sources Selected
           </div>
           <div style={{ width: 1, height: 24, background: "rgba(255,255,255,0.1)" }} />

@@ -4,7 +4,10 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import ListView from "./ListView";
 import type { HomePageNotification } from "../../../types/notification";
 import { fetchNotificationsByState } from "../../../services/public/notiifcationApi";
-import { INDIAN_STATES } from "../../../constant/SharedConstant";
+import { getUserActivities } from "../../../services/private/userActivityApi";
+import { fetchEligibleNotifications } from "../../../services/private/eligibilityApi";
+import { INDIAN_STATES, PROFILE_FIELD_LABELS } from "../../../constant/SharedConstant";
+import { useAuth } from "../../../context/AuthContext";
 import SEO from "../../../components/SEO/SEO";
 import { buildBreadcrumbSchema, SITE_URL } from "../../../seo/site";
 
@@ -19,6 +22,7 @@ const StateView: React.FC = () => {
     const decodedState = decodeURIComponent(state ?? "");
     const query = useQuery();
     const searchValue = query.get("searchValue") ?? "";
+    const { isAuthenticated, onShowAuthPopup } = useAuth();
 
     const [items, setItems] = useState<HomePageNotification[]>([]);
     const [lastKey, setLastKey] = useState<string | undefined>(undefined);
@@ -28,6 +32,60 @@ const StateView: React.FC = () => {
     // ✅ prevents race conditions
     const isFetchingRef = useRef(false);
 
+    /* ================= ACTIVITY STATUS (fetched once, shared across all cards) ================= */
+    const [activityMap, setActivityMap] = useState<Map<string, number> | undefined>(undefined);
+
+    useEffect(() => {
+        if (!isAuthenticated) {
+            setActivityMap(undefined);
+            return;
+        }
+        getUserActivities({ redirectOn401: false })
+            .then((res) => {
+                const map = new Map<string, number>();
+                (res.data || []).forEach((activity) => map.set(activity.sk, activity.status));
+                setActivityMap(map);
+            })
+            .catch(() => setActivityMap(undefined));
+    }, [isAuthenticated]);
+
+    /* ================= ELIGIBLE FILTER STATE ================= */
+    const [mode, setMode] = useState<"all" | "eligible">("all");
+    const [eligLoading, setEligLoading] = useState(false);
+    const [eligItems, setEligItems] = useState<HomePageNotification[]>([]);
+    const [eligIncompleteProfile, setEligIncompleteProfile] = useState(false);
+    const [eligMissingFields, setEligMissingFields] = useState<string[]>([]);
+
+    const loadEligible = async () => {
+        setEligLoading(true);
+        setEligIncompleteProfile(false);
+        setEligMissingFields([]);
+        try {
+            const res = await fetchEligibleNotifications({ state: decodedState });
+            if (res.incompleteProfile) {
+                setEligIncompleteProfile(true);
+                setEligMissingFields(res.missingProfileFields);
+                setEligItems([]);
+            } else {
+                setEligItems(res.notifications || []);
+            }
+        } catch (error) {
+            console.error("Failed to load eligible notifications", error);
+            setEligItems([]);
+        } finally {
+            setEligLoading(false);
+        }
+    };
+
+    const handleShowEligible = () => {
+        if (!isAuthenticated) {
+            onShowAuthPopup();
+            return;
+        }
+        setMode("eligible");
+        loadEligible();
+    };
+
     /* ================= RESET ON CHANGE ================= */
 
     useEffect(() => {
@@ -36,6 +94,7 @@ const StateView: React.FC = () => {
         setHasMore(true);
         setLoading(true);
         isFetchingRef.current = false;
+        setMode("all");
         loadMore(true);
         // eslint-disable-next-line
     }, [decodedState, searchValue]);
@@ -79,8 +138,8 @@ const StateView: React.FC = () => {
 
     return (
         <div className="container py-3 px-2 px-md-4">
-            <SEO 
-                title={`${stateLabel} Government Jobs & Notifications ${currentYear}`} 
+            <SEO
+                title={`${stateLabel} Government Jobs & Notifications ${currentYear}`}
                 description={`Find the latest government job notifications, entrance exams, results, and scholarships in ${stateLabel}. Apply online on Apply India.`}
                 noindex={!!searchValue}
                 canonical={canonicalUrl}
@@ -112,15 +171,68 @@ const StateView: React.FC = () => {
             />
             <div className="row justify-content-center">
                 <div className="col-12 col-md-10 col-lg-8">
-                    {searchValue && (
+                    <div className="text-center">
+                        <div className="ai-elig-toggle">
+                            <button
+                                type="button"
+                                className={`ai-elig-toggle-btn ${mode === "all" ? "active" : ""}`}
+                                onClick={() => setMode("all")}
+                            >
+                                All Notifications
+                            </button>
+                            <button
+                                type="button"
+                                className={`ai-elig-toggle-btn ${mode === "eligible" ? "active" : ""}`}
+                                onClick={handleShowEligible}
+                            >
+                                ✓ Eligible Notifications
+                            </button>
+                        </div>
+                    </div>
+
+                    {searchValue && mode === "all" && (
                         <p className="text-center text-muted mb-3" style={{ fontSize: "0.92rem" }}>
                             Showing results for <strong>"{searchValue}"</strong>
                         </p>
                     )}
 
-                    {loading && items.length === 0 ? (
+                    {mode === "eligible" ? (
+                        eligLoading ? (
+                            <div className="text-center py-5">
+                                <span className="spinner-border" style={{ color: "var(--color-primary)" }} />
+                            </div>
+                        ) : eligIncompleteProfile ? (
+                            <div className="ai-elig-prompt">
+                                <div className="ai-elig-prompt-icon">⚠️</div>
+                                <div className="ai-elig-prompt-title">Complete Your Profile</div>
+                                <p className="ai-elig-prompt-text">
+                                    We need a bit more information to calculate your eligibility:
+                                </p>
+                                <ul className="ai-elig-prompt-fields">
+                                    {eligMissingFields.map((field) => (
+                                        <li key={field}>{PROFILE_FIELD_LABELS[field] || field}</li>
+                                    ))}
+                                </ul>
+                                <a href="/profile" className="ai-elig-prompt-cta">
+                                    Complete Profile
+                                </a>
+                            </div>
+                        ) : eligItems.length === 0 ? (
+                            <div className="text-center py-5 text-muted">
+                                <b>No eligible notifications found based on your current profile.</b>
+                            </div>
+                        ) : (
+                            <ListView
+                                category={stateLabel}
+                                items={eligItems}
+                                showSeeMore={false}
+                                showAllItems={true}
+                                activityMap={activityMap}
+                            />
+                        )
+                    ) : loading && items.length === 0 ? (
                         <div className="text-center py-5">
-                            <span className="spinner-border text-primary" />
+                            <span className="spinner-border" style={{ color: "var(--color-primary)" }} />
                         </div>
                     ) : items.length === 0 ? (
                         <div className="text-center py-5 text-muted">
@@ -133,7 +245,7 @@ const StateView: React.FC = () => {
                             hasMore={hasMore}
                             loader={
                                 <div className="text-center py-4">
-                                    <span className="spinner-border text-primary" />
+                                    <span className="spinner-border" style={{ color: "var(--color-primary)" }} />
                                 </div>
                             }
                             endMessage={
@@ -149,6 +261,7 @@ const StateView: React.FC = () => {
                                 items={items}
                                 showSeeMore={false}
                                 showAllItems={true}
+                                activityMap={activityMap}
                             />
                         </InfiniteScroll>
                     )}

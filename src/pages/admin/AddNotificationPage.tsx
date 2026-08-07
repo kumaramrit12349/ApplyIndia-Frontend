@@ -50,14 +50,14 @@ const AddNotificationPage: React.FC = () => {
   if (loading) {
     return (
       <div className="container mt-5 text-center">
-        <div className="spinner-border text-primary" />
+        <div className="spinner-border" style={{ color: "var(--color-primary)" }} />
       </div>
     );
   }
 
   return (
     <div className="container py-5">
-      <div className="d-flex justify-content-between align-items-center mb-5 p-4 rounded-4 shadow-sm" style={{ background: 'linear-gradient(135deg, #667eea, #764ba2)' }}>
+      <div className="d-flex justify-content-between align-items-center mb-5 p-4 rounded-4 shadow-sm" style={{ background: 'linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))' }}>
         <h2 className="brand-name text-white mb-0 d-flex align-items-center gap-2" style={{fontSize: '1.75rem'}}>
           {cloneId ? "📋 Clone Notification" : "✨ Add New Notification"}
         </h2>

@@ -1,20 +1,20 @@
 .job-banner-container {
   display: flex;
   align-items: center;
-  background: linear-gradient(90deg, #1e3a8a, #1d4ed8);
+  background: linear-gradient(90deg, var(--color-primary, #0F3D91) 0%, var(--color-secondary, #2563EB) 100%);
   color: white;
   height: 52px;
   overflow: hidden;
   position: relative;
-  font-family: inherit;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-family: var(--font-base, inherit);
+  box-shadow: var(--shadow-sm, 0 2px 8px rgba(15, 23, 42, 0.15));
   z-index: 900; /* below navbar slightly */
 }
 
 .job-banner-label {
-  background-color: #ef4444; /* Bootstrap danger red */
+  background: var(--color-primary-hover, #0A2C68);
   color: white;
-  font-weight: bold;
+  font-weight: 700;
   padding: 0 1rem;
   height: 100%;
   display: flex;
@@ -23,7 +23,8 @@
   z-index: 2;
   white-space: nowrap;
   font-size: 0.9rem;
-  box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+  letter-spacing: 0.2px;
+  box-shadow: 2px 0 8px rgba(10, 44, 104, 0.35);
 }
 
 /* Arrow effect for the label */
@@ -34,7 +35,17 @@
   right: -10px;
   border-width: 26px 0 26px 10px;
   border-style: solid;
-  border-color: transparent transparent transparent #ef4444;
+  border-color: transparent transparent transparent var(--color-primary-hover, #0A2C68);
+}
+
+.job-banner-empty-message {
+  flex: 1;
+  margin-left: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.92);
+  position: relative;
+  z-index: 2;
 }
 
 .job-banner-marquee {
@@ -61,12 +72,12 @@
 
 .job-banner-marquee::before {
   left: 0;
-  background: linear-gradient(to right, #1d4ed8, transparent);
+  background: linear-gradient(to right, var(--color-primary, #0F3D91), transparent);
 }
 
 .job-banner-marquee::after {
   right: 0;
-  background: linear-gradient(to left, #1e3a8a, transparent);
+  background: linear-gradient(to left, var(--color-secondary, #2563EB), transparent);
 }
 
 .job-banner-content {
@@ -99,19 +110,31 @@
   font-weight: 500;
   font-size: 0.95rem;
   line-height: 1.2;
-  transition: opacity 0.2s, color 0.2s;
+  transition: opacity var(--motion-fast, 0.2s), color var(--motion-fast, 0.2s);
+  position: relative;
+  z-index: 2;
 }
 
 .job-banner-item:hover {
   text-decoration: underline;
   opacity: 1;
-  color: #fca5a5; /* slight red/pink highlight on hover */
+  color: #DBEAFE; /* soft sky highlight, in line with the brand blue */
+}
+
+.job-banner-deadline {
+  color: var(--color-accent, #F59E0B);
+  margin-top: 2px;
+  font-weight: 600;
+  font-size: 0.8rem;
+  letter-spacing: 0.2px;
 }
 
 .job-banner-separator {
   margin: 0 2rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.55);
   display: inline-block;
+  position: relative;
+  z-index: 2;
 }
 
 @keyframes marquee {
@@ -127,24 +150,24 @@
   .job-banner-container {
     height: 46px;
   }
-  
+
   .job-banner-label {
     padding: 0 0.5rem;
     font-size: 0.8rem;
   }
-  
+
   .job-banner-label::after {
     border-width: 23px 0 23px 10px;
   }
-  
+
   .job-banner-marquee {
     margin-left: 10px;
   }
-  
+
   .job-banner-item {
     font-size: 0.85rem;
   }
-  
+
   .job-banner-separator {
     margin: 0 1.25rem;
   }

@@ -51,6 +51,18 @@ export const INDIAN_STATES = [
   { value: "WB", label: "West Bengal" },
 ] as const;
 
+export const NOTIFICATION_TOPICS = [
+  { value: "ssc", label: "SSC" },
+  { value: "railway", label: "Railway" },
+  { value: "banking", label: "Banking" },
+  { value: "defence", label: "Defence" },
+  { value: "state-govt-jobs", label: "State Government Jobs" },
+  { value: "admissions", label: "Admissions" },
+  { value: "scholarships", label: "Scholarships" },
+  { value: "results", label: "Results" },
+  { value: "admit-cards", label: "Admit Cards" },
+] as const;
+
 export const EDUCATIONAL_QUALIFICATIONS = [
   { value: "10th", label: "10th (Matriculation)" },
   { value: "12th", label: "12th (Intermediate)" },
@@ -181,3 +193,14 @@ export const APPLYINDIA_SOCIAL_LINKS = [
     color: "#0077b5",
   },
 ];
+
+// Friendly labels for profile field keys returned by the eligibility API's
+// missingProfileFields (used both for the single-notification Check Eligibility
+// modal and the Eligible Notifications list filter).
+export const PROFILE_FIELD_LABELS: Record<string, string> = {
+  dob: "Date of Birth",
+  qualification: "Highest Qualification",
+  specialization: "Specialization",
+  qualification_percentage: "Percentage / CGPA Obtained",
+  state: "State",
+};

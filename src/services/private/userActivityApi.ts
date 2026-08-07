@@ -42,11 +42,15 @@ export const trackActivity = (
 };
 
 /**
- * Get all tracked activities for the authenticated user (for dashboard).
+ * Get all tracked activities for the authenticated user (for dashboard, and
+ * for batching wishlist-status lookups on public listing pages). Pass
+ * `redirectOn401: false` on public pages where the user may not be logged
+ * in — a 401 there is expected, not a session loss that should redirect.
  */
-export const getUserActivities = () => {
+export const getUserActivities = (options?: { redirectOn401?: boolean }) => {
     return privateFetch<{ success: boolean; data: IUserActivityItem[] }>(
-        USER_ACTIVITY_API.LIST
+        USER_ACTIVITY_API.LIST,
+        { redirectOn401: options?.redirectOn401 }
     );
 };
 

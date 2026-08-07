@@ -90,3 +90,42 @@ export const bulkPermanentDeleteNotifications = (ids: string[]) => {
     body: JSON.stringify({ ids }),
   });
 };
+
+// Bulk archive notifications
+export const bulkArchiveNotifications = (ids: string[]) => {
+  return privateFetch<any>(PRIVATE_API.NOTIFICATION.ARCHIVE_BULK, {
+    method: "DELETE",
+    body: JSON.stringify({ ids }),
+  });
+};
+
+export type ChannelStatus = "pending" | "sent" | "failed" | "skipped";
+
+export interface IChannelResult {
+  status: ChannelStatus;
+  sent_count?: number;
+  failed_count?: number;
+  skipped_count?: number;
+  total_count?: number;
+  last_attempt_at?: number;
+  error?: string;
+}
+
+export interface IDistributionLog {
+  email?: IChannelResult;
+}
+
+// Get delivery status for a notification
+export const getDistributionStatus = (id: string) => {
+  return privateFetch<{ success: boolean; distribution: IDistributionLog | null }>(
+    PRIVATE_API.NOTIFICATION.DISTRIBUTION_STATUS(id)
+  );
+};
+
+// Retry failed distribution
+export const retryDistribution = (id: string) => {
+  return privateFetch<{ success: boolean; distribution: IDistributionLog | null }>(
+    PRIVATE_API.NOTIFICATION.RETRY_DISTRIBUTION(id),
+    { method: "POST" }
+  );
+};

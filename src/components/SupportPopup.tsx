@@ -28,7 +28,7 @@ const SupportPopup: React.FC<SupportPopupProps> = ({ show, onClose }) => {
           <br /><br />
           If you want to track or mark this notification again, please mail us at:
           <br />
-          <a href="mailto:support@applyinida.online" style={{ fontWeight: "bold", color: "#667eea", textDecoration: "none" }}>
+          <a href="mailto:support@applyinida.online" style={{ fontWeight: "bold", color: "var(--color-secondary)", textDecoration: "none" }}>
             support@applyinida.online
           </a>
         </p>

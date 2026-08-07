@@ -22,11 +22,14 @@ import CategoryView from "./features/notifications/components/CategoryView";
 import StateView from "./features/notifications/components/StateView";
 import UserNotificationDetailPage from "./features/notifications/components/UserNotificationDetailPage";
 import JobBanner from "./components/JobBanner/JobBanner";
+import Hero from "./components/Hero/Hero";
 import ForgotPasswordPopup from "./components/ForgotPasswordPopup";
 import ResetPasswordPopup from "./components/ResetPasswordPopup";
 import { ToastContainer, toast } from "react-toastify";
 import { checkAuthStatus, logoutUser } from "./services/authApi";
+import { fetchAvailableFilters } from "./services/public/notiifcationApi";
 import { AuthProvider } from "./context/AuthContext";
+import { ThemeProvider } from "./context/ThemeContext";
 import ScrollToTop from "./components/ScrollToTop";
 
 const DashboardPage = lazy(() => import("./pages/admin/DashboardPage"));
@@ -36,18 +39,20 @@ const ReviewNotificationPage = lazy(() => import("./pages/admin/ReviewNotificati
 const AdminFeedbackPage = lazy(() => import("./pages/admin/AdminFeedbackPage"));
 const ScraperDashboard = lazy(() => import("./pages/admin/ScraperDashboard"));
 const AdminRolesPage = lazy(() => import("./pages/admin/AdminRolesPage"));
+const EmailTemplatesPage = lazy(() => import("./pages/admin/EmailTemplatesPage"));
 const PrivacyPolicy = lazy(() => import("./pages/legal/PrivacyPolicy"));
 const TermsAndConditions = lazy(() => import("./pages/legal/TermsAndConditions"));
 const Disclaimer = lazy(() => import("./pages/legal/Disclaimer"));
 const AboutUs = lazy(() => import("./pages/legal/AboutUs"));
 const FeedbackPage = lazy(() => import("./pages/feedback/FeedbackPage"));
 const ProfilePage = lazy(() => import("./pages/ProfilePage"));
+const NotificationPreferencesPage = lazy(() => import("./pages/NotificationPreferencesPage"));
 const MyDashboard = lazy(() => import("./pages/MyDashboard"));
 const GoogleCallbackPage = lazy(() => import("./pages/GoogleCallbackPage"));
 
 const RouteFallback: React.FC = () => (
   <div className="d-flex justify-content-center align-items-center py-5">
-    <div className="spinner-border text-primary" role="status">
+    <div className="spinner-border" style={{ color: "var(--color-primary)" }} role="status">
       <span className="visually-hidden">Loading...</span>
     </div>
   </div>
@@ -82,11 +87,25 @@ const AppLayout: React.FC = () => {
   const [authPopupError, setAuthPopupError] = useState<string>("");
   const [userCategory, setUserCategory] = useState<string | undefined>(undefined);
 
+  // Fetched once here (instead of independently by Navigation and SearchBar,
+  // which used to each fire their own duplicate request on every page).
+  const [availableStates, setAvailableStates] = useState<string[]>([]);
+
   // Global event listener for forcing auth popup
   useEffect(() => {
     const handleOpenAuthPopup = () => setShowAuthPopup(true);
     window.addEventListener("openAuthPopup", handleOpenAuthPopup);
     return () => window.removeEventListener("openAuthPopup", handleOpenAuthPopup);
+  }, []);
+
+  useEffect(() => {
+    fetchAvailableFilters()
+      .then((res: any) => {
+        if (res.states) {
+          setAvailableStates(res.states.map((s: string) => s.toLowerCase()));
+        }
+      })
+      .catch((err) => console.error("Failed to load available filters", err));
   }, []);
 
   // Check auth status on first load; also handle Google OAuth error redirects
@@ -130,8 +149,10 @@ const AppLayout: React.FC = () => {
     verifyAuth();
   }, []);
 
-  const handleAuthSuccess = async () => {
-    // immediately fetch user info after login
+  // Re-fetches the authenticated user's profile and syncs it into app-level
+  // state. Called after login, and after a profile edit (e.g. state change)
+  // so pages like the homepage reflect it without needing a full reload.
+  const refreshUserData = async () => {
     const { isAuthenticated, user } = await checkAuthStatus();
     setIsAuthenticated(isAuthenticated);
 
@@ -144,7 +165,11 @@ const AppLayout: React.FC = () => {
       setUserState(user.state);
       setUserCategory(user.category);
     }
+  };
 
+  const handleAuthSuccess = async () => {
+    // immediately fetch user info after login
+    await refreshUserData();
     setShowAuthPopup(false);
     setShowSignUpTab(false);
     setShowVerifyPopup(false);
@@ -189,7 +214,7 @@ const AppLayout: React.FC = () => {
   if (checkingAuth) {
     return (
       <div className="d-flex justify-content-center align-items-center min-vh-100">
-        <div className="spinner-border text-primary" role="status">
+        <div className="spinner-border" style={{ color: "var(--color-primary)" }} role="status">
           <span className="visually-hidden">Loading...</span>
         </div>
       </div>
@@ -214,14 +239,15 @@ const AppLayout: React.FC = () => {
         onShowSignUpPopup={() => { setShowSignUpTab(true); setShowAuthPopup(true); }}
       />
 
-      {!isAdminRoute && <Navigation />}
-      {showSearchBarBanner && <SearchBar />}
+      {!isAdminRoute && <Navigation availableStates={availableStates} />}
+      {location.pathname === "/" && <Hero />}
+      {showSearchBarBanner && <SearchBar availableStates={availableStates} />}
       {!isAdminRoute && <JobBanner />}
 
       <main className="flex-grow-1">
         <Suspense fallback={<RouteFallback />}>
           <Routes>
-            <Route path="/" element={<HomePage />} />
+            <Route path="/" element={<HomePage userState={userState} />} />
 
             {/* Admin routes – protected */}
             <Route
@@ -253,7 +279,7 @@ const AppLayout: React.FC = () => {
                   isAuthenticated={isAuthenticated}
                   checkingAuth={checkingAuth}
                 >
-                  <EditNotificationPage />
+                  <EditNotificationPage adminRole={adminRole} />
                 </ProtectedRoute>
               }
             />
@@ -310,6 +336,17 @@ const AppLayout: React.FC = () => {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/admin/email-templates"
+              element={
+                <ProtectedRoute
+                  isAuthenticated={isAuthenticated}
+                  checkingAuth={checkingAuth}
+                >
+                  <EmailTemplatesPage />
+                </ProtectedRoute>
+              }
+            />
 
             {/* Public routes */}
             <Route
@@ -363,7 +400,20 @@ const AppLayout: React.FC = () => {
                   isAuthenticated={isAuthenticated}
                   checkingAuth={checkingAuth}
                 >
-                  <ProfilePage />
+                  <ProfilePage onProfileUpdated={refreshUserData} />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Notification Preferences page – protected */}
+            <Route
+              path="/notification-preferences"
+              element={
+                <ProtectedRoute
+                  isAuthenticated={isAuthenticated}
+                  checkingAuth={checkingAuth}
+                >
+                  <NotificationPreferencesPage onProfileUpdated={refreshUserData} />
                 </ProtectedRoute>
               }
             />
@@ -419,9 +469,11 @@ const AppLayout: React.FC = () => {
 };
 
 const App: React.FC = () => (
-  <Router>
-    <AppLayout />
-  </Router>
+  <ThemeProvider>
+    <Router>
+      <AppLayout />
+    </Router>
+  </ThemeProvider>
 );
 
 export default App;

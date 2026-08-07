@@ -19,32 +19,32 @@ const STATUS_CONFIG: Record<
     0: {
         label: "Wishlisted",
         emoji: "❤️",
-        color: "#dc3545",
-        bg: "linear-gradient(135deg, #ff758c, #ff7eb3)",
+        color: "#ff4757",
+        bg: "linear-gradient(135deg, #ff4757, #ff6b81)",
     },
     1: {
         label: "Applied",
         emoji: "📝",
-        color: "#0d6efd",
-        bg: "linear-gradient(135deg, #667eea, #764ba2)",
+        color: "var(--color-secondary)",
+        bg: "linear-gradient(135deg, var(--color-secondary), var(--color-primary))",
     },
     2: {
         label: "Admit Card",
         emoji: "🎫",
-        color: "#198754",
-        bg: "linear-gradient(135deg, #11998e, #38ef7d)",
+        color: "var(--color-accent)",
+        bg: "linear-gradient(135deg, var(--color-accent), #d97706)",
     },
     3: {
         label: "Result",
         emoji: "📊",
-        color: "#fd7e14",
-        bg: "linear-gradient(135deg, #f093fb, #f5576c)",
+        color: "var(--status-result)",
+        bg: "linear-gradient(135deg, var(--status-result), #5b21b6)",
     },
     4: {
         label: "Selected",
         emoji: "🏆",
-        color: "#ffc107",
-        bg: "linear-gradient(135deg, #f5af19, #f12711)",
+        color: "var(--color-success)",
+        bg: "linear-gradient(135deg, var(--color-success), #15803d)",
     },
 };
 
@@ -129,7 +129,7 @@ const MyDashboard: React.FC = () => {
     if (loading) {
         return (
             <div className="container mt-5 text-center">
-                <div className="spinner-border text-primary" role="status">
+                <div className="spinner-border" style={{ color: "var(--color-primary)" }} role="status">
                     <span className="visually-hidden">Loading...</span>
                 </div>
             </div>
@@ -170,10 +170,7 @@ const MyDashboard: React.FC = () => {
             {/* Filter Tabs */}
             <div className="d-flex gap-2 mb-4 flex-wrap">
                 <button
-                    className={`btn btn-sm ${filterStatus === "ALL"
-                        ? "btn-dark"
-                        : "btn-outline-secondary"
-                        }`}
+                    className={`dashboard-filter-btn ${filterStatus === "ALL" ? "dashboard-filter-btn--active" : ""}`}
                     onClick={() => setFilterStatus("ALL")}
                 >
                     All ({activities.length})
@@ -181,8 +178,7 @@ const MyDashboard: React.FC = () => {
                 {STATUS_ORDER.map((s) => (
                     <button
                         key={s}
-                        className={`btn btn-sm ${filterStatus === s ? "btn-dark" : "btn-outline-secondary"
-                            }`}
+                        className={`dashboard-filter-btn ${filterStatus === s ? "dashboard-filter-btn--active" : ""}`}
                         onClick={() => setFilterStatus(filterStatus === s ? "ALL" : s)}
                     >
                         {STATUS_CONFIG[s].emoji} {STATUS_CONFIG[s].label} ({counts[s]})
@@ -198,7 +194,11 @@ const MyDashboard: React.FC = () => {
                     <p className="text-muted">
                         Start by applying to a notification and tracking your progress!
                     </p>
-                    <Link to="/" className="btn btn-primary mt-2">
+                    <Link
+                        to="/"
+                        className="btn mt-2 text-white fw-semibold"
+                        style={{ background: "var(--color-primary)", border: "none" }}
+                    >
                         Browse Notifications
                     </Link>
                 </div>
@@ -243,13 +243,14 @@ const MyDashboard: React.FC = () => {
                                             className="text-decoration-none"
                                         >
                                             <h6
-                                                className="fw-bold mb-2 text-dark"
+                                                className="fw-bold mb-2"
                                                 style={{
                                                     display: "-webkit-box",
                                                     WebkitLineClamp: 2,
                                                     WebkitBoxOrient: "vertical",
                                                     overflow: "hidden",
                                                     lineHeight: 1.4,
+                                                    color: "var(--color-heading)",
                                                 }}
                                             >
                                                 {activity.notification_title}
@@ -257,7 +258,10 @@ const MyDashboard: React.FC = () => {
                                         </Link>
 
                                         {/* Category */}
-                                        <span className="badge bg-light text-dark border mb-2">
+                                        <span
+                                            className="badge border mb-2"
+                                            style={{ background: "var(--color-bg)", color: "var(--color-body)" }}
+                                        >
                                             {formatCategoryTitle(activity.notification_category)}
                                         </span>
 
@@ -273,7 +277,7 @@ const MyDashboard: React.FC = () => {
                                                         background:
                                                             i <= stepIndex
                                                                 ? STATUS_CONFIG[s].color
-                                                                : "#e9ecef",
+                                                                : "var(--color-border)",
                                                         transition: "background 0.3s ease",
                                                     }}
                                                 />

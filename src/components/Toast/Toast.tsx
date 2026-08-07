@@ -22,19 +22,19 @@ const Toast: React.FC<ToastProps> = ({ show, message, type, onClose }) => {
 
   const config = {
     success: {
-      bg: "linear-gradient(135deg, #28a745, #20c997)",
+      bg: "linear-gradient(135deg, var(--color-success), #15803d)",
       icon: <BsCheckCircleFill size={22} />
     },
     error: {
-      bg: "linear-gradient(135deg, #dc3545, #c82333)",
+      bg: "linear-gradient(135deg, var(--color-danger), #b91c1c)",
       icon: <BsXCircleFill size={22} />
     },
     info: {
-      bg: "linear-gradient(135deg, #667eea, #764ba2)",
+      bg: "linear-gradient(135deg, var(--color-info), var(--color-secondary))",
       icon: <BsInfoCircleFill size={22} />
     },
     warning: {
-      bg: "linear-gradient(135deg, #ffc107, #ff9800)",
+      bg: "linear-gradient(135deg, var(--color-accent), #d97706)",
       icon: <BsExclamationTriangleFill size={22} />
     },
   }[type];

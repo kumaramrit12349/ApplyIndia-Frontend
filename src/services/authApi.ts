@@ -14,8 +14,13 @@ export interface AuthStatus {
     state?: string;
     qualification?: string;
     specialization?: string;
+    qualification_percentage?: number;
+    phone?: string;
+    email_notifications?: boolean;
+    whatsapp_notifications?: boolean;
+    subscribed_topics?: string[];
     isAdmin?: boolean;
-    adminRole?: 'creator' | 'reviewer' | 'admin' | null;
+    adminRole?: 'creator' | 'reviewer' | 'senior_reviewer' | 'admin' | null;
     adminPermissions?: {
       categories: string[];
       states: string[];
@@ -25,6 +30,17 @@ export interface AuthStatus {
     } | null;
     sub?: string;
   };
+}
+
+export interface INotificationPreferences {
+  email_notifications?: boolean;
+  whatsapp_notifications?: boolean;
+  subscribed_topics?: string[];
+}
+
+export interface NotificationPreferencesStatus {
+  isAuthenticated: boolean;
+  preferences?: INotificationPreferences;
 }
 
 export const signUpUser = async (
@@ -177,6 +193,39 @@ export const updateProfile = async (data: any) => {
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     throw new Error(err.message || "Failed to update profile");
+  }
+  return res.json();
+};
+
+export const fetchNotificationPreferences = async (): Promise<NotificationPreferencesStatus> => {
+  try {
+    const res = await fetch(`${BASE_URL}${AUTH_API.GET_NOTIFICATION_PREFERENCES}`, {
+      credentials: "include",
+    });
+
+    if (!res.ok) return { isAuthenticated: false };
+
+    const data = await res.json();
+    return {
+      isAuthenticated: true,
+      preferences: data.preferences,
+    };
+  } catch {
+    return { isAuthenticated: false };
+  }
+};
+
+export const updateNotificationPreferences = async (data: INotificationPreferences) => {
+  const res = await fetch(`${BASE_URL}${AUTH_API.UPDATE_NOTIFICATION_PREFERENCES}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(data),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || "Failed to update notification preferences");
   }
   return res.json();
 };

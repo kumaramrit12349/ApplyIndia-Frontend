@@ -15,18 +15,32 @@ import {
   BsLockFill,
   BsHeart,
   BsHeartFill,
+  BsBarChartFill,
+  BsEnvelopeFill,
+  BsXCircleFill,
+  BsClockHistory,
+  BsArrowRepeat,
+  BsDashCircle,
 } from "react-icons/bs";
 import { FcViewDetails } from "react-icons/fc";
 import { formatCategoryTitle, formatStateName, getId } from "../../utils/utils";
 import type { INotification } from "../../interface/NotificationInterface";
 import CongratulationsPopup from "../CongratulationsPopup";
 import SupportPopup from "../SupportPopup";
+import EligibilityModal from "../EligibilityModal";
 import {
   trackActivity,
   checkActivityForNotification,
   removeActivity,
   type UserActivityStatus,
 } from "../../services/private/userActivityApi";
+import { checkEligibility, type IEligibilityResult } from "../../services/private/eligibilityApi";
+import {
+  getDistributionStatus,
+  retryDistribution,
+  type IDistributionLog,
+  type ChannelStatus,
+} from "../../services/private/notificationApi";
 import { toast } from "react-toastify";
 import "./NotificationDetailView.css";
 
@@ -141,6 +155,25 @@ const TRACKING_STEPS: {
 
 const STATUS_ORDER: UserActivityStatus[] = [1, 2, 3, 4];
 
+const ACTIVITY_STAT_ITEMS: {
+  field: "count_wishlisted" | "count_applied" | "count_admit_card" | "count_result" | "count_selected";
+  label: string;
+  emoji: string;
+}[] = [
+  { field: "count_wishlisted", label: "Wishlisted", emoji: "❤️" },
+  { field: "count_applied", label: "Applied", emoji: "📝" },
+  { field: "count_admit_card", label: "Admit Card", emoji: "🎫" },
+  { field: "count_result", label: "Result Checked", emoji: "📊" },
+  { field: "count_selected", label: "Selected", emoji: "🏆" },
+];
+
+const isDeadlinePassed = (lastDateToApply?: string): boolean => {
+  if (!lastDateToApply) return false;
+  const deadline = new Date(lastDateToApply).getTime();
+  if (isNaN(deadline)) return false;
+  return deadline < Date.now();
+};
+
 /* ──────────────── Sub-components ──────────────── */
 
 const LabelValue = ({
@@ -170,6 +203,38 @@ const LabelValue = ({
         className={`ndv-lv-value ${highlight ? "ndv-lv-value--highlight" : ""} ${!value ? "ndv-lv-value--muted" : ""}`}
       >
         {displayValue}
+      </span>
+    </div>
+  );
+};
+
+const DELIVERY_STATUS_META: Record<
+  ChannelStatus,
+  { label: string; icon: React.ReactNode; className: string }
+> = {
+  sent: { label: "Sent", icon: <BsCheckCircleFill />, className: "ndv-badge--sent" },
+  failed: { label: "Failed", icon: <BsXCircleFill />, className: "ndv-badge--failed" },
+  pending: { label: "Pending", icon: <BsClockHistory />, className: "ndv-badge--pending" },
+  skipped: { label: "Not Configured", icon: <BsDashCircle />, className: "ndv-badge--skipped" },
+};
+
+const DeliveryBadge = ({
+  icon,
+  label,
+  status,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  status?: ChannelStatus;
+}) => {
+  const meta = DELIVERY_STATUS_META[status ?? "pending"];
+  return (
+    <div className={`ndv-delivery-badge ${meta.className}`}>
+      <span className="ndv-delivery-badge-channel">
+        {icon} {label}
+      </span>
+      <span className="ndv-delivery-badge-status">
+        {meta.icon} {meta.label}
       </span>
     </div>
   );
@@ -206,6 +271,12 @@ export default function NotificationDetailView({
     title: "",
     message: "",
   });
+  const [showEligibility, setShowEligibility] = useState(false);
+  const [eligibilityLoading, setEligibilityLoading] = useState(false);
+  const [eligibilityResult, setEligibilityResult] = useState<IEligibilityResult | null>(null);
+  const [distribution, setDistribution] = useState<IDistributionLog | null>(null);
+  const [distributionLoading, setDistributionLoading] = useState(false);
+  const [retrying, setRetrying] = useState(false);
 
   useEffect(() => {
     if (isAuthenticated && notification?.sk) {
@@ -218,6 +289,32 @@ export default function NotificationDetailView({
         .catch(() => {});
     }
   }, [isAuthenticated, notification?.sk]);
+
+  useEffect(() => {
+    if (isAdmin && notification?.approved_at && notification?.sk) {
+      setDistributionLoading(true);
+      getDistributionStatus(getId(notification.sk))
+        .then((res) => {
+          if (res.success) setDistribution(res.distribution);
+        })
+        .catch(() => {})
+        .finally(() => setDistributionLoading(false));
+    }
+  }, [isAdmin, notification?.approved_at, notification?.sk]);
+
+  const handleRetryDistribution = async () => {
+    if (!notification?.sk) return;
+    setRetrying(true);
+    try {
+      const res = await retryDistribution(getId(notification.sk));
+      if (res.success) setDistribution(res.distribution);
+      toast.success("Retry triggered");
+    } catch {
+      toast.error("Retry failed");
+    } finally {
+      setRetrying(false);
+    }
+  };
 
   const handleTrackAction = async (step: (typeof TRACKING_STEPS)[number]) => {
     if (!isAuthenticated) {
@@ -245,6 +342,8 @@ export default function NotificationDetailView({
       const msg = error?.message || "Failed to track activity";
       if (msg.includes("ATTEMPT_LIMIT_REACHED")) {
         setShowSupport(true);
+      } else if (msg.includes("DEADLINE_PASSED")) {
+        toast.error("Applications for this notification have closed.");
       } else if (msg.includes("Invalid status transition")) {
         toast.warning("Complete the previous step first!");
       } else {
@@ -261,6 +360,11 @@ export default function NotificationDetailView({
       if (onShowAuthPopup) onShowAuthPopup();
       return;
     }
+    if (currentStatus !== 0 && deadlinePassed) {
+      toast.error("Applications for this notification have closed.");
+      return;
+    }
+
     setIsWishlistedLoading(true);
     try {
       if (currentStatus === 0) {
@@ -281,6 +385,8 @@ export default function NotificationDetailView({
       const msg = error?.message || "Failed to update wishlist";
       if (msg.includes("ATTEMPT_LIMIT_REACHED")) {
         setShowSupport(true);
+      } else if (msg.includes("DEADLINE_PASSED")) {
+        toast.error("Applications for this notification have closed.");
       } else {
         toast.error(msg);
       }
@@ -289,9 +395,35 @@ export default function NotificationDetailView({
     }
   };
 
+  const handleCheckEligibility = async () => {
+    if (!isAuthenticated) {
+      toast.info("🔒 Please login to check your eligibility!", { autoClose: 3000 });
+      if (onShowAuthPopup) onShowAuthPopup();
+      return;
+    }
+    setShowEligibility(true);
+    setEligibilityLoading(true);
+    setEligibilityResult(null);
+    try {
+      const id = getId(notification.sk);
+      const result = await checkEligibility(id);
+      setEligibilityResult(result);
+    } catch (error: any) {
+      setShowEligibility(false);
+      toast.error(error?.message || "Failed to check eligibility");
+    } finally {
+      setEligibilityLoading(false);
+    }
+  };
+
+  const deadlinePassed = isDeadlinePassed(notification.last_date_to_apply);
+  const hasAlreadyApplied = currentStatus !== null && currentStatus !== 0;
+
   const getStepState = (stepIndex: number) => {
-    if (currentStatus === null || currentStatus === 0)
-      return stepIndex === 0 ? "active" : "locked";
+    if (currentStatus === null || currentStatus === 0) {
+      if (stepIndex !== 0) return "locked";
+      return deadlinePassed ? "locked" : "active";
+    }
     const currentIndex = STATUS_ORDER.indexOf(currentStatus);
     if (stepIndex <= currentIndex) return "completed";
     if (stepIndex === currentIndex + 1) return "active";
@@ -378,7 +510,11 @@ export default function NotificationDetailView({
               </button>
               {(!adminRole ||
                 adminRole === "creator" ||
-                adminRole === "admin") && (
+                adminRole === "senior_reviewer" ||
+                adminRole === "admin") &&
+                (adminRole === "admin" ||
+                  adminRole === "senior_reviewer" ||
+                  !notification.approved_at) && (
                 <a
                   href={`/admin/edit/${getId(notification.sk)}`}
                   className="ndv-admin-btn ndv-admin-btn--edit"
@@ -421,29 +557,45 @@ export default function NotificationDetailView({
           <h1 className="ndv-hero-title">{notification.title}</h1>
 
           {/* Hero actions */}
-          {!isAdmin && (currentStatus === null || currentStatus === 0) && (
+          {!isAdmin && (
             <div className="ndv-hero-actions">
+              {(currentStatus === 0 ||
+                (currentStatus === null && !deadlinePassed)) && (
+                <button
+                  className={`ndv-btn-wishlist ${currentStatus === 0 ? "ndv-btn-wishlist--active" : ""}`}
+                  onClick={handleWishlistToggle}
+                  disabled={isWishlistedLoading}
+                >
+                  {isWishlistedLoading ? (
+                    <span className="spinner-border spinner-border-sm" />
+                  ) : currentStatus === 0 ? (
+                    <>
+                      <BsHeartFill /> Wishlisted
+                    </>
+                  ) : (
+                    <>
+                      <BsHeart /> Add to Wishlist
+                    </>
+                  )}
+                </button>
+              )}
               <button
-                className={`ndv-btn-wishlist ${currentStatus === 0 ? "ndv-btn-wishlist--active" : ""}`}
-                onClick={handleWishlistToggle}
-                disabled={isWishlistedLoading}
+                className="ndv-btn-eligibility"
+                onClick={handleCheckEligibility}
               >
-                {isWishlistedLoading ? (
-                  <span className="spinner-border spinner-border-sm" />
-                ) : currentStatus === 0 ? (
-                  <>
-                    <BsHeartFill /> Wishlisted
-                  </>
-                ) : (
-                  <>
-                    <BsHeart /> Add to Wishlist
-                  </>
-                )}
+                <BsCheckCircle /> Check Eligibility
               </button>
             </div>
           )}
         </div>
       </section>
+
+      <EligibilityModal
+        show={showEligibility}
+        loading={eligibilityLoading}
+        result={eligibilityResult}
+        onClose={() => setShowEligibility(false)}
+      />
 
       {/* ═══════════════ CONTENT ═══════════════ */}
       <div className="ndv-content">
@@ -636,7 +788,7 @@ export default function NotificationDetailView({
         {hasAnyLinks && (
           <div className="ndv-links">
             <h2 className="ndv-links-title">
-              <BsLink45Deg style={{ color: "#667eea" }} /> Important Links
+              <BsLink45Deg style={{ color: "var(--color-secondary)" }} /> Important Links
             </h2>
 
             {notification.links?.apply_online_url && (
@@ -672,6 +824,34 @@ export default function NotificationDetailView({
           </div>
         )}
 
+        {/* ═══════════════ APPLICANT ACTIVITY ═══════════════ */}
+        <div className="row g-3 mb-3">
+          <div className="col-12">
+            <div className="ndv-card" style={{ animationDelay: "0.3s" }}>
+              <div className="ndv-card-header ndv-card-header--teal">
+                <div className="ndv-card-icon ndv-card-icon--teal">
+                  <BsBarChartFill />
+                </div>
+                <h3 className="ndv-card-title">Applicant Activity</h3>
+              </div>
+              <div className="ndv-card-body">
+                <div className="ndv-stats-grid">
+                  {ACTIVITY_STAT_ITEMS.map((item) => (
+                    <div className="ndv-stat-pill" key={item.field}>
+                      <span className="ndv-stat-value">
+                        {notification[item.field] ?? 0}
+                      </span>
+                      <span className="ndv-stat-label">
+                        {item.emoji} {item.label}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* ═══════════════ TRACK YOUR PROGRESS ═══════════════ */}
         {!isAdmin && (
           <div className="ndv-track" id="track-progress-section">
@@ -681,12 +861,23 @@ export default function NotificationDetailView({
               next!
             </p>
 
+            {deadlinePassed && !hasAlreadyApplied && (
+              <div className="ndv-track-note" style={{ borderColor: "var(--color-danger)" }}>
+                <BsLockFill color="var(--color-danger)" />
+                <span>
+                  <strong>Applications closed</strong> — the last date to
+                  apply for this notification has passed, so it can no
+                  longer be marked as Applied.
+                </span>
+              </div>
+            )}
+
             <div className="ndv-track-note">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="16"
                 height="16"
-                fill="#667eea"
+                fill="var(--color-secondary)"
                 viewBox="0 0 16 16"
               >
                 <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
@@ -698,7 +889,7 @@ export default function NotificationDetailView({
                 <button
                   onClick={() => window.open("/dashboard", "_blank")}
                   style={{
-                    background: "#667eea",
+                    background: "var(--color-secondary)",
                     color: "white",
                     border: "none",
                     borderRadius: "4px",
@@ -757,6 +948,11 @@ export default function NotificationDetailView({
                     className={`ndv-track-btn ndv-track-btn--${state}`}
                     disabled={
                       state === "locked" || state === "completed" || isLoading
+                    }
+                    title={
+                      i === 0 && state === "locked" && deadlinePassed
+                        ? "Applications for this notification have closed"
+                        : undefined
                     }
                     onClick={() => handleTrackAction(step)}
                   >
@@ -827,6 +1023,35 @@ export default function NotificationDetailView({
                   : "Pending approval"
               }
             />
+
+            {notification.approved_at && (
+              <div className="ndv-delivery-status">
+                <div className="ndv-delivery-status-header">
+                  <h4 className="ndv-delivery-status-title">Delivery Status</h4>
+                  <button
+                    type="button"
+                    className="ndv-retry-btn"
+                    onClick={handleRetryDistribution}
+                    disabled={retrying || distributionLoading}
+                  >
+                    <BsArrowRepeat className={retrying ? "ndv-spin" : ""} />
+                    {retrying ? "Retrying..." : "Retry Failed"}
+                  </button>
+                </div>
+
+                {distributionLoading ? (
+                  <p className="ndv-lv-value--muted">Loading delivery status...</p>
+                ) : (
+                  <div className="ndv-delivery-badges">
+                    <DeliveryBadge
+                      icon={<BsEnvelopeFill />}
+                      label="Email"
+                      status={distribution?.email?.status}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
       </div>
