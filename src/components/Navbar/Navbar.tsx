@@ -39,7 +39,11 @@ const Navbar: React.FC<NavbarProps> = ({
       <div className="container-fluid d-flex align-items-center justify-content-between">
         {/* LEFT: Logo */}
         <Link className="navbar-brand" to="/">
-          <span className="brand-name">{WEBSITE_NAME}</span>
+          <img src="/apple-touch-icon.png" alt={WEBSITE_NAME} />
+          <span className="brand-name">
+            {WEBSITE_NAME.split(" ")[0]}{" "}
+            <span className="brand-accent">{WEBSITE_NAME.split(" ").slice(1).join(" ")}</span>
+          </span>
         </Link>
 
         {/* RIGHT: Theme toggle + Profile */}
