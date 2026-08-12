@@ -39,7 +39,7 @@ const HomePage: React.FC<HomePageProps> = ({ userState }) => {
 
   /* ================= STATE PERSONALIZATION ================= */
   const hasState = !!userState && userState.toUpperCase() !== "CT";
-  const [stateView, setStateView] = useState<"personalized" | "all">("personalized");
+  const [stateView, setStateView] = useState<"personalized" | "all">("all");
   // Effective filter sent to the API: "all" disables filtering; a state code
   // scopes to Central + that state; undefined falls back to Central only.
   const effectiveStateFilter = stateView === "all" ? "all" : userState;
