@@ -129,3 +129,29 @@ export const retryDistribution = (id: string) => {
     { method: "POST" }
   );
 };
+
+export type SocialPostStatus = "pending" | "published" | "failed";
+
+export interface ISocialPost {
+  platform: string;
+  status: SocialPostStatus;
+  external_post_id?: string;
+  error_message?: string;
+  retry_count: number;
+  published_at?: number;
+}
+
+// Get social (Telegram, etc.) publishing status for a notification
+export const getSocialPostStatus = (id: string) => {
+  return privateFetch<{ success: boolean; socialPosts: ISocialPost[] }>(
+    PRIVATE_API.NOTIFICATION.SOCIAL_STATUS(id)
+  );
+};
+
+// Retry a failed social publication
+export const retrySocialPost = (id: string, platform: string) => {
+  return privateFetch<{ success: boolean; socialPosts: ISocialPost[] }>(
+    PRIVATE_API.NOTIFICATION.RETRY_SOCIAL(id, platform),
+    { method: "POST" }
+  );
+};

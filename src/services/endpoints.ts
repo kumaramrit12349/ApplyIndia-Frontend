@@ -32,6 +32,8 @@ export const PRIVATE_API = {
     ARCHIVE_BULK: "api/notification/bulk-archive",
     DISTRIBUTION_STATUS: (id: string) => `api/notification/${id}/distribution-status`,
     RETRY_DISTRIBUTION: (id: string) => `api/notification/${id}/retry-distribution`,
+    SOCIAL_STATUS: (id: string) => `api/notification/${id}/social-status`,
+    RETRY_SOCIAL: (id: string, platform: string) => `api/notification/${id}/retry-social/${platform}`,
   },
   SCRAPER: {
     RUN: "api/scraper/run",
