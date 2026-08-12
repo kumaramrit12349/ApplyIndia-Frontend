@@ -472,6 +472,50 @@ const NotificationForm: React.FC<Props> = ({
           </div>
         </div>
 
+        {/* ================= SOCIAL MEDIA PUBLISHING ================= */}
+        {renderSectionTitle("Social Media Publishing")}
+        <div className="ai-checkbox-group mb-5">
+          <div className="row">
+            <div className="col-md-6 mb-3">
+              <div className="form-check d-flex align-items-center gap-2">
+                <input
+                  type="checkbox"
+                  className="form-check-input mt-0"
+                  style={{ width: '1.2rem', height: '1.2rem' }}
+                  id="send_telegram_notification"
+                  checked={form.send_telegram_notification !== false}
+                  onChange={(e) => setForm((p: INotification) => ({ ...p, send_telegram_notification: e.target.checked }))}
+                />
+                <label className="form-check-label ai-form-label mb-0" htmlFor="send_telegram_notification">
+                  Post to Telegram when this notification is approved
+                </label>
+              </div>
+            </div>
+
+            {[
+              ["send_facebook_notification", "Post to Facebook when this notification is approved"],
+              ["send_instagram_notification", "Post to Instagram when this notification is approved"],
+            ].map(([key, label]) => (
+              <div className="col-md-6 mb-3" key={key}>
+                <div className="form-check d-flex align-items-center gap-2" style={{ opacity: 0.55 }}>
+                  <input
+                    type="checkbox"
+                    className="form-check-input mt-0"
+                    style={{ width: '1.2rem', height: '1.2rem' }}
+                    id={key}
+                    checked={false}
+                    disabled
+                    title="Coming soon"
+                  />
+                  <label className="form-check-label ai-form-label mb-0" htmlFor={key}>
+                    {label} <span className="badge bg-secondary ms-1">Coming soon</span>
+                  </label>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* ================= FEES ================= */}
         {needsFeesAndDates && (
           <>

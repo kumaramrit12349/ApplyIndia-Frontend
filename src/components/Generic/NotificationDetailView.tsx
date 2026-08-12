@@ -21,6 +21,7 @@ import {
   BsClockHistory,
   BsArrowRepeat,
   BsDashCircle,
+  BsTelegram,
 } from "react-icons/bs";
 import { FcViewDetails } from "react-icons/fc";
 import { formatCategoryTitle, formatStateName, getId } from "../../utils/utils";
@@ -38,8 +39,12 @@ import { checkEligibility, type IEligibilityResult } from "../../services/privat
 import {
   getDistributionStatus,
   retryDistribution,
+  getSocialPostStatus,
+  retrySocialPost,
   type IDistributionLog,
   type ChannelStatus,
+  type ISocialPost,
+  type SocialPostStatus,
 } from "../../services/private/notificationApi";
 import { toast } from "react-toastify";
 import "./NotificationDetailView.css";
@@ -208,11 +213,14 @@ const LabelValue = ({
   );
 };
 
+type DeliveryLikeStatus = ChannelStatus | SocialPostStatus;
+
 const DELIVERY_STATUS_META: Record<
-  ChannelStatus,
+  DeliveryLikeStatus,
   { label: string; icon: React.ReactNode; className: string }
 > = {
   sent: { label: "Sent", icon: <BsCheckCircleFill />, className: "ndv-badge--sent" },
+  published: { label: "Published", icon: <BsCheckCircleFill />, className: "ndv-badge--sent" },
   failed: { label: "Failed", icon: <BsXCircleFill />, className: "ndv-badge--failed" },
   pending: { label: "Pending", icon: <BsClockHistory />, className: "ndv-badge--pending" },
   skipped: { label: "Not Configured", icon: <BsDashCircle />, className: "ndv-badge--skipped" },
@@ -225,7 +233,7 @@ const DeliveryBadge = ({
 }: {
   icon: React.ReactNode;
   label: string;
-  status?: ChannelStatus;
+  status?: DeliveryLikeStatus;
 }) => {
   const meta = DELIVERY_STATUS_META[status ?? "pending"];
   return (
@@ -277,6 +285,8 @@ export default function NotificationDetailView({
   const [distribution, setDistribution] = useState<IDistributionLog | null>(null);
   const [distributionLoading, setDistributionLoading] = useState(false);
   const [retrying, setRetrying] = useState(false);
+  const [socialPosts, setSocialPosts] = useState<ISocialPost[]>([]);
+  const [socialRetrying, setSocialRetrying] = useState(false);
 
   useEffect(() => {
     if (isAuthenticated && notification?.sk) {
@@ -299,8 +309,30 @@ export default function NotificationDetailView({
         })
         .catch(() => {})
         .finally(() => setDistributionLoading(false));
+
+      getSocialPostStatus(getId(notification.sk))
+        .then((res) => {
+          if (res.success) setSocialPosts(res.socialPosts);
+        })
+        .catch(() => {});
     }
   }, [isAdmin, notification?.approved_at, notification?.sk]);
+
+  const telegramPost = socialPosts.find((p) => p.platform === "telegram");
+
+  const handleRetrySocial = async (platform: string) => {
+    if (!notification?.sk) return;
+    setSocialRetrying(true);
+    try {
+      const res = await retrySocialPost(getId(notification.sk), platform);
+      if (res.success) setSocialPosts(res.socialPosts);
+      toast.success("Retry triggered");
+    } catch {
+      toast.error("Retry failed");
+    } finally {
+      setSocialRetrying(false);
+    }
+  };
 
   const handleRetryDistribution = async () => {
     if (!notification?.sk) return;
@@ -1048,7 +1080,25 @@ export default function NotificationDetailView({
                       label="Email"
                       status={distribution?.email?.status}
                     />
+                    <DeliveryBadge
+                      icon={<BsTelegram />}
+                      label="Telegram"
+                      status={telegramPost?.status}
+                    />
                   </div>
+                )}
+
+                {telegramPost?.status === "failed" && (
+                  <button
+                    type="button"
+                    className="ndv-retry-btn"
+                    style={{ marginTop: 10 }}
+                    onClick={() => handleRetrySocial("telegram")}
+                    disabled={socialRetrying}
+                  >
+                    <BsArrowRepeat className={socialRetrying ? "ndv-spin" : ""} />
+                    {socialRetrying ? "Retrying..." : "Retry Telegram"}
+                  </button>
                 )}
               </div>
             )}
