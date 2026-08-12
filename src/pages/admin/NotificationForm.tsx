@@ -450,6 +450,28 @@ const NotificationForm: React.FC<Props> = ({
           </>
         )}
 
+        {/* ================= EMAIL DISTRIBUTION ================= */}
+        {renderSectionTitle("Email Distribution")}
+        <div className="ai-checkbox-group mb-5">
+          <div className="row">
+            <div className="col-md-6 mb-3">
+              <div className="form-check d-flex align-items-center gap-2">
+                <input
+                  type="checkbox"
+                  className="form-check-input mt-0"
+                  style={{ width: '1.2rem', height: '1.2rem' }}
+                  id="send_email_notification"
+                  checked={form.send_email_notification !== false}
+                  onChange={(e) => setForm((p: INotification) => ({ ...p, send_email_notification: e.target.checked }))}
+                />
+                <label className="form-check-label ai-form-label mb-0" htmlFor="send_email_notification">
+                  Email users when this notification is approved
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* ================= FEES ================= */}
         {needsFeesAndDates && (
           <>

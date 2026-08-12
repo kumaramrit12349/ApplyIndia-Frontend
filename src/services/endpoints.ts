@@ -37,6 +37,7 @@ export const PRIVATE_API = {
     RUN: "api/scraper/run",
     STATUS: "api/scraper/status",
     SOURCES: "api/scraper/sources",
+    SOURCES_BULK_STATUS: "api/scraper/sources/bulk-status",
     SOURCE_BY_KEY: (key: string) => `api/scraper/sources/${key}`,
     PREVIEW: (siteKey: string) => `api/scraper/preview/${siteKey}`,
   },
@@ -50,6 +51,7 @@ export const PRIVATE_API = {
   },
   EMAIL_TEMPLATES: {
     LIST: "api/email-templates",
+    SAMPLE_PREVIEW: "api/email-templates/sample-preview",
     TEMPLATE_BY_KEY: (key: string) => `api/email-templates/${key}`,
     PREVIEW: (key: string) => `api/email-templates/${key}/preview`,
   },

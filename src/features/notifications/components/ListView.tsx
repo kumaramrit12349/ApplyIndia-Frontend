@@ -138,14 +138,12 @@ interface StatusBadge {
 
 const CLOSING_SOON_WINDOW_DAYS = 3;
 
-const CATEGORY_STATUS_BADGE: Record<string, StatusBadge> = {
-  "admit-card": { label: "Admit Card", color: "var(--status-admit-card)", bg: "var(--status-admit-card-bg)" },
-  "result": { label: "Result Out", color: "var(--status-result)", bg: "var(--status-result-bg)" },
-};
+// These categories already show their identity via the section header (e.g. "Admit Card",
+// "Result"), so a per-item badge repeating the same label would be redundant.
+const NO_STATUS_BADGE_CATEGORIES = new Set(["admit-card", "result"]);
 
 const getStatusBadge = (category: string, item: HomePageNotification): StatusBadge | null => {
-  const fixed = CATEGORY_STATUS_BADGE[category?.toLowerCase()];
-  if (fixed) return fixed;
+  if (NO_STATUS_BADGE_CATEGORIES.has(category?.toLowerCase())) return null;
 
   if (!item.last_date_to_apply) return null;
   const deadline = new Date(item.last_date_to_apply as string).getTime();

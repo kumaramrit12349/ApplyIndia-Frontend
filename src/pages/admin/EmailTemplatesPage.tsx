@@ -7,6 +7,7 @@ import {
   updateEmailTemplate,
   deleteEmailTemplate,
   getEmailTemplatePreviewUrl,
+  getEmailSamplePreviewUrl,
 } from "../../services/private/emailTemplateApi";
 import type { EmailTemplate } from "../../services/private/emailTemplateApi";
 import ConfirmModal from "../../components/ConfirmModal/ConfirmModal";
@@ -134,22 +135,33 @@ const EmailTemplatesPage: React.FC = () => {
         {/* Header Section */}
         <div className="card shadow-sm border-0 mb-4 rounded-3" style={{ background: "var(--color-surface)" }}>
           <div className="card-body p-4">
-            <div className="d-flex align-items-center gap-3 mb-2">
-              <div
-                className="rounded-circle p-3 d-flex align-items-center justify-content-center"
-                style={{ backgroundColor: "rgba(15, 61, 145, 0.12)", color: "var(--color-primary)" }}
+            <div className="d-flex align-items-center justify-content-between gap-3 mb-2">
+              <div className="d-flex align-items-center gap-3">
+                <div
+                  className="rounded-circle p-3 d-flex align-items-center justify-content-center"
+                  style={{ backgroundColor: "rgba(15, 61, 145, 0.12)", color: "var(--color-primary)" }}
+                >
+                  <FiMail size={28} />
+                </div>
+                <div>
+                  <h2 className="h4 mb-1 fw-bold" style={{ color: "var(--color-heading)" }}>
+                    Email Templates
+                  </h2>
+                  <p className="text-muted mb-0 small">
+                    Manage subject/body content for system emails. A shared header and footer are applied
+                    automatically to every email — no need to include branding here.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => window.open(getEmailSamplePreviewUrl(), "_blank", "noopener,noreferrer")}
+                className="btn btn-outline-primary d-flex align-items-center gap-2 shadow-sm flex-shrink-0"
+                title="Preview the shared header/footer theme with sample content — no template needs to be saved first"
               >
-                <FiMail size={28} />
-              </div>
-              <div>
-                <h2 className="h4 mb-1 fw-bold" style={{ color: "var(--color-heading)" }}>
-                  Email Templates
-                </h2>
-                <p className="text-muted mb-0 small">
-                  Manage subject/body content for system emails. A shared header and footer are applied
-                  automatically to every email — no need to include branding here.
-                </p>
-              </div>
+                <FiEye size={16} />
+                <span>Preview Theme</span>
+              </button>
             </div>
           </div>
         </div>

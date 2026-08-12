@@ -46,14 +46,22 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      # 7️⃣ Upload dist to S3
-      - name: Upload dist to S3
+      # 7️⃣ Upload hashed assets with long cache lifetime
+      - name: Upload static assets to S3
         run: |
           aws s3 sync dist s3://${{ secrets.S3_BUCKET_NAME }} \
             --delete \
+            --exclude "index.html" \
             --cache-control "max-age=31536000,public"
 
-      # 8️⃣ Invalidate CloudFront cache
+      # 8️⃣ Upload HTML with no-cache so clients see the new asset manifest immediately
+      - name: Upload index.html to S3
+        run: |
+          aws s3 cp dist/index.html s3://${{ secrets.S3_BUCKET_NAME }}/index.html \
+            --cache-control "no-cache, no-store, must-revalidate" \
+            --content-type "text/html"
+
+      # 9️⃣ Invalidate CloudFront cache
       - name: Invalidate CloudFront cache
         run: |
           aws cloudfront create-invalidation \
