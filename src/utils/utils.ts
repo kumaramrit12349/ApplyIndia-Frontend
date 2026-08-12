@@ -44,6 +44,8 @@ export const emptyNotificationForm: INotification = {
   has_answer_key: false,
   has_syllabus: false,
 
+  send_email_notification: true,
+
   start_date: "",
   last_date_to_apply: "",
   exam_date: "",
