@@ -556,6 +556,16 @@ h1, h2, h3, h4, h5, h6 {
   display: none;
 }
 
+/* Horizontally-scrollable row with an edge fade, so a partially-cut-off
+   item reads as "scroll for more" instead of looking clipped/broken.
+   Compose onto anything that already has its own overflow-x: auto (this
+   class only adds the fade mask, e.g. .ai-nav-scroll above, or Bootstrap's
+   .table-responsive on admin tables) — don't duplicate the scroll rules. */
+.scroll-fade-x {
+  -webkit-mask-image: linear-gradient(to right, transparent, black 16px, black calc(100% - 24px), transparent);
+  mask-image: linear-gradient(to right, transparent, black 16px, black calc(100% - 24px), transparent);
+}
+
 .ai-pill-list {
   display: flex;
   list-style: none;
@@ -827,6 +837,26 @@ h1, h2, h3, h4, h5, h6 {
   .ai-search-btn {
     padding: 8px 16px;
     font-size: 0.85rem;
+  }
+}
+
+/* Below ~480px, select + input + button no longer fit on one row without
+   truncating the input's placeholder — give the select its own row instead
+   of shrinking everything further. */
+@media (max-width: 480px) {
+  .ai-search-group {
+    flex-wrap: wrap;
+  }
+
+  .ai-search-group select {
+    flex: 1 1 100%;
+    max-width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .ai-search-group input {
+    flex: 1 1 auto;
   }
 }
 

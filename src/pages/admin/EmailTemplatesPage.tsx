@@ -193,7 +193,7 @@ const EmailTemplatesPage: React.FC = () => {
                     <p className="mb-0">No email templates created yet.</p>
                   </div>
                 ) : (
-                  <div className="table-responsive">
+                  <div className="table-responsive scroll-fade-x">
                     <table className="table table-hover align-middle mb-0">
                       <thead style={{ background: "var(--color-bg)" }}>
                         <tr>

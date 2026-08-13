@@ -1264,7 +1264,9 @@ const ScraperDashboard: React.FC = () => {
         .site-actions-container {
           margin-left: 0;
           width: 100%;
-          justify-content: space-between;
+          flex-wrap: wrap;
+          justify-content: flex-start;
+          gap: 10px 16px;
           padding-top: 12px;
           border-top: 1px solid var(--color-border);
         }

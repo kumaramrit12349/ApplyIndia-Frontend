@@ -205,7 +205,7 @@ const CategoryView: React.FC = () => {
           ]),
         ]}
       />
-      <div className="row justify-content-center">
+      <div className="row justify-content-center gx-3 gx-md-4">
         <div className="col-12 col-md-10 col-lg-8">
           <div className="text-center">
             <div className="ai-elig-toggle">

@@ -152,7 +152,7 @@ const HomePage: React.FC<HomePageProps> = ({ userState }) => {
           description={`Find government job notifications and results related to "${searchValue}" across India.`} 
           noindex={true}
         />
-        <div className="row justify-content-center">
+        <div className="row justify-content-center gx-3 gx-md-4">
           <div className="col-12 col-md-10 col-lg-8">
             <h2 className="mb-3 text-center">
               Search Results
