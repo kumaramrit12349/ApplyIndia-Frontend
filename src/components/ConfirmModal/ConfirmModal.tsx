@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 interface ConfirmModalProps {
   show: boolean;
@@ -21,7 +21,24 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
   confirmVariant = "primary",
   confirmButtonClassName,
 }) => {
+  // Guards against a double-click firing onConfirm (and whatever async
+  // action it kicks off, e.g. approve/archive/delete) twice before the
+  // caller's own state update closes the modal — that update happens on the
+  // next React render, which isn't necessarily fast enough to beat a second
+  // click. Resets whenever the modal is freshly shown again.
+  const [confirming, setConfirming] = useState(false);
+
+  useEffect(() => {
+    if (show) setConfirming(false);
+  }, [show]);
+
   if (!show) return null;
+
+  const handleConfirmClick = () => {
+    if (confirming) return;
+    setConfirming(true);
+    onConfirm();
+  };
 
   return (
     <>
@@ -54,7 +71,8 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
               <button
                 type="button"
                 className={confirmButtonClassName || `btn btn-${confirmVariant}`}
-                onClick={onConfirm}
+                onClick={handleConfirmClick}
+                disabled={confirming}
               >
                 {confirmText}
               </button>

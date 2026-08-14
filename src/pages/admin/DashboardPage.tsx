@@ -215,7 +215,8 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
         try {
           await approveNotification(id);
           showToast("Notification approved successfully!", "success");
-          loadNotifications(search, timeRange, categoryFilter);
+          setSelectedIds((prev) => prev.filter((sk) => getId(sk) !== id));
+          loadNotifications(search, timeRange, categoryFilter, stateFilter);
         } catch (err: any) {
           showToast(err.message || "Failed to approve notification", "error");
         }
@@ -235,7 +236,8 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
         try {
           await deleteNotification(id);
           showToast("Notification archived successfully!", "success");
-          loadNotifications(search, timeRange, categoryFilter);
+          setSelectedIds((prev) => prev.filter((sk) => getId(sk) !== id));
+          loadNotifications(search, timeRange, categoryFilter, stateFilter);
         } catch (err: any) {
           showToast(err.message || "Failed to archive notification", "error");
         }
@@ -255,6 +257,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
         try {
           await unarchiveNotification(id);
           showToast("Notification restored successfully!", "success");
+          setSelectedIds((prev) => prev.filter((sk) => getId(sk) !== id));
           loadNotifications(search, timeRange, categoryFilter, stateFilter);
         } catch (err: any) {
           showToast(err.message || "Failed to restore notification", "error");
@@ -282,7 +285,8 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
         try {
           await permanentDeleteNotification(id);
           showToast("Notification permanently deleted from database!", "success");
-          loadNotifications(search, timeRange, categoryFilter);
+          setSelectedIds((prev) => prev.filter((sk) => getId(sk) !== id));
+          loadNotifications(search, timeRange, categoryFilter, stateFilter);
         } catch (err: any) {
           showToast(err.message || "Failed to permanently delete", "error");
         }

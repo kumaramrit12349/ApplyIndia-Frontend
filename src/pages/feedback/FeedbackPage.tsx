@@ -17,19 +17,23 @@ const FeedbackPage: React.FC = () => {
     e.preventDefault();
     setLoading(true);
 
-    const res = await submitFeedback(form);
+    try {
+      const res = await submitFeedback(form);
 
-    if (res.success) {
-      toast.success("Thank you! Your feedback has been sent.");
+      if (res.success) {
+        toast.success("Thank you! Your feedback has been sent.");
 
-      setTimeout(() => {
-        navigate("/");
-      }, 1800);
-    } else {
-      toast.error(res.message || "Failed to submit feedback");
+        setTimeout(() => {
+          navigate("/");
+        }, 1800);
+      } else {
+        toast.error(res.message || "Failed to submit feedback");
+      }
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to submit feedback");
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   return (
@@ -54,7 +58,7 @@ const FeedbackPage: React.FC = () => {
                 We value your feedback. Share your thoughts or suggestions with us to help improve Apply India.
               </p>
 
-              <form onSubmit={handleSubmit} noValidate>
+              <form onSubmit={handleSubmit}>
                 {/* Name */}
                 <div className="mb-4">
                   <label className="ai-form-label">Name</label>

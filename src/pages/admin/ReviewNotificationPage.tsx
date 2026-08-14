@@ -30,6 +30,7 @@ const ReviewNotificationPage: React.FC<ReviewNotificationPageProps> = ({
   /* Comment form state */
   const [commentText, setCommentText] = useState("");
   const [submittingComment, setSubmittingComment] = useState(false);
+  const [approving, setApproving] = useState(false);
 
   const canComment = role === "reviewer" || role === "senior_reviewer" || role === "admin";
   const canApprove = role === "reviewer" || role === "senior_reviewer" || role === "admin";
@@ -80,12 +81,14 @@ const ReviewNotificationPage: React.FC<ReviewNotificationPageProps> = ({
       confirmVariant: "success",
       onConfirm: async () => {
         setModal((m) => ({ ...m, show: false }));
+        setApproving(true);
         try {
           await approveNotification(notifId);
           showToast("Notification approved successfully!", "success");
           navigate("/admin/dashboard");
         } catch (err: any) {
           showToast(err.message || "Failed to approve notification", "error");
+          setApproving(false);
         }
       },
     });
@@ -135,6 +138,7 @@ const ReviewNotificationPage: React.FC<ReviewNotificationPageProps> = ({
             ? () => handleApprove(getId(notification.sk))
             : undefined
         }
+        approving={approving}
       />
 
       {/* ============ REVIEW COMMENTS SECTION ============ */}

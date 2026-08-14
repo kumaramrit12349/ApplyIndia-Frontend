@@ -31,6 +31,9 @@ const StateView: React.FC = () => {
 
     // ✅ prevents race conditions
     const isFetchingRef = useRef(false);
+    // Bumped every time state/searchValue changes, so a slow response for a
+    // since-superseded filter can't overwrite newer results when it resolves.
+    const generationRef = useRef(0);
 
     /* ================= ACTIVITY STATUS (fetched once, shared across all cards) ================= */
     const [activityMap, setActivityMap] = useState<Map<string, number> | undefined>(undefined);
@@ -89,6 +92,7 @@ const StateView: React.FC = () => {
     /* ================= RESET ON CHANGE ================= */
 
     useEffect(() => {
+        generationRef.current += 1;
         setItems([]);
         setLastKey(undefined);
         setHasMore(true);
@@ -106,6 +110,7 @@ const StateView: React.FC = () => {
         if (!hasMore && !isFirst) return;
 
         isFetchingRef.current = true;
+        const generation = generationRef.current;
 
         try {
             const res = await fetchNotificationsByState(
@@ -115,6 +120,10 @@ const StateView: React.FC = () => {
                 searchValue
             );
 
+            // A newer state/search filter superseded this request while it was
+            // in flight — discard the stale response instead of overwriting fresher results.
+            if (generation !== generationRef.current) return;
+
             setItems(prev => {
                 const newData = Array.isArray(res.data) ? res.data : [];
                 return isFirst ? newData : [...prev, ...newData];
@@ -123,11 +132,16 @@ const StateView: React.FC = () => {
             setLastKey(res.lastEvaluatedKey);
             setHasMore(Boolean(res.lastEvaluatedKey));
         } catch (error) {
+            if (generation !== generationRef.current) return;
             console.error("Failed to load notifications", error);
             setHasMore(false);
         } finally {
-            setLoading(false);
-            isFetchingRef.current = false;
+            // Only the current generation's own request may clear the in-flight
+            // guard — see HomePage.tsx's loadMoreSearch for why.
+            if (generation === generationRef.current) {
+                setLoading(false);
+                isFetchingRef.current = false;
+            }
         }
     };
 
