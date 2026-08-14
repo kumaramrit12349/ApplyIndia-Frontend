@@ -74,26 +74,38 @@ const HomePage: React.FC<HomePageProps> = ({ userState }) => {
 
   // ✅ prevents duplicate calls
   const isFetchingSearchRef = useRef(false);
+  // Bumped every time searchValue changes, so a slow response for a since-
+  // superseded query can't overwrite newer results when it finally resolves.
+  const searchGenerationRef = useRef(0);
 
   /* ================= GROUPED MODE ================= */
 
   const [grouped, setGrouped] = useState<GroupedNotifications>({});
   const [groupedLoading, setGroupedLoading] = useState(false);
+  // Same stale-response guard as searchGenerationRef, for rapid state-filter toggling.
+  const groupedGenerationRef = useRef(0);
 
   /* ================= GROUPED HOME ================= */
 
   useEffect(() => {
     if (searchValue) return;
 
+    const generation = ++groupedGenerationRef.current;
     setGroupedLoading(true);
 
     fetchHomePageNotifications(effectiveStateFilter)
-      .then(res => setGrouped(res.data))
+      .then(res => {
+        if (generation !== groupedGenerationRef.current) return;
+        setGrouped(res.data);
+      })
       .catch(err => {
+        if (generation !== groupedGenerationRef.current) return;
         console.error("Failed to fetch homepage notifications", err);
         setGrouped({});
       })
-      .finally(() => setGroupedLoading(false));
+      .finally(() => {
+        if (generation === groupedGenerationRef.current) setGroupedLoading(false);
+      });
   }, [searchValue, effectiveStateFilter]);
 
   /* ================= RESET SEARCH ================= */
@@ -101,6 +113,7 @@ const HomePage: React.FC<HomePageProps> = ({ userState }) => {
   useEffect(() => {
     if (!searchValue) return;
 
+    searchGenerationRef.current += 1;
     setSearchResults([]);
     setSearchLastKey(undefined);
     setSearchHasMore(true);
@@ -118,6 +131,7 @@ const HomePage: React.FC<HomePageProps> = ({ userState }) => {
     if (!searchHasMore && !isFirst) return;
 
     isFetchingSearchRef.current = true;
+    const generation = searchGenerationRef.current;
 
     try {
       const res = await fetchNotificationsByCategory(
@@ -127,6 +141,10 @@ const HomePage: React.FC<HomePageProps> = ({ userState }) => {
         searchValue
       );
 
+      // A newer search superseded this request while it was in flight —
+      // discard the stale response instead of overwriting fresher results.
+      if (generation !== searchGenerationRef.current) return;
+
       setSearchResults(prev =>
         isFirst ? res.data : [...prev, ...res.data]
       );
@@ -134,11 +152,18 @@ const HomePage: React.FC<HomePageProps> = ({ userState }) => {
       setSearchLastKey(res.lastEvaluatedKey);
       setSearchHasMore(Boolean(res.lastEvaluatedKey));
     } catch (error) {
+      if (generation !== searchGenerationRef.current) return;
       console.error("Search pagination failed", error);
       setSearchHasMore(false);
     } finally {
-      setSearchLoading(false);
-      isFetchingSearchRef.current = false;
+      // Only the current generation's own request may clear the in-flight
+      // guard — otherwise a stale response resolving after the next
+      // generation's request has already started would incorrectly unlock
+      // it mid-flight and allow a duplicate concurrent fetch.
+      if (generation === searchGenerationRef.current) {
+        setSearchLoading(false);
+        isFetchingSearchRef.current = false;
+      }
     }
   };
 
@@ -152,7 +177,7 @@ const HomePage: React.FC<HomePageProps> = ({ userState }) => {
           description={`Find government job notifications and results related to "${searchValue}" across India.`} 
           noindex={true}
         />
-        <div className="row justify-content-center">
+        <div className="row justify-content-center gx-3 gx-md-4">
           <div className="col-12 col-md-10 col-lg-8">
             <h2 className="mb-3 text-center">
               Search Results

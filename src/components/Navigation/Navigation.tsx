@@ -39,7 +39,7 @@ const Navigation: React.FC<NavigationProps> = ({ availableStates }) => {
     <nav className="ai-navigation">
       <div className="container">
         {/* Categories Row */}
-        <div className="ai-nav-scroll border-bottom">
+        <div className="ai-nav-scroll scroll-fade-x border-bottom">
           <ul className="ai-pill-list">
             {NOTIFICATION_CATEGORIES.map((item) => (
               <li key={`cat-${item.value}`}>

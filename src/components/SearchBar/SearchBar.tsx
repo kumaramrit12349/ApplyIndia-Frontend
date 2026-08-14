@@ -47,6 +47,11 @@ const SearchBar: React.FC<SearchBarProps> = ({
   };
 
   const handleSearch = () => {
+    // Guard here (not just the Search button's `disabled`) since the Enter-key
+    // path in the input's onKeyDown calls handleSearch() directly — a
+    // whitespace-only query used to slip through and silently return the
+    // entire unfiltered list under a "search results" heading.
+    if (!query.trim()) return;
     if (onSearch) onSearch(query, filter);
     const route = getNavigateRoute(filter);
     if (filter !== "all") {
