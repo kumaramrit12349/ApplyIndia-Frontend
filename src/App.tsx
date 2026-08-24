@@ -113,9 +113,12 @@ const AppLayout: React.FC = () => {
     const params = new URLSearchParams(window.location.search);
     const authError = params.get("auth_error");
     if (authError) {
-      const displayMsg = authError.includes("Email already registered")
+      // Pass the backend message through directly — it already says
+      // "Email already exists. Try signing in with Google." or
+      // "Email already exists. Try logging in with your email and password."
+      const displayMsg = authError.toLowerCase().includes("email already exists")
         ? authError
-        : "This email is already registered. Please sign in with your email and password.";
+        : authError;
       setAuthPopupError(displayMsg);
       setShowAuthPopup(true);
       toast.error(displayMsg, { autoClose: 5000 });

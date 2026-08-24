@@ -16,7 +16,7 @@ const GoogleCallbackPage: React.FC = () => {
 
   useEffect(() => {
     if (authError) {
-      const displayMsg = authError.includes("Email already registered")
+      const displayMsg = authError.toLowerCase().includes("email already exists")
         ? authError
         : "Google sign-in failed. Please try again.";
 
