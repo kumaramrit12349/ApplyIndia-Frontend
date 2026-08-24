@@ -40,6 +40,7 @@ const AdminFeedbackPage = lazy(() => import("./pages/admin/AdminFeedbackPage"));
 const ScraperDashboard = lazy(() => import("./pages/admin/ScraperDashboard"));
 const AdminRolesPage = lazy(() => import("./pages/admin/AdminRolesPage"));
 const EmailTemplatesPage = lazy(() => import("./pages/admin/EmailTemplatesPage"));
+const AdminUsersPage = lazy(() => import("./pages/admin/AdminUsersPage"));
 const PrivacyPolicy = lazy(() => import("./pages/legal/PrivacyPolicy"));
 const TermsAndConditions = lazy(() => import("./pages/legal/TermsAndConditions"));
 const Disclaimer = lazy(() => import("./pages/legal/Disclaimer"));
@@ -350,6 +351,17 @@ const AppLayout: React.FC = () => {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/admin/users"
+              element={
+                <ProtectedRoute
+                  isAuthenticated={isAuthenticated}
+                  checkingAuth={checkingAuth}
+                >
+                  <AdminUsersPage />
+                </ProtectedRoute>
+              }
+            />
 
             {/* Public routes */}
             <Route
@@ -403,7 +415,7 @@ const AppLayout: React.FC = () => {
                   isAuthenticated={isAuthenticated}
                   checkingAuth={checkingAuth}
                 >
-                  <ProfilePage onProfileUpdated={refreshUserData} />
+                  <ProfilePage onProfileUpdated={refreshUserData} isAdmin={isAdmin} />
                 </ProtectedRoute>
               }
             />
