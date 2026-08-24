@@ -106,12 +106,21 @@ const AuthPopup: React.FC<AuthPopupProps> = ({
         onRequireVerification
       ) {
         onRequireVerification(form.email);
+      } else if (
+        tab === "register" &&
+        msg.toLowerCase().includes("try signing in with google")
+      ) {
+        // Email is registered via Google — switch to the login tab so the
+        // user immediately sees the "Sign in with Google" button.
+        setTab("login");
+        setError(msg);
       } else {
         setError(msg);
       }
     } finally {
       setLoading(false);
     }
+
   };
 
 

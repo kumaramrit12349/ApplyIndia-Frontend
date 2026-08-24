@@ -57,6 +57,9 @@ export const PRIVATE_API = {
     TEMPLATE_BY_KEY: (key: string) => `api/email-templates/${key}`,
     PREVIEW: (key: string) => `api/email-templates/${key}/preview`,
   },
+  USERS: {
+    STATS: "api/users/stats",
+  },
 };
 
 export const AUTH_API = {

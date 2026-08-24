@@ -146,9 +146,9 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({
             {adminRole === "admin" && (
               <button
                 className="ai-dropdown-item"
-                onClick={() => { setOpen(false); navigate("/admin/feedback"); }}
+                onClick={() => { setOpen(false); navigate("/admin/users"); }}
               >
-                📥 User Feedback
+                👥 Users & Feedback
               </button>
             )}
 
