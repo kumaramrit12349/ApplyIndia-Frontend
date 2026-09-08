@@ -19,6 +19,7 @@ export interface OpenNotificationFilters {
   department?: string;
   minVacancies?: number;
   search?: string;
+  closingSoon?: boolean;
   sortBy?: "last_date_to_apply" | "created_at";
   sortOrder?: "asc" | "desc";
   limit?: number;
@@ -33,6 +34,7 @@ export const fetchOpenNotifications = (filters: OpenNotificationFilters) => {
   if (filters.department) params.set("department", filters.department);
   if (filters.minVacancies) params.set("minVacancies", String(filters.minVacancies));
   if (filters.search) params.set("search", filters.search);
+  if (filters.closingSoon) params.set("closingSoon", "true");
   if (filters.sortBy) params.set("sortBy", filters.sortBy);
   if (filters.sortOrder) params.set("sortOrder", filters.sortOrder);
   params.set("limit", String(filters.limit ?? 20));

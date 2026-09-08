@@ -51,6 +51,7 @@ const OpenNotificationsBrowser: React.FC = () => {
 
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [stateFilter, setStateFilter] = useState("all");
+  const [closingSoonFilter, setClosingSoonFilter] = useState(false);
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -88,6 +89,7 @@ const OpenNotificationsBrowser: React.FC = () => {
         category: categoryFilter,
         state: stateFilter,
         search: search || undefined,
+        closingSoon: closingSoonFilter || undefined,
         sortBy: "last_date_to_apply",
         sortOrder: "asc",
         limit: PAGE_SIZE,
@@ -119,7 +121,7 @@ const OpenNotificationsBrowser: React.FC = () => {
     isFetchingRef.current = false;
     loadMore(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [categoryFilter, stateFilter, search]);
+  }, [categoryFilter, stateFilter, closingSoonFilter, search]);
 
   return (
     <div>
@@ -170,6 +172,14 @@ const OpenNotificationsBrowser: React.FC = () => {
               ))}
           </Dropdown.Menu>
         </Dropdown>
+
+        <button
+          type="button"
+          className={`onb-filter-toggle ${closingSoonFilter ? "onb-filter-toggle--active" : ""}`}
+          onClick={() => setClosingSoonFilter((prev) => !prev)}
+        >
+          ⏰ Closing in 2 Days
+        </button>
       </div>
 
       {loading && items.length === 0 ? (

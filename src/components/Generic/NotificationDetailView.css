@@ -31,7 +31,7 @@
 
 /* --- Hero section --- */
 .ndv-hero {
-  background: linear-gradient(120deg, #1e40af 0%, #1d4ed8 42%, var(--color-primary) 75%, var(--color-primary-hover) 100%);
+  background: linear-gradient(120deg, #6d28d9 0%, #4c1d95 40%, #312e81 72%, #1e1b4b 100%);
   padding: 2.5rem 0 2.75rem;
   position: relative;
   overflow: hidden;
@@ -84,7 +84,7 @@
   right: -50px;
   width: 300px;
   height: 300px;
-  background: rgba(96, 165, 250, 0.45);
+  background: rgba(232, 121, 249, 0.4);
   opacity: 0.7;
 }
 .ndv-hero-blob--b {
@@ -92,7 +92,7 @@
   left: -70px;
   width: 280px;
   height: 280px;
-  background: rgba(245, 158, 11, 0.35);
+  background: rgba(96, 165, 250, 0.35);
   opacity: 0.6;
 }
 .ndv-hero-blob--c {
@@ -100,7 +100,7 @@
   left: 40%;
   width: 220px;
   height: 220px;
-  background: rgba(45, 212, 191, 0.25);
+  background: rgba(45, 212, 191, 0.28);
   opacity: 0.5;
 }
 
@@ -151,29 +151,29 @@
   color: rgba(255,255,255,0.85);
   border: 1px solid rgba(255,255,255,0.12);
 }
+/* Solid (not translucent) fills — on the blue hero, a low-opacity tint just
+   reads as "slightly different blue" and disappears into the background.
+   A flat, opaque color keeps each urgency tier legible and distinct. */
 .ndv-badge--deadline {
-  font-weight: 700;
+  font-weight: 600;
+  border: 1px solid rgba(255,255,255,0.2);
 }
 .ndv-badge--deadline-open {
-  background: rgba(34,197,94,0.22);
-  color: #bbf7d0;
-  border: 1px solid rgba(34,197,94,0.35);
+  background: #0f766e;
+  color: #fff;
 }
 .ndv-badge--deadline-soon {
-  background: rgba(245,158,11,0.25);
-  color: #fde68a;
-  border: 1px solid rgba(245,158,11,0.4);
+  background: #b45309;
+  color: #fff;
 }
 .ndv-badge--deadline-urgent {
-  background: rgba(239,68,68,0.28);
-  color: #fecaca;
-  border: 1px solid rgba(239,68,68,0.45);
+  background: #b91c1c;
+  color: #fff;
   animation: ndv-pulseRing 2s infinite;
 }
 .ndv-badge--deadline-closed {
-  background: rgba(255,255,255,0.1);
-  color: rgba(255,255,255,0.65);
-  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.75);
 }
 
 .ndv-hero-title {
@@ -195,30 +195,33 @@
 }
 
 /* --- Wishlist button (hero) --- */
+/* Solid (non-gradient), muted red-700/800 tones — keeps white-text contrast
+   safely above the WCAG AA 4.5:1 minimum and avoids the harsher, brighter
+   red/green gradient + glow combination that read as too intense. */
 .ndv-btn-wishlist {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  padding: 8px 22px;
+  padding: 7px 20px;
   border-radius: 50px;
-  font-size: 0.88rem;
-  font-weight: 700;
+  font-size: 0.85rem;
+  font-weight: 600;
   font-family: var(--font-base);
   border: none;
-  background: linear-gradient(135deg, #f87171, #dc2626);
+  background: #b91c1c;
   color: #fff;
   cursor: pointer;
   transition: all 0.25s ease;
-  box-shadow: 0 4px 14px rgba(220,38,38,0.35);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
 }
 .ndv-btn-wishlist:hover:not(:disabled) {
-  background: linear-gradient(135deg, #ef4444, #b91c1c);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 22px rgba(220,38,38,0.5);
+  background: #991b1b;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.22);
 }
 .ndv-btn-wishlist--active {
-  background: linear-gradient(135deg, #ef4444, #b91c1c);
-  box-shadow: 0 4px 14px rgba(220,38,38,0.45), inset 0 0 0 2px rgba(255,255,255,0.4);
+  background: #991b1b;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2), inset 0 0 0 2px rgba(255,255,255,0.35);
 }
 .ndv-btn-wishlist:disabled {
   opacity: 0.7;
@@ -230,22 +233,22 @@
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  padding: 8px 22px;
+  padding: 7px 20px;
   border-radius: 50px;
-  font-size: 0.88rem;
-  font-weight: 700;
+  font-size: 0.85rem;
+  font-weight: 600;
   font-family: var(--font-base);
   border: none;
-  background: linear-gradient(135deg, #22c55e, #16a34a);
+  background: #15803d;
   color: #fff;
   cursor: pointer;
   transition: all 0.25s ease;
-  box-shadow: 0 4px 14px rgba(22,163,74,0.35);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
 }
 .ndv-btn-eligibility:hover {
-  background: linear-gradient(135deg, #16a34a, #15803d);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 22px rgba(22,163,74,0.5);
+  background: #166534;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.22);
 }
 
 /* --- Content area --- */
