@@ -656,7 +656,8 @@ h1, h2, h3, h4, h5, h6 {
 .ai-search-group {
   display: flex;
   border-radius: var(--radius-xl);
-  overflow: hidden;
+  /* Not overflow:hidden — that also clips the dropdown menu's popout.
+     Rounding lives on the first/last child instead (below). */
   box-shadow: var(--shadow-md);
   border: 1.5px solid var(--color-border);
   background: var(--color-surface);
@@ -668,9 +669,13 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow: var(--shadow-md), var(--shadow-focus);
 }
 
-.ai-search-group select {
+.ai-search-select-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   border: none;
   border-right: 1px solid var(--color-border);
+  border-radius: var(--radius-xl) 0 0 var(--radius-xl);
   padding: 14px 16px;
   font-size: 0.92rem;
   font-weight: 500;
@@ -680,6 +685,19 @@ h1, h2, h3, h4, h5, h6 {
   outline: none;
   font-family: var(--font-base);
   cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* Suppress react-bootstrap's own ::after caret — we render our own
+   FiChevronDown. !important because bootstrap.min.css is imported after
+   this stylesheet, so an equal-specificity rule alone loses the cascade. */
+.ai-search-select-btn.dropdown-toggle::after {
+  display: none !important;
+}
+.ai-search-select-caret {
+  flex-shrink: 0;
+  color: var(--color-muted);
 }
 
 .ai-search-group input {
@@ -713,6 +731,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .ai-search-btn {
   border: none;
+  border-radius: 0 var(--radius-xl) var(--radius-xl) 0;
   background: var(--color-primary);
   color: #fff;
   padding: 14px 30px;
@@ -845,7 +864,7 @@ h1, h2, h3, h4, h5, h6 {
     min-width: 260px;
   }
 
-  .ai-search-group select {
+  .ai-search-select-btn {
     max-width: 140px;
     font-size: 0.82rem;
     padding: 8px 10px;
@@ -870,11 +889,21 @@ h1, h2, h3, h4, h5, h6 {
     flex-wrap: wrap;
   }
 
-  .ai-search-group select {
+  .ai-search-select-btn {
     flex: 1 1 100%;
     max-width: 100%;
     border-right: none;
     border-bottom: 1px solid var(--color-border);
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    justify-content: space-between;
+  }
+
+  .ai-search-group input {
+    border-radius: 0 0 0 var(--radius-xl);
+  }
+
+  .ai-search-btn {
+    border-radius: 0 0 var(--radius-xl) 0;
   }
 
   .ai-search-group input {
