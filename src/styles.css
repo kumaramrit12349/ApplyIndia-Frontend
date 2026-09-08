@@ -1605,6 +1605,137 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ========================================
+   FEEDBACK PAGE
+   ======================================== */
+.ai-feedback-page {
+  position: relative;
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  background: linear-gradient(180deg, var(--color-surface) 0%, var(--color-bg) 100%);
+}
+
+.ai-feedback-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(70px);
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.ai-feedback-blob--blue {
+  top: -80px;
+  left: -60px;
+  width: 300px;
+  height: 300px;
+  background: rgba(37, 99, 235, 0.16);
+}
+
+.ai-feedback-blob--orange {
+  bottom: -80px;
+  right: -60px;
+  width: 280px;
+  height: 280px;
+  background: rgba(245, 158, 11, 0.14);
+}
+
+.ai-feedback-card {
+  position: relative;
+}
+
+.ai-feedback-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(15, 61, 145, 0.28);
+}
+
+.ai-feedback-title {
+  text-align: center;
+  margin-bottom: 0.6rem;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.ai-feedback-subtitle {
+  text-align: center;
+  color: var(--color-muted);
+  font-size: 0.95rem;
+  margin-bottom: 1.75rem;
+}
+
+.ai-input-icon-group {
+  position: relative;
+}
+
+.ai-input-icon-group .ai-input {
+  padding-left: 44px;
+}
+
+.ai-input-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-muted);
+  pointer-events: none;
+}
+
+.ai-feedback-label-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.ai-feedback-char-count {
+  font-size: 0.78rem;
+  color: var(--color-muted);
+  font-weight: 500;
+}
+
+.ai-feedback-trust {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+}
+
+.ai-feedback-trust span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  background: rgba(22, 163, 74, 0.08);
+  font-size: 0.85rem;
+  color: var(--color-body);
+  font-weight: 600;
+}
+
+.ai-feedback-trust svg {
+  color: var(--color-success);
+  flex-shrink: 0;
+}
+
+.ai-feedback-submit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* ========================================
    MODERN FORM INPUTS (.ai-form)
    ======================================== */
 .ai-glass-panel {
