@@ -1,6 +1,9 @@
 .ai-why-choose {
   padding: var(--space-16) 0;
   font-family: var(--font-base);
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .ai-why-choose-header {
@@ -27,7 +30,7 @@
 }
 
 .ai-why-choose-card {
-  background: var(--color-surface);
+  background: var(--color-bg);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   padding: var(--space-6);

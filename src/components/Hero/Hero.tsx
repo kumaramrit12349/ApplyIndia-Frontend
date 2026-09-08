@@ -1,5 +1,5 @@
 import React from "react";
-import { FiCheckCircle } from "react-icons/fi";
+import { FiCheckCircle, FiArrowRight } from "react-icons/fi";
 import "./Hero.css";
 
 const Hero: React.FC = () => {
@@ -15,6 +15,14 @@ const Hero: React.FC = () => {
             Verified notifications for government jobs, entrance exams, admissions and
             scholarships across India — updated daily so you never miss a deadline.
           </p>
+          <div className="ai-hero-cta">
+            <a href="#browse-notifications" className="ai-hero-btn ai-hero-btn--primary">
+              Browse Notifications <FiArrowRight aria-hidden="true" />
+            </a>
+            <a href="/notification/category/job" className="ai-hero-btn ai-hero-btn--secondary">
+              Latest Government Jobs
+            </a>
+          </div>
           <div className="ai-hero-trust">
             <span><FiCheckCircle aria-hidden="true" /> Verified sources</span>
             <span><FiCheckCircle aria-hidden="true" /> Updated daily</span>

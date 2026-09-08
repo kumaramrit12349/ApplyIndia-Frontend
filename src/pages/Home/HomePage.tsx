@@ -318,7 +318,7 @@ const HomePage: React.FC<HomePageProps> = ({ userState }) => {
           </div>
         )}
       </div>
-      <div className="container py-4">
+      <div className="container ai-notifications-container py-4" id="browse-notifications" style={{ scrollMarginTop: 130 }}>
         <div className="row g-4">
           {groupedLoading ? (
             <div className="text-center m-auto py-5">
