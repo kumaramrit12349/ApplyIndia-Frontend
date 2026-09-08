@@ -69,8 +69,8 @@ export function getYouTubeEmbedUrl(url: string): string | null {
 export const emptyNotificationForm: INotification = {
   sk: "",
   title: "",
-  category: "",
-  state: "",
+  category: "job",
+  state: "CT",
   department: "",
   total_vacancies: 0,
 

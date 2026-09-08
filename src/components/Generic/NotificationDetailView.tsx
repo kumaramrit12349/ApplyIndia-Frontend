@@ -788,7 +788,7 @@ export default function NotificationDetailView({
                     groupedFees.map(([fee, cats]) => (
                       <LabelValue
                         key={fee}
-                        label={`${cats.join("/")} Fee`}
+                        label={cats.join("/")}
                         value={fee}
                       />
                     ))
