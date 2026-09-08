@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import NotificationDetailView from "../../../components/Generic/NotificationDetailView";
 import { getNotificationById } from "../../../services/public/notiifcationApi";
 import SEO from "../../../components/SEO/SEO";
@@ -137,7 +137,6 @@ const UserNotificationDetailPage: React.FC<UserNotificationDetailPageProps> = ({
   onShowAuthPopup,
 }) => {
   const { id } = useParams<{ slug: string; id: string }>();
-  const navigate = useNavigate();
   const [notification, setNotification] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -203,36 +202,6 @@ const UserNotificationDetailPage: React.FC<UserNotificationDetailPageProps> = ({
         ].filter(Boolean)}
         schema={[primarySchema, breadcrumbSchema]}
       />
-
-      {/* Back Button */}
-      <button
-        onClick={() => navigate(-1)}
-        className="btn btn-sm mb-3"
-        style={{
-          background: "transparent",
-          border: "1px solid var(--color-border)",
-          borderRadius: "20px",
-          color: "var(--color-muted)",
-          padding: "4px 14px",
-          fontWeight: 500,
-          fontSize: "0.88rem",
-          cursor: "pointer",
-          display: "inline-flex",
-          alignItems: "center",
-          gap: "6px",
-          transition: "all 0.2s",
-        }}
-        onMouseOver={(e) => {
-          e.currentTarget.style.background = "var(--color-bg)";
-          e.currentTarget.style.color = "var(--color-body)";
-        }}
-        onMouseOut={(e) => {
-          e.currentTarget.style.background = "transparent";
-          e.currentTarget.style.color = "var(--color-muted)";
-        }}
-      >
-        ← Back
-      </button>
 
       <NotificationDetailView
         notification={notification}
