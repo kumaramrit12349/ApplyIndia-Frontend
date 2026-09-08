@@ -55,7 +55,10 @@ const FAQ: React.FC = () => {
                   onClick={() => setOpenIndex(isOpen ? null : index)}
                   aria-expanded={isOpen}
                 >
-                  <span>{faq.question}</span>
+                  <span className="ai-faq-question-text">
+                    <span className="ai-faq-number">{String(index + 1).padStart(2, "0")}</span>
+                    {faq.question}
+                  </span>
                   <FiChevronDown className="ai-faq-chevron" size={18} />
                 </button>
                 {isOpen && <p className="ai-faq-answer">{faq.answer}</p>}

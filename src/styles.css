@@ -564,6 +564,22 @@ h1, h2, h3, h4, h5, h6 {
   mask-image: linear-gradient(to right, transparent, black 16px, black calc(100% - 24px), transparent);
 }
 
+.ai-nav-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ai-nav-row-label {
+  flex-shrink: 0;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-muted);
+  opacity: 0.75;
+}
+
 .ai-pill-list {
   display: flex;
   list-style: none;
@@ -574,7 +590,9 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .ai-pill {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   padding: 6px 16px;
   border-radius: var(--radius-pill);
   font-size: 0.85rem;
@@ -585,6 +603,11 @@ h1, h2, h3, h4, h5, h6 {
   border: 1px solid var(--color-border);
   color: var(--color-body);
   background: var(--color-surface);
+  box-shadow: var(--shadow-xs);
+}
+
+.ai-pill svg {
+  flex-shrink: 0;
 }
 
 .ai-pill:hover {
@@ -615,8 +638,9 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .ai-pill.state-pill.active {
-  background: var(--color-secondary);
-  box-shadow: 0 3px 10px rgba(37, 99, 235, 0.3);
+  background: var(--state-pill-gradient);
+  color: #064e3b;
+  box-shadow: 0 3px 10px rgba(16, 185, 129, 0.35);
 }
 
 /* ========================================

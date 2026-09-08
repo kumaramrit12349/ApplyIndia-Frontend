@@ -8,24 +8,28 @@ const REASONS = [
     title: "Verified, Not Just Scraped",
     description:
       "Every notification is reviewed by our team before it goes live — filtering out spam, duplicates, and stale postings.",
+    accent: "#2563eb",
   },
   {
     icon: <FiClock size={22} />,
     title: "Never Miss a Deadline",
     description:
       "Every listing shows its last date to apply at a glance, with a clear Open, Closing Soon, or Closed status.",
+    accent: "#d97706",
   },
   {
     icon: <FiLayers size={22} />,
     title: "Everything in One Place",
     description:
       "Jobs, admit cards, results, answer keys, and syllabus — linked together so you don't have to hunt across a dozen sites.",
+    accent: "#7c3aed",
   },
   {
     icon: <FiBookmark size={22} />,
     title: "Track Your Own Applications",
     description:
       "Wishlist any notification and follow it from Applied through to Result on your personal dashboard.",
+    accent: "#db2777",
   },
 ];
 
@@ -41,7 +45,11 @@ const WhyChoose: React.FC = () => {
         </div>
         <div className="ai-why-choose-grid">
           {REASONS.map((reason) => (
-            <div className="ai-why-choose-card" key={reason.title}>
+            <div
+              className="ai-why-choose-card"
+              key={reason.title}
+              style={{ "--reason-accent": reason.accent } as React.CSSProperties}
+            >
               <div className="ai-why-choose-icon">{reason.icon}</div>
               <h3 className="ai-why-choose-card-title">{reason.title}</h3>
               <p className="ai-why-choose-card-desc">{reason.description}</p>
