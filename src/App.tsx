@@ -395,6 +395,9 @@ const AppLayout: React.FC = () => {
               }
             />
 
+            {/* Browsing open notifications now lives as a tab inside My Dashboard */}
+            <Route path="/notifications" element={<Navigate to="/dashboard?tab=open" replace />} />
+
             {/* Google OAuth callback */}
             <Route path="/login/callback" element={<GoogleCallbackPage />} />
 

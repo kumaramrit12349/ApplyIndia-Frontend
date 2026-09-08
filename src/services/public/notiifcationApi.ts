@@ -83,7 +83,7 @@ export const getNotificationById = (id: string) => {
 
 // get available filters
 export const fetchAvailableFilters = () => {
-  return apiFetch<{ states: string[] }>(PUBLIC_API.HOME.FILTERS, {
+  return apiFetch<{ states: string[]; categories: string[]; departments: string[] }>(PUBLIC_API.HOME.FILTERS, {
     cache: "no-store",
   });
 };

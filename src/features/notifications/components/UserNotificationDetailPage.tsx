@@ -136,7 +136,7 @@ const UserNotificationDetailPage: React.FC<UserNotificationDetailPageProps> = ({
   isAuthenticated = false,
   onShowAuthPopup,
 }) => {
-  const { id } = useParams<{ id: string }>();
+  const { id } = useParams<{ slug: string; id: string }>();
   const navigate = useNavigate();
   const [notification, setNotification] = useState<any>(null);
   const [loading, setLoading] = useState(true);

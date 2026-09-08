@@ -10,11 +10,20 @@ export const addNotification = (data: INotification) => {
   });
 };
 
-// Fetch all notifications (admin) with optional search + time filter + category filter
-export const fetchNotifications = (search?: string, timeRange?: string, category?: string, state?: string) => {
+// Fetch all notifications (admin) with optional search + time filter + category filter + video-status filters + open-only/closing-soon filters
+export const fetchNotifications = (
+  search?: string,
+  timeRange?: string,
+  category?: string,
+  state?: string,
+  dailyVideoDone?: boolean,
+  weeklyVideoDone?: boolean,
+  openOnly?: boolean,
+  closingSoon?: boolean,
+) => {
   return privateFetch<any>(PRIVATE_API.NOTIFICATION.LIST, {
     method: "POST",
-    body: JSON.stringify({ search, timeRange, category, state }),
+    body: JSON.stringify({ search, timeRange, category, state, dailyVideoDone, weeklyVideoDone, openOnly, closingSoon }),
   });
 };
 
@@ -96,6 +105,30 @@ export const bulkArchiveNotifications = (ids: string[]) => {
   return privateFetch<any>(PRIVATE_API.NOTIFICATION.ARCHIVE_BULK, {
     method: "DELETE",
     body: JSON.stringify({ ids }),
+  });
+};
+
+// Mark (or unmark) a single notification's daily video as done
+export const markDailyVideo = (id: string, done: boolean, videoUrl?: string) => {
+  return privateFetch<any>(PRIVATE_API.NOTIFICATION.DAILY_VIDEO(id), {
+    method: "PATCH",
+    body: JSON.stringify({ done, video_url: videoUrl }),
+  });
+};
+
+// Mark (or unmark) several notifications' daily video in one shot
+export const markDailyVideoBulk = (ids: string[], done: boolean, videoUrl?: string) => {
+  return privateFetch<any>(PRIVATE_API.NOTIFICATION.DAILY_VIDEO_BULK, {
+    method: "PATCH",
+    body: JSON.stringify({ ids, done, video_url: videoUrl }),
+  });
+};
+
+// Mark (or unmark) several notifications as covered by one weekly roundup video
+export const markWeeklyVideoBulk = (ids: string[], done: boolean, videoUrl?: string) => {
+  return privateFetch<any>(PRIVATE_API.NOTIFICATION.WEEKLY_VIDEO_BULK, {
+    method: "PATCH",
+    body: JSON.stringify({ ids, done, video_url: videoUrl }),
   });
 };
 

@@ -1,8 +1,11 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { Link } from "react-router-dom";
 import ConfirmModal from "../../components/ConfirmModal/ConfirmModal";
+import VideoUrlModal from "../../components/VideoUrlModal/VideoUrlModal";
+import VideoPreviewModal from "../../components/VideoPreviewModal/VideoPreviewModal";
 import Toast from "../../components/Toast/Toast";
-import { getId } from "../../utils/utils";
+import { getId, makeSlug } from "../../utils/utils";
+import { SITE_URL } from "../../seo/site";
 import {
   approveNotification,
   deleteNotification,
@@ -11,10 +14,13 @@ import {
   unarchiveNotification,
   bulkPermanentDeleteNotifications,
   bulkArchiveNotifications,
+  markDailyVideo,
+  markDailyVideoBulk,
+  markWeeklyVideoBulk,
 } from "../../services/private/notificationApi";
 import { NOTIFICATION_CATEGORIES, INDIAN_STATES } from "../../constant/SharedConstant";
 import { Dropdown, Form } from "react-bootstrap";
-import { FiTrash2, FiArchive } from "react-icons/fi";
+import { FiTrash2, FiArchive, FiCopy } from "react-icons/fi";
 
 /* ============ Role helpers ============ */
 type AdminRole = "creator" | "reviewer" | "senior_reviewer" | "admin";
@@ -27,6 +33,7 @@ const can = (role: AdminRole | undefined, action: string): boolean => {
     approve: ["reviewer", "senior_reviewer", "admin"],
     archive: ["senior_reviewer", "admin"],
     unarchive: ["senior_reviewer", "admin"],
+    video: ["reviewer", "senior_reviewer", "admin"],
   };
   return (perms[action] || []).includes(role);
 };
@@ -79,16 +86,35 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [stateFilter, setStateFilter] = useState("all");
   const [stateSearch, setStateSearch] = useState("");
+  /* "all" | "done" | "not_done" — tri-state video-status filters */
+  const [dailyVideoFilter, setDailyVideoFilter] = useState<"all" | "done" | "not_done">("all");
+  const [weeklyVideoFilter, setWeeklyVideoFilter] = useState<"all" | "done" | "not_done">("all");
+  /* Only show notifications whose last date to apply hasn't passed yet */
+  const [openOnlyFilter, setOpenOnlyFilter] = useState(false);
+  /* Only show notifications whose last date to apply is within the next 2 days */
+  const [closingSoonFilter, setClosingSoonFilter] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const videoFilterToBool = (f: "all" | "done" | "not_done"): boolean | undefined =>
+    f === "all" ? undefined : f === "done";
 
   /* Infinite scroll state */
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const observer = useRef<IntersectionObserver | null>(null);
 
-  const loadNotifications = async (s?: string, t?: string, c?: string, st?: string) => {
+  const loadNotifications = async (
+    s?: string,
+    t?: string,
+    c?: string,
+    st?: string,
+    dv: "all" | "done" | "not_done" = dailyVideoFilter,
+    wv: "all" | "done" | "not_done" = weeklyVideoFilter,
+    openOnly: boolean = openOnlyFilter,
+    closingSoon: boolean = closingSoonFilter,
+  ) => {
     setLoading(true);
     try {
-      const res = await fetchNotifications(s, t, c, st);
+      const res = await fetchNotifications(s, t, c, st, videoFilterToBool(dv), videoFilterToBool(wv), openOnly || undefined, closingSoon || undefined);
       setNotifications(res.notifications ?? []);
     } catch (err: any) {
       if (err.message === "NOT_AUTHENTICATED") {
@@ -103,14 +129,26 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
   };
 
   useEffect(() => {
-    loadNotifications(search, timeRange, categoryFilter, stateFilter);
-  }, [search, timeRange, categoryFilter, stateFilter]);
+    loadNotifications(search, timeRange, categoryFilter, stateFilter, dailyVideoFilter, weeklyVideoFilter, openOnlyFilter, closingSoonFilter);
+  }, [search, timeRange, categoryFilter, stateFilter, dailyVideoFilter, weeklyVideoFilter, openOnlyFilter, closingSoonFilter]);
 
   /* Reset visible count on tab/search/time/category change */
   useEffect(() => {
     setVisibleCount(PAGE_SIZE);
     setSelectedIds([]); // Reset selection on any filter/tab change
-  }, [tab, search, timeRange, categoryFilter, stateFilter]);
+  }, [tab, search, timeRange, categoryFilter, stateFilter, dailyVideoFilter, weeklyVideoFilter, openOnlyFilter, closingSoonFilter]);
+
+  /* The video-status and open-only/closing-soon filters are only shown on the
+     Approved tab — clear them when leaving it so they don't silently keep
+     filtering other tabs. */
+  useEffect(() => {
+    if (tab !== "approved") {
+      setDailyVideoFilter("all");
+      setWeeklyVideoFilter("all");
+      setOpenOnlyFilter(false);
+      setClosingSoonFilter(false);
+    }
+  }, [tab]);
 
   /* Debounced search */
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -266,11 +304,151 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
     });
   };
 
+  /* Detail-page URL for a notification — same slug logic the public site uses,
+     so a copied link is guaranteed to match what actually resolves. */
+  const buildDetailUrl = (n: any) => `${SITE_URL}/notification/${makeSlug(n.title, getId(n.sk))}`;
+
+  const copyToClipboard = async (text: string, successMessage: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      showToast(successMessage, "success");
+    } catch {
+      showToast("Failed to copy to clipboard", "error");
+    }
+  };
+
+  const handleCopyOne = (n: any) => {
+    copyToClipboard(`${n.title} — ${buildDetailUrl(n)}`, "Copied to clipboard");
+  };
+
+  const handleCopySelected = (items: any[]) => {
+    const selected = items.filter((n) => selectedIds.includes(n.sk));
+    const text = selected.map((n) => `${n.title} — ${buildDetailUrl(n)}`).join("\n");
+    copyToClipboard(text, `Copied ${selected.length} link${selected.length === 1 ? "" : "s"} to clipboard`);
+  };
+
+  /* Marking a video "done" needs an optional YouTube URL, collected via
+     VideoUrlModal — daily and weekly are independent, and weekly reuses the
+     bulk endpoint even for a single notification (ids.length === 1). */
+  const [videoModal, setVideoModal] = useState<{ type: "daily" | "weekly"; ids: string[] } | null>(null);
+
+  const handleToggleDailyVideo = async (id: string, currentlyDone: boolean) => {
+    if (currentlyDone) {
+      try {
+        await markDailyVideo(id, false, undefined);
+        showToast("Daily video unmarked", "success");
+        loadNotifications(search, timeRange, categoryFilter, stateFilter, dailyVideoFilter, weeklyVideoFilter, openOnlyFilter);
+      } catch (err: any) {
+        showToast(err?.message || "Failed to update daily video status", "error");
+      }
+      return;
+    }
+    setVideoModal({ type: "daily", ids: [id] });
+  };
+
+  const handleToggleWeeklyVideo = async (id: string, currentlyDone: boolean) => {
+    if (currentlyDone) {
+      try {
+        await markWeeklyVideoBulk([id], false, undefined);
+        showToast("Weekly video unmarked", "success");
+        loadNotifications(search, timeRange, categoryFilter, stateFilter, dailyVideoFilter, weeklyVideoFilter, openOnlyFilter);
+      } catch (err: any) {
+        showToast(err?.message || "Failed to update weekly video status", "error");
+      }
+      return;
+    }
+    setVideoModal({ type: "weekly", ids: [id] });
+  };
+
+  const handleMarkDailyVideoSelected = () => {
+    if (selectedIds.length === 0) return;
+    const ids = selectedIds.map((sk) => getId(sk)).filter(Boolean);
+    setVideoModal({ type: "daily", ids });
+  };
+
+  const handleMarkWeeklyVideoSelected = () => {
+    if (selectedIds.length === 0) return;
+    const ids = selectedIds.map((sk) => getId(sk)).filter(Boolean);
+    setVideoModal({ type: "weekly", ids });
+  };
+
+  const handleVideoModalConfirm = async (videoUrl: string | undefined) => {
+    if (!videoModal) return;
+    const { type, ids } = videoModal;
+    setVideoModal(null);
+    try {
+      if (type === "daily") {
+        await markDailyVideoBulk(ids, true, videoUrl);
+        showToast(`Marked daily video done for ${ids.length} notification${ids.length === 1 ? "" : "s"}`, "success");
+        setSelectedIds([]);
+      } else {
+        await markWeeklyVideoBulk(ids, true, videoUrl);
+        showToast(`Marked weekly video done for ${ids.length} notification${ids.length === 1 ? "" : "s"}`, "success");
+        setSelectedIds([]);
+      }
+      loadNotifications(search, timeRange, categoryFilter, stateFilter, dailyVideoFilter, weeklyVideoFilter, openOnlyFilter);
+    } catch (err: any) {
+      showToast(err?.message || "Failed to update video status", "error");
+    }
+  };
+
   const getStateLabel = (stateCode: string) => {
     if (!stateCode) return "Unknown";
     const normalizedCode = stateCode.toUpperCase().replace(/-/g, "");
     const state = INDIAN_STATES.find(s => s.value === normalizedCode);
     return state ? state.label : stateCode.replace(/-/g, " ");
+  };
+
+  /* Video preview shown in-page when a badge with a saved URL is clicked */
+  const [videoPreview, setVideoPreview] = useState<{ title: string; url: string } | null>(null);
+
+  /** Daily/weekly video status badge — opens an in-page preview of the saved
+      YouTube URL when one was provided, a plain badge otherwise. */
+  const renderVideoBadge = (
+    label: string,
+    icon: string,
+    done: boolean,
+    url?: string | null,
+    markedBy?: string | null,
+  ) => {
+    const style: React.CSSProperties = {
+      background: done ? "rgba(22, 163, 74, 0.1)" : "rgba(0,0,0,0.05)",
+      color: done ? "var(--color-success)" : "var(--color-muted)",
+      fontSize: "0.7rem",
+      padding: "4px 10px",
+      borderRadius: 6,
+      fontWeight: 600,
+    };
+    const tooltip = [markedBy ? `Marked by ${markedBy}` : null, url ? "Click to preview video" : null]
+      .filter(Boolean)
+      .join(" — ") || undefined;
+    const content = (
+      <>
+        {icon} {label} {done ? "✅" : "❌"}
+        {url && " 🔗"}
+      </>
+    );
+    if (url) {
+      return (
+        <button
+          type="button"
+          className="badge border-0"
+          style={{ ...style, cursor: "pointer" }}
+          title={tooltip}
+          onClick={(e) => {
+            e.stopPropagation();
+            setVideoPreview({ title: `${label} Video`, url });
+          }}
+        >
+          {content}
+        </button>
+      );
+    }
+    return (
+      <span className="badge" style={style} title={tooltip}>
+        {content}
+      </span>
+    );
   };
 
   const handlePermanentDelete = (id: string) => {
@@ -336,8 +514,9 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
   const hasMore = visibleCount < fullList.length;
 
   // Bulk-select is available on the Archived tab (permanent delete) and,
-  // for roles with archive permission, on the other tabs too (bulk archive).
-  const canBulkSelect = tab === "archived" || can(role, "archive");
+  // for roles with archive or video-marking permission, on the other tabs
+  // too (bulk archive, copy links, bulk weekly-video marking).
+  const canBulkSelect = tab === "archived" || can(role, "archive") || can(role, "video");
 
   /* Intersection observer for infinite scroll */
   const lastElementRef = useCallback(
@@ -380,6 +559,16 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
             background: var(--color-primary);
             border-color: var(--color-primary);
             color: #fff;
+          }
+          .admin-notif-card {
+            position: relative;
+          }
+          .admin-notif-card::before {
+            content: "";
+            display: block;
+            height: 4px;
+            width: 100%;
+            background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
           }
         `}
       </style>
@@ -522,7 +711,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
 
           {/* Filters Section */}
           <div className="col-12 col-lg-7">
-            <div className="d-flex flex-wrap flex-sm-nowrap gap-2 justify-content-lg-end">
+            <div className="d-flex flex-wrap gap-2 justify-content-lg-end">
               {/* Category Dropdown */}
               <Dropdown className="flex-grow-1" style={{ minWidth: 160, maxWidth: 300 }}>
                  <Dropdown.Toggle 
@@ -655,6 +844,104 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                   }
                 </Dropdown.Menu>
               </Dropdown>
+
+              {/* Daily/Weekly video status filters only make sense for approved
+                  notifications — those are the only ones that can ever have
+                  video status marked. */}
+              {tab === "approved" && (
+                <>
+                  {/* Daily Video Status Dropdown */}
+                  <Dropdown className="flex-grow-1" style={{ minWidth: 150, maxWidth: 220 }}>
+                    <Dropdown.Toggle
+                      as="div"
+                      role="button"
+                      className="input-group input-group-sm shadow-sm justify-content-center"
+                      style={{ borderRadius: 14, overflow: 'hidden', height: 48, background: 'var(--color-bg)' }}
+                    >
+                      <div className="d-flex align-items-center gap-2 px-3 text-muted" style={{ fontSize: '0.9rem' }}>
+                        <span>🎥</span>
+                        <span className="fw-medium">
+                          {dailyVideoFilter === "all" ? "Daily Video" : dailyVideoFilter === "done" ? "Daily: Done" : "Daily: Not Done"}
+                        </span>
+                        <span style={{ fontSize: '0.6rem', opacity: 0.6 }}>▼</span>
+                      </div>
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu className="border-0 shadow-lg p-2" style={{ borderRadius: 16, minWidth: '100%', marginTop: '8px', zIndex: 1050 }}>
+                      <Dropdown.Item onClick={() => setDailyVideoFilter("all")} active={dailyVideoFilter === "all"} className="rounded-3 mb-1 px-3 py-2" style={{ fontSize: '0.9rem' }}>Any</Dropdown.Item>
+                      <Dropdown.Item onClick={() => setDailyVideoFilter("done")} active={dailyVideoFilter === "done"} className="rounded-3 mb-1 px-3 py-2" style={{ fontSize: '0.9rem' }}>Done</Dropdown.Item>
+                      <Dropdown.Item onClick={() => setDailyVideoFilter("not_done")} active={dailyVideoFilter === "not_done"} className="rounded-3 mb-1 px-3 py-2" style={{ fontSize: '0.9rem' }}>Not Done</Dropdown.Item>
+                    </Dropdown.Menu>
+                  </Dropdown>
+
+                  {/* Weekly Video Status Dropdown */}
+                  <Dropdown className="flex-grow-1" style={{ minWidth: 150, maxWidth: 220 }}>
+                    <Dropdown.Toggle
+                      as="div"
+                      role="button"
+                      className="input-group input-group-sm shadow-sm justify-content-center"
+                      style={{ borderRadius: 14, overflow: 'hidden', height: 48, background: 'var(--color-bg)' }}
+                    >
+                      <div className="d-flex align-items-center gap-2 px-3 text-muted" style={{ fontSize: '0.9rem' }}>
+                        <span>🎬</span>
+                        <span className="fw-medium">
+                          {weeklyVideoFilter === "all" ? "Weekly Video" : weeklyVideoFilter === "done" ? "Weekly: Done" : "Weekly: Not Done"}
+                        </span>
+                        <span style={{ fontSize: '0.6rem', opacity: 0.6 }}>▼</span>
+                      </div>
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu className="border-0 shadow-lg p-2" style={{ borderRadius: 16, minWidth: '100%', marginTop: '8px', zIndex: 1050 }}>
+                      <Dropdown.Item onClick={() => setWeeklyVideoFilter("all")} active={weeklyVideoFilter === "all"} className="rounded-3 mb-1 px-3 py-2" style={{ fontSize: '0.9rem' }}>Any</Dropdown.Item>
+                      <Dropdown.Item onClick={() => setWeeklyVideoFilter("done")} active={weeklyVideoFilter === "done"} className="rounded-3 mb-1 px-3 py-2" style={{ fontSize: '0.9rem' }}>Done</Dropdown.Item>
+                      <Dropdown.Item onClick={() => setWeeklyVideoFilter("not_done")} active={weeklyVideoFilter === "not_done"} className="rounded-3 mb-1 px-3 py-2" style={{ fontSize: '0.9rem' }}>Not Done</Dropdown.Item>
+                    </Dropdown.Menu>
+                  </Dropdown>
+                </>
+              )}
+
+              {/* Open Only Toggle — last date to apply hasn't passed. Only
+                  meaningful for approved (i.e. actually published) notifications. */}
+              {tab === "approved" && (
+                <button
+                  type="button"
+                  className="btn btn-sm flex-grow-1"
+                  onClick={() => setOpenOnlyFilter((prev) => !prev)}
+                  style={{
+                    borderRadius: 14,
+                    height: 48,
+                    minWidth: 130,
+                    maxWidth: 170,
+                    fontSize: '0.9rem',
+                    fontWeight: 500,
+                    border: openOnlyFilter ? 'none' : '1px solid var(--color-border)',
+                    background: openOnlyFilter ? 'var(--color-primary)' : 'var(--color-bg)',
+                    color: openOnlyFilter ? '#fff' : 'var(--color-muted)',
+                  }}
+                >
+                  🟢 Open Only
+                </button>
+              )}
+
+              {/* Closing Soon Toggle — last date to apply within the next 2 days */}
+              {tab === "approved" && (
+                <button
+                  type="button"
+                  className="btn btn-sm flex-grow-1"
+                  onClick={() => setClosingSoonFilter((prev) => !prev)}
+                  style={{
+                    borderRadius: 14,
+                    height: 48,
+                    minWidth: 150,
+                    maxWidth: 190,
+                    fontSize: '0.9rem',
+                    fontWeight: 500,
+                    border: closingSoonFilter ? 'none' : '1px solid var(--color-border)',
+                    background: closingSoonFilter ? 'var(--color-danger)' : 'var(--color-bg)',
+                    color: closingSoonFilter ? '#fff' : 'var(--color-muted)',
+                  }}
+                >
+                  ⏰ Closing in 2 Days
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -740,7 +1027,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
           </p>
         </div>
       ) : (
-        <div className="row g-3">
+        <div className="row g-4">
           {displayList.map((n: any, index: number) => {
             const isLastElement = index === displayList.length - 1;
             return (
@@ -750,10 +1037,12 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                 ref={isLastElement ? lastElementRef : null}
               >
                 <div
-                  className="card border-0 shadow-sm rounded-4 overflow-hidden h-100"
-                  style={{ 
+                  className="card admin-notif-card border-0 rounded-4 overflow-hidden h-100"
+                  style={{
                     transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-                    border: "1px solid rgba(0,0,0,0.05) !important",
+                    background: "var(--color-surface)",
+                    border: "1.5px solid var(--color-border)",
+                    boxShadow: "0 2px 10px rgba(0,0,0,0.07)",
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.transform = "translateY(-4px)";
@@ -761,7 +1050,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.transform = "translateY(0)";
-                    e.currentTarget.style.boxShadow = "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)";
+                    e.currentTarget.style.boxShadow = "0 2px 10px rgba(0,0,0,0.07)";
                   }}
                 >
                   <div className="card-body p-3 d-flex gap-3 align-items-start">
@@ -867,16 +1156,80 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                           })}
                         </span>
                       </div>
+                      {!!n.approved_at && (
+                        <div
+                          className="d-flex flex-wrap align-items-center gap-2 mt-2 p-2 rounded-3"
+                          style={{ background: "rgba(22, 163, 74, 0.05)", border: "1px solid rgba(22, 163, 74, 0.12)" }}
+                        >
+                          {renderVideoBadge("Daily", "🎥", !!n.daily_video_done, n.daily_video_url, n.daily_video_marked_by)}
+                          {renderVideoBadge("Weekly", "🎬", !!n.weekly_video_done, n.weekly_video_url, n.weekly_video_marked_by)}
+
+                          <div className="d-flex flex-wrap gap-2 ms-auto">
+                            <button
+                              className="btn btn-sm d-flex align-items-center justify-content-center gap-1"
+                              style={{
+                                borderRadius: '8px',
+                                fontSize: "0.75rem",
+                                fontWeight: 600,
+                                backgroundColor: "#fff",
+                                color: 'var(--color-body)',
+                                border: '1px solid var(--color-border)',
+                                padding: '0.35rem 0.6rem',
+                              }}
+                              onClick={() => handleCopyOne(n)}
+                              title="Copy title and link"
+                            >
+                              <FiCopy size={12} /> Copy
+                            </button>
+
+                            {can(role, "video") && !n.is_archived && (
+                              <button
+                                className="btn btn-sm"
+                                style={{
+                                  borderRadius: '8px',
+                                  fontSize: "0.75rem",
+                                  fontWeight: 600,
+                                  backgroundColor: n.daily_video_done ? "rgba(220, 38, 38, 0.08)" : "rgba(22, 163, 74, 0.12)",
+                                  color: n.daily_video_done ? "var(--color-danger)" : "var(--color-success)",
+                                  border: 'none',
+                                  padding: '0.35rem 0.6rem',
+                                }}
+                                onClick={() => handleToggleDailyVideo(getId(n.sk), !!n.daily_video_done)}
+                              >
+                                🎥 {n.daily_video_done ? "Undo Daily" : "Mark Daily"}
+                              </button>
+                            )}
+
+                            {can(role, "video") && !n.is_archived && (
+                              <button
+                                className="btn btn-sm"
+                                style={{
+                                  borderRadius: '8px',
+                                  fontSize: "0.75rem",
+                                  fontWeight: 600,
+                                  backgroundColor: n.weekly_video_done ? "rgba(220, 38, 38, 0.08)" : "rgba(22, 163, 74, 0.12)",
+                                  color: n.weekly_video_done ? "var(--color-danger)" : "var(--color-success)",
+                                  border: 'none',
+                                  padding: '0.35rem 0.6rem',
+                                }}
+                                onClick={() => handleToggleWeeklyVideo(getId(n.sk), !!n.weekly_video_done)}
+                              >
+                                🎬 {n.weekly_video_done ? "Undo Weekly" : "Mark Weekly"}
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      )}
                     </div>
- 
-                    {/* Bottom: Action Group */}
+
+                    {/* Workflow actions: view / edit / clone / approve */}
                     <div className="d-flex flex-wrap gap-2 pt-2 border-top" style={{ borderColor: "rgba(0,0,0,0.04) !important" }}>
                       <Link
                         to={`/admin/review/${getId(n.sk)}`}
                         className="btn btn-sm flex-grow-1"
-                        style={{ 
-                          borderRadius: '10px', 
-                          fontSize: "0.8rem", 
+                        style={{
+                          borderRadius: '10px',
+                          fontSize: "0.8rem",
                           fontWeight: 600,
                           backgroundColor: "var(--color-bg)",
                           color: 'var(--color-body)',
@@ -1038,52 +1391,115 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
         confirmText={modal.confirmText}
         confirmVariant={modal.confirmVariant}
       />
+      {/* Video URL Modal */}
+      <VideoUrlModal
+        show={!!videoModal}
+        title={
+          videoModal
+            ? `Mark ${videoModal.type === "daily" ? "Daily" : "Weekly"} Video Done${videoModal.ids.length > 1 ? ` (${videoModal.ids.length} notifications)` : ""}`
+            : ""
+        }
+        onConfirm={handleVideoModalConfirm}
+        onCancel={() => setVideoModal(null)}
+      />
+      {/* Video Preview Modal */}
+      <VideoPreviewModal
+        show={!!videoPreview}
+        title={videoPreview?.title || "Video"}
+        url={videoPreview?.url || null}
+        onClose={() => setVideoPreview(null)}
+      />
       {/* Bulk Action Bar */}
       {selectedIds.length > 0 && (
-        <div 
-          className="fixed-bottom d-flex justify-content-center px-3" 
-          style={{ zIndex: 1050, bottom: "2rem" }}
+        <div
+          className="fixed-bottom d-flex justify-content-center px-2 px-sm-3"
+          style={{ zIndex: 1050, bottom: "1rem" }}
         >
-          <div 
-            className="shadow-lg d-flex align-items-center gap-3 py-3 px-4"
+          <div
+            className="shadow-lg"
             style={{
-              background: "rgba(30, 41, 59, 0.95)",
+              background: "rgba(30, 41, 59, 0.97)",
               backdropFilter: "blur(12px)",
-              borderRadius: "24px",
+              borderRadius: "18px",
               border: "1px solid rgba(255, 255, 255, 0.1)",
-              maxWidth: "500px",
+              maxWidth: "820px",
               width: "100%",
+              padding: "0.85rem 1rem",
               transition: "all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
-              animation: "slideUp 0.4s ease-out"
+              animation: "slideUp 0.4s ease-out",
             }}
           >
-            <div className="flex-grow-1">
-              <div 
-                style={{ 
-                  color: "#fff", 
-                  fontWeight: 800, 
-                  fontSize: "1rem" 
-                }}
-              >
-                {selectedIds.length} Selected
+            <div className="d-flex align-items-center justify-content-between gap-2">
+              <div>
+                <div style={{ color: "#fff", fontWeight: 800, fontSize: "0.95rem" }}>
+                  {selectedIds.length} Selected
+                </div>
+                <div className="d-none d-sm-block" style={{ color: "rgba(255,255,255,0.6)", fontSize: "0.75rem" }}>
+                  Actions will be applied to all selected notifications
+                </div>
               </div>
-              <div style={{ color: "rgba(255,255,255,0.6)", fontSize: "0.75rem" }}>
-                Actions will be applied to all selected notifications
-              </div>
-            </div>
-            
-            <div className="d-flex gap-2">
-              <button 
-                className="btn btn-sm btn-outline-light rounded-pill px-3"
+              <button
+                className="btn btn-sm btn-outline-light rounded-pill px-3 flex-shrink-0"
                 onClick={() => setSelectedIds([])}
-                style={{ border: "1px solid rgba(255,255,255,0.2)", fontSize: "0.8rem" }}
+                style={{ border: "1px solid rgba(255,255,255,0.2)", fontSize: "0.8rem", whiteSpace: "nowrap" }}
               >
                 Cancel
               </button>
-              
+            </div>
+
+            <div className="d-flex flex-wrap gap-2 mt-2 pt-2" style={{ borderTop: "1px solid rgba(255,255,255,0.1)" }}>
+              <button
+                className="btn btn-sm rounded-3 px-3 d-flex align-items-center justify-content-center gap-2 fw-bold flex-grow-1"
+                onClick={() => handleCopySelected(notifications)}
+                style={{
+                  background: "rgba(255,255,255,0.15)",
+                  color: "#fff",
+                  border: "1px solid rgba(255,255,255,0.2)",
+                  fontSize: "0.8rem",
+                  whiteSpace: "nowrap",
+                  minWidth: 110,
+                }}
+              >
+                <FiCopy size={14} /> Copy
+              </button>
+
+              {tab === "approved" && can(role, "video") && (
+                <button
+                  className="btn btn-sm rounded-3 px-3 d-flex align-items-center justify-content-center gap-2 fw-bold flex-grow-1"
+                  onClick={handleMarkDailyVideoSelected}
+                  style={{
+                    background: "rgba(22, 163, 74, 0.85)",
+                    color: "#fff",
+                    border: "none",
+                    fontSize: "0.8rem",
+                    whiteSpace: "nowrap",
+                    minWidth: 150,
+                  }}
+                >
+                  🎥 Mark Daily Video
+                </button>
+              )}
+
+              {tab === "approved" && can(role, "video") && (
+                <button
+                  className="btn btn-sm rounded-3 px-3 d-flex align-items-center justify-content-center gap-2 fw-bold flex-grow-1"
+                  onClick={handleMarkWeeklyVideoSelected}
+                  style={{
+                    background: "rgba(22, 163, 74, 0.85)",
+                    color: "#fff",
+                    border: "none",
+                    fontSize: "0.8rem",
+                    whiteSpace: "nowrap",
+                    minWidth: 160,
+                  }}
+                >
+                  🎬 Mark Weekly Video
+                </button>
+              )}
+
               {tab === "archived" ? (
                 <button
-                  className="btn btn-sm rounded-pill px-4 d-flex align-items-center gap-2 fw-bold"
+                  className="btn btn-sm rounded-3 px-3 d-flex align-items-center justify-content-center gap-2 fw-bold flex-grow-1"
                   disabled={isBulkDeleting}
                   onClick={() => {
                     setModal({
@@ -1101,6 +1517,8 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                     border: "none",
                     boxShadow: "0 4px 12px rgba(220, 38, 38, 0.3)",
                     fontSize: "0.8rem",
+                    whiteSpace: "nowrap",
+                    minWidth: 120,
                   }}
                 >
                   <FiTrash2 size={16} /> Delete
@@ -1108,7 +1526,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
               ) : (
                 can(role, "archive") && (
                   <button
-                    className="btn btn-sm rounded-pill px-4 d-flex align-items-center gap-2 fw-bold"
+                    className="btn btn-sm rounded-3 px-3 d-flex align-items-center justify-content-center gap-2 fw-bold flex-grow-1"
                     disabled={isBulkArchiving}
                     onClick={() => {
                       setModal({
@@ -1126,6 +1544,8 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                       border: "none",
                       boxShadow: "0 4px 12px rgba(220, 38, 38, 0.3)",
                       fontSize: "0.8rem",
+                      whiteSpace: "nowrap",
+                      minWidth: 120,
                     }}
                   >
                     <FiArchive size={16} /> Archive
