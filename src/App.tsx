@@ -7,6 +7,7 @@ import {
   Routes,
   Route,
   useLocation,
+  useNavigate,
   matchPath,
   Navigate,
 } from "react-router-dom";
@@ -61,6 +62,7 @@ const RouteFallback: React.FC = () => (
 
 const AppLayout: React.FC = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const isAdminRoute = location.pathname.startsWith("/admin");
   const showSearchBarBanner =
     location.pathname === "/" ||
@@ -71,6 +73,11 @@ const AppLayout: React.FC = () => {
   const [checkingAuth, setCheckingAuth] = useState(true);
 
   const [showAuthPopup, setShowAuthPopup] = useState(false);
+  // Where to send the user once they finish logging in, if the auth popup
+  // was opened from an action that required being signed in first (e.g.
+  // Hero's "Explore Open Opportunities" button) — so login completes the
+  // action instead of leaving them back where they started.
+  const [pendingRedirect, setPendingRedirect] = useState<string | null>(null);
   const [showSignUpTab, setShowSignUpTab] = useState(false);
   const [showVerifyPopup, setShowVerifyPopup] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
@@ -177,6 +184,10 @@ const AppLayout: React.FC = () => {
     setShowAuthPopup(false);
     setShowSignUpTab(false);
     setShowVerifyPopup(false);
+    if (pendingRedirect) {
+      navigate(pendingRedirect);
+      setPendingRedirect(null);
+    }
   };
   const handleRequireVerification = (email: string) => {
     setPendingEmail(email);
@@ -226,7 +237,13 @@ const AppLayout: React.FC = () => {
   }
 
   return (
-    <AuthProvider isAuthenticated={isAuthenticated} onShowAuthPopup={() => setShowAuthPopup(true)}>
+    <AuthProvider
+      isAuthenticated={isAuthenticated}
+      onShowAuthPopup={(redirectTo) => {
+        if (redirectTo) setPendingRedirect(redirectTo);
+        setShowAuthPopup(true);
+      }}
+    >
     <ScrollToTop />
     <div className="d-flex flex-column min-vh-100">
       <Navbar

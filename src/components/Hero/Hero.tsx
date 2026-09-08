@@ -1,27 +1,54 @@
 import React from "react";
-import { FiCheckCircle, FiArrowRight } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
+import { FiCheckCircle, FiArrowRight, FiBriefcase, FiBookOpen, FiAward, FiEdit3, FiCompass } from "react-icons/fi";
+import { useAuth } from "../../context/AuthContext";
 import "./Hero.css";
 
+const KICKER_ITEMS = [
+  { icon: FiBriefcase, label: "Jobs" },
+  { icon: FiBookOpen, label: "Admissions" },
+  { icon: FiAward, label: "Scholarships" },
+  { icon: FiEdit3, label: "Exams" },
+];
+
 const Hero: React.FC = () => {
+  const navigate = useNavigate();
+  const { isAuthenticated, onShowAuthPopup } = useAuth();
+
+  const handleExploreClick = () => {
+    if (isAuthenticated) {
+      navigate("/dashboard?tab=open");
+    } else {
+      onShowAuthPopup("/dashboard?tab=open");
+    }
+  };
+
   return (
     <section className="ai-hero" aria-label="Apply India">
+      <div className="ai-hero-blob ai-hero-blob--blue" aria-hidden="true" />
+      <div className="ai-hero-blob ai-hero-blob--orange" aria-hidden="true" />
       <div className="container">
         <div className="ai-hero-inner">
-          <span className="ai-hero-kicker">Jobs · Admissions · Scholarships · Exams</span>
+          <div className="ai-hero-kicker">
+            {KICKER_ITEMS.map(({ icon: Icon, label }) => (
+              <span className="ai-hero-kicker-item" key={label}>
+                <Icon aria-hidden="true" size={13} /> {label}
+              </span>
+            ))}
+          </div>
           <h1 className="ai-hero-title">
             Your Gateway to <span className="ai-hero-highlight">Government Opportunities</span>
           </h1>
           <p className="ai-hero-subtitle">
-            Verified notifications for government jobs, entrance exams, admissions and
-            scholarships across India — updated daily so you never miss a deadline.
+            One place for every verified government opportunity across India — always free.
           </p>
           <div className="ai-hero-cta">
             <a href="#browse-notifications" className="ai-hero-btn ai-hero-btn--primary">
               Browse Notifications <FiArrowRight aria-hidden="true" />
             </a>
-            <a href="/notification/category/job" className="ai-hero-btn ai-hero-btn--secondary">
-              Latest Government Jobs
-            </a>
+            <button type="button" className="ai-hero-btn ai-hero-btn--secondary" onClick={handleExploreClick}>
+              <FiCompass aria-hidden="true" /> Explore Open Opportunities
+            </button>
           </div>
           <div className="ai-hero-trust">
             <span><FiCheckCircle aria-hidden="true" /> Verified sources</span>
