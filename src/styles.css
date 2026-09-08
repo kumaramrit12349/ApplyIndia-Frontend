@@ -1836,6 +1836,68 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow: var(--shadow-focus);
 }
 
+/* ============ LEGAL PAGE SHELL ============ */
+.legal-page {
+  max-width: 860px;
+}
+
+.legal-card {
+  position: relative;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+  border-radius: var(--radius-lg, 1.25rem);
+  padding: 2.25rem 2.5rem 2.5rem;
+  overflow: hidden;
+}
+
+/* Tricolor accent stripe, matching the site footer/nav brand mark */
+.legal-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #ea580c, #f8fafc 50%, #16a34a);
+}
+
+.legal-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 1.75rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.legal-card-icon {
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(15, 61, 145, 0.28);
+}
+
+.legal-card-title {
+  font-weight: 700;
+  font-size: 1.6rem;
+  color: var(--color-heading);
+  font-family: var(--font-base);
+  margin: 0 0 4px;
+}
+
+.legal-card-subtitle {
+  color: var(--color-muted);
+  font-size: 0.98rem;
+  margin: 0;
+}
+
 /* ============ LEGAL CONTENT ============ */
 .legal-content {
   color: var(--color-body);
@@ -1850,6 +1912,18 @@ h1, h2, h3, h4, h5, h6 {
   margin-top: 2rem;
   margin-bottom: 1rem;
   font-family: var(--font-base);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.legal-content h5::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  background: var(--color-accent);
+  flex-shrink: 0;
 }
 
 .legal-content p {
@@ -1858,11 +1932,16 @@ h1, h2, h3, h4, h5, h6 {
 
 .legal-content ul {
   margin-bottom: 1.5rem;
-  padding-left: 1.5rem;
+  padding-left: 1.4rem;
 }
 
 .legal-content li {
   margin-bottom: 0.5rem;
+}
+
+.legal-content li::marker {
+  color: var(--color-primary);
+  font-weight: 700;
 }
 
 .legal-content a {
@@ -1879,6 +1958,94 @@ h1, h2, h3, h4, h5, h6 {
 
 .legal-content strong {
   color: var(--color-heading);
+}
+
+/* Warning-style callout box, used for disclaimer notices */
+.legal-callout {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  background: color-mix(in srgb, #d97706 8%, var(--color-surface));
+  border: 1px solid color-mix(in srgb, #d97706 25%, var(--color-border));
+  border-left: 3px solid #d97706;
+  border-radius: var(--radius-md, 0.75rem);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.legal-callout-icon {
+  flex-shrink: 0;
+  color: #d97706;
+  margin-top: 3px;
+}
+
+.legal-callout h5 {
+  margin-top: 0;
+}
+
+.legal-callout h5::before {
+  display: none;
+}
+
+.legal-callout p:last-child {
+  margin-bottom: 0;
+}
+
+/* Cross-links to sibling legal pages */
+.legal-related {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 1.5rem;
+  padding: 0 0.25rem;
+}
+
+.legal-related-label {
+  font-size: 0.85rem;
+  color: var(--color-muted);
+  font-weight: 600;
+}
+
+.legal-related-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: var(--radius-pill, 999px);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: var(--motion-fast);
+}
+
+.legal-related-link:hover {
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+@media (max-width: 575px) {
+  .legal-card {
+    padding: 1.75rem 1.25rem 2rem;
+  }
+
+  .legal-card-header {
+    gap: 12px;
+  }
+
+  .legal-card-icon {
+    width: 44px;
+    height: 44px;
+  }
+
+  .legal-card-title {
+    font-size: 1.3rem;
+  }
 }
 
 /* ========================================

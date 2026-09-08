@@ -1,9 +1,14 @@
+import { FiFileText } from "react-icons/fi";
 import LegalLayout from "../../components/LegalLayout";
 import { WEBSITE_NAME } from "../../constant/SharedConstant";
 
 export default function TermsAndConditions() {
   return (
-    <LegalLayout title="Terms & Conditions">
+    <LegalLayout
+      title="Terms & Conditions"
+      icon={FiFileText}
+      description="The terms that govern your use of Apply India."
+    >
       <p>
         By accessing or using <strong>{WEBSITE_NAME}</strong>, you agree to be
         bound by these terms.
