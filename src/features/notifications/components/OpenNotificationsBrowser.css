@@ -1,0 +1,228 @@
+.onb-filter-input,
+.onb-filter-btn {
+  border-radius: 12px;
+  height: 44px;
+  font-size: 0.88rem;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-body);
+}
+
+.onb-filter-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 14px;
+  white-space: nowrap;
+}
+
+.onb-filter-btn:hover {
+  border-color: rgba(15, 61, 145, 0.3);
+}
+
+.onb-filter-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 44px;
+  padding: 0 16px;
+  border-radius: 12px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-muted);
+}
+.onb-filter-toggle:hover {
+  border-color: rgba(220, 38, 38, 0.35);
+  color: var(--color-danger);
+}
+.onb-filter-toggle--active {
+  border-color: transparent;
+  background: var(--color-danger);
+  color: #fff;
+}
+.onb-filter-toggle--active:hover {
+  color: #fff;
+}
+
+.onb-card {
+  position: relative;
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-xl, 18px);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.onb-card::before {
+  content: "";
+  display: block;
+  height: 4px;
+  width: 100%;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+}
+
+.onb-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md, 0 14px 24px rgba(0, 0, 0, 0.12));
+}
+
+.onb-card-body {
+  padding: 16px 18px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex-grow: 1;
+}
+
+.onb-card-title {
+  font-weight: 800;
+  font-size: 1.02rem;
+  line-height: 1.4;
+  color: var(--color-heading);
+  text-decoration: none;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.onb-card-title:hover {
+  color: var(--color-primary);
+}
+
+.onb-badge-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.onb-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+.onb-stats-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px dashed var(--color-border);
+}
+
+.onb-stat {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 12px;
+}
+
+.onb-stat--wide {
+  grid-column: span 2;
+}
+
+.onb-stat-icon {
+  font-size: 1.15rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.onb-stat-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.onb-stat-label {
+  font-size: 0.64rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  opacity: 0.75;
+}
+
+.onb-stat-value {
+  font-size: 0.92rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.onb-stat--vacancy {
+  background: rgba(37, 99, 235, 0.1);
+}
+.onb-stat--vacancy .onb-stat-label,
+.onb-stat--vacancy .onb-stat-value {
+  color: var(--color-secondary);
+}
+
+.onb-stat--fee-free {
+  background: rgba(22, 163, 74, 0.1);
+}
+.onb-stat--fee-free .onb-stat-label,
+.onb-stat--fee-free .onb-stat-value {
+  color: var(--color-success);
+}
+
+.onb-stat--fee-paid {
+  background: rgba(245, 158, 11, 0.12);
+}
+.onb-stat--fee-paid .onb-stat-label,
+.onb-stat--fee-paid .onb-stat-value {
+  color: var(--color-accent);
+}
+
+.onb-stat--date-urgent {
+  background: rgba(220, 38, 38, 0.1);
+}
+.onb-stat--date-urgent .onb-stat-label,
+.onb-stat--date-urgent .onb-stat-value {
+  color: var(--color-danger);
+}
+
+.onb-stat--date-soon {
+  background: rgba(245, 158, 11, 0.12);
+}
+.onb-stat--date-soon .onb-stat-label,
+.onb-stat--date-soon .onb-stat-value {
+  color: var(--color-accent);
+}
+
+.onb-stat--date-normal {
+  background: rgba(2, 132, 199, 0.1);
+}
+.onb-stat--date-normal .onb-stat-label,
+.onb-stat--date-normal .onb-stat-value {
+  color: var(--color-info);
+}
+
+.onb-view-link {
+  display: block;
+  text-align: center;
+  margin-top: 2px;
+  padding: 9px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.onb-view-link:hover {
+  opacity: 0.9;
+  color: #fff;
+}

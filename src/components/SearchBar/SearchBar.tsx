@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { Dropdown } from "react-bootstrap";
+import { FiChevronDown } from "react-icons/fi";
 import { NOTIFICATION_CATEGORIES, INDIAN_STATES } from "../../constant/SharedConstant";
 
 interface SearchBarProps {
@@ -61,12 +63,17 @@ const SearchBar: React.FC<SearchBarProps> = ({
     }
   };
 
-  const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const val = e.target.value;
+  const handleFilterSelect = (val: string | null) => {
+    if (!val) return;
     setFilter(val);
     setQuery("");
     navigate(getNavigateRoute(val));
   };
+
+  const currentFilterLabel =
+    NOTIFICATION_CATEGORIES.find((c) => c.value === filter)?.label ??
+    visibleStates.find((s) => s.value === filter)?.label ??
+    "Home";
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -87,27 +94,29 @@ const SearchBar: React.FC<SearchBarProps> = ({
         <div className="row justify-content-center">
           <div className="col-lg-10">
             <div className="ai-search-group">
-              <select
-                value={filter}
-                onChange={handleFilterChange}
-              >
-                <optgroup label="Categories">
+              <Dropdown onSelect={handleFilterSelect}>
+                <Dropdown.Toggle as="button" type="button" className="ai-search-select-btn">
+                  {currentFilterLabel} <FiChevronDown className="ai-search-select-caret" aria-hidden="true" />
+                </Dropdown.Toggle>
+                <Dropdown.Menu style={{ maxHeight: 320, overflowY: "auto" }}>
+                  <Dropdown.Header>Categories</Dropdown.Header>
                   {NOTIFICATION_CATEGORIES.map((c) => (
-                    <option key={c.value} value={c.value}>
+                    <Dropdown.Item key={c.value} eventKey={c.value} active={filter === c.value}>
                       {c.label}
-                    </option>
+                    </Dropdown.Item>
                   ))}
-                </optgroup>
-                {visibleStates.length > 0 && (
-                  <optgroup label="States / Regions">
-                    {visibleStates.map((s) => (
-                      <option key={s.value} value={s.value}>
-                        {s.label}
-                      </option>
-                    ))}
-                  </optgroup>
-                )}
-              </select>
+                  {visibleStates.length > 0 && (
+                    <>
+                      <Dropdown.Header>States / Regions</Dropdown.Header>
+                      {visibleStates.map((s) => (
+                        <Dropdown.Item key={s.value} eventKey={s.value} active={filter === s.value}>
+                          {s.label}
+                        </Dropdown.Item>
+                      ))}
+                    </>
+                  )}
+                </Dropdown.Menu>
+              </Dropdown>
               <input
                 type="text"
                 value={query}

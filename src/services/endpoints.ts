@@ -30,6 +30,9 @@ export const PRIVATE_API = {
     GET_COMMENTS: (id: string) => `api/notification/comments/${id}`,
     DELETE_BULK_PERMANENT: "api/notification/bulk-permanent-delete",
     ARCHIVE_BULK: "api/notification/bulk-archive",
+    DAILY_VIDEO: (id: string) => `api/notification/${id}/daily-video`,
+    DAILY_VIDEO_BULK: "api/notification/daily-video/bulk",
+    WEEKLY_VIDEO_BULK: "api/notification/weekly-video/bulk",
     DISTRIBUTION_STATUS: (id: string) => `api/notification/${id}/distribution-status`,
     RETRY_DISTRIBUTION: (id: string) => `api/notification/${id}/retry-distribution`,
     SOCIAL_STATUS: (id: string) => `api/notification/${id}/social-status`,
@@ -56,6 +59,9 @@ export const PRIVATE_API = {
     SAMPLE_PREVIEW: "api/email-templates/sample-preview",
     TEMPLATE_BY_KEY: (key: string) => `api/email-templates/${key}`,
     PREVIEW: (key: string) => `api/email-templates/${key}/preview`,
+  },
+  OPEN_NOTIFICATIONS: {
+    LIST: "api/open-notifications",
   },
   USERS: {
     STATS: "api/users/stats",

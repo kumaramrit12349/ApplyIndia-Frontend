@@ -137,10 +137,42 @@ interface StatusBadge {
 }
 
 const CLOSING_SOON_WINDOW_DAYS = 3;
+// Shown before "See More" — higher than before so more notifications are
+// visible per screen without an extra click.
+const INITIAL_VISIBLE_COUNT = 8;
 
 // These categories already show their identity via the section header (e.g. "Admit Card",
 // "Result"), so a per-item badge repeating the same label would be redundant.
 const NO_STATUS_BADGE_CATEGORIES = new Set(["admit-card", "result"]);
+
+// Gives each category section its own identity instead of every card on the
+// homepage looking identical, so the grid reads as distinct sections at a glance.
+const CATEGORY_STYLE: Record<string, { icon: string; gradient: string; accent: string }> = {
+  job: { icon: "💼", gradient: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))", accent: "#0F3D91" },
+  "admit-card": { icon: "🎫", gradient: "linear-gradient(135deg, #7c3aed, #5b21b6)", accent: "#7c3aed" },
+  result: { icon: "📊", gradient: "linear-gradient(135deg, #16a34a, #15803d)", accent: "#16a34a" },
+  "entrance-exam": { icon: "✍️", gradient: "linear-gradient(135deg, #f59e0b, #d97706)", accent: "#f59e0b" },
+  "answer-key": { icon: "✅", gradient: "linear-gradient(135deg, #0891b2, #0e7490)", accent: "#0891b2" },
+  syllabus: { icon: "📄", gradient: "linear-gradient(135deg, #d97706, #b45309)", accent: "#d97706" },
+  admission: { icon: "🎓", gradient: "linear-gradient(135deg, #0284c7, #0369a1)", accent: "#0284c7" },
+  scholarship: { icon: "🏅", gradient: "linear-gradient(135deg, #db2777, #9d174d)", accent: "#db2777" },
+  "sarkari-yojana": { icon: "🏛️", gradient: "linear-gradient(135deg, #059669, #047857)", accent: "#059669" },
+  documents: { icon: "📁", gradient: "linear-gradient(135deg, #64748b, #475569)", accent: "#64748b" },
+};
+
+const getCategoryStyle = (category: string) =>
+  CATEGORY_STYLE[category?.toLowerCase()] || {
+    icon: "🔔",
+    gradient: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))",
+    accent: "var(--color-primary)",
+  };
+
+const formatItemDate = (value?: string | number) => {
+  if (!value) return null;
+  const d = new Date(value);
+  if (isNaN(d.getTime())) return null;
+  return d.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+};
 
 const getStatusBadge = (category: string, item: HomePageNotification): StatusBadge | null => {
   if (NO_STATUS_BADGE_CATEGORIES.has(category?.toLowerCase())) return null;
@@ -175,23 +207,26 @@ const ListView: React.FC<ListViewProps> = ({
     ? items
     : showAll
       ? items
-      : items.slice(0, 5);
+      : items.slice(0, INITIAL_VISIBLE_COUNT);
 
   const getCategoryRoute = (category: string) => {
     return `/notification/category/${encodeURIComponent(category)}`;
   };
 
+  const categoryStyle = getCategoryStyle(category);
+
   return (
     <div className="ai-list-card" style={{ position: "relative" }}>
-      <div className="ai-list-header">
+      <div className="ai-list-header" style={{ background: categoryStyle.gradient }}>
         <h5 className="ai-list-header-title">
+          <span aria-hidden="true" className="ai-list-header-icon">{categoryStyle.icon}</span>
           {category
             ?.replace(/[-]/g, " ")
             ?.replace(/\b\w/g, (l) => l?.toUpperCase())}
         </h5>
       </div>
 
-      <div className="ai-list-body">
+      <div className="ai-list-body" style={{ "--ai-list-accent": categoryStyle.accent } as React.CSSProperties}>
         {loading ? (
           <div className="text-center py-5">
             <div className="spinner-border" style={{ color: "var(--color-primary)" }} role="status">
@@ -220,14 +255,19 @@ const ListView: React.FC<ListViewProps> = ({
                     <span className="ai-list-item-title">
                       {item.title}
                     </span>
-                    {statusBadge && (
-                      <span
-                        className="ai-status-badge"
-                        style={{ color: statusBadge.color, background: statusBadge.bg }}
-                      >
-                        {statusBadge.label}
-                      </span>
-                    )}
+                    <div className="ai-list-item-meta">
+                      {statusBadge && (
+                        <span
+                          className="ai-status-badge"
+                          style={{ color: statusBadge.color, background: statusBadge.bg }}
+                        >
+                          {statusBadge.label}
+                        </span>
+                      )}
+                      {formatItemDate(item.last_date_to_apply) && (
+                        <span className="ai-list-item-date">📅 {formatItemDate(item.last_date_to_apply)}</span>
+                      )}
+                    </div>
                   </div>
 
                   <div className="d-flex align-items-center gap-2">

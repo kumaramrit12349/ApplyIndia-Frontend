@@ -1,9 +1,14 @@
+import { FiShield } from "react-icons/fi";
 import LegalLayout from "../../components/LegalLayout";
 import { WEBSITE_NAME } from "../../constant/SharedConstant";
 
 export default function PrivacyPolicy() {
   return (
-    <LegalLayout title="Privacy Policy">
+    <LegalLayout
+      title="Privacy Policy"
+      icon={FiShield}
+      description="How we collect, use, and protect your information on Apply India."
+    >
       <p>
         At <strong>{WEBSITE_NAME}</strong>, we respect your privacy and are
         committed to protecting your personal information.

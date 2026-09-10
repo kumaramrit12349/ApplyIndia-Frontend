@@ -1,3 +1,4 @@
+import { FiInfo } from "react-icons/fi";
 import LegalLayout from "../../components/LegalLayout";
 import { WEBSITE_NAME } from "../../constant/SharedConstant";
 import { SITE_URL } from "../../seo/site";
@@ -6,6 +7,7 @@ export default function AboutUs() {
   return (
     <LegalLayout
       title="About Apply India"
+      icon={FiInfo}
       description="Learn about Apply India Online, a platform for government jobs, sarkari naukri updates, exam notifications, results, admissions, and scholarships across India."
       canonical={`${SITE_URL}/about`}
       keywords={[

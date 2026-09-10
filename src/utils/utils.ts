@@ -31,11 +31,46 @@ export function makeSlug(title: string, sk: string): string {
   return `${baseSlug}/${sk}`;
 }
 
+/**
+ * Converts a YouTube watch/share/shorts URL into its embeddable
+ * `/embed/<id>` form, or null if the URL isn't a recognizable YouTube link
+ * (e.g. a non-YouTube host) — callers fall back to a plain external link.
+ */
+export function getYouTubeEmbedUrl(url: string): string | null {
+  try {
+    const parsed = new URL(url);
+    const host = parsed.hostname.replace(/^www\.|^m\./, "");
+
+    if (host === "youtu.be") {
+      const id = parsed.pathname.slice(1);
+      return id ? `https://www.youtube.com/embed/${id}` : null;
+    }
+
+    if (host === "youtube.com") {
+      if (parsed.pathname === "/watch") {
+        const id = parsed.searchParams.get("v");
+        return id ? `https://www.youtube.com/embed/${id}` : null;
+      }
+      if (parsed.pathname.startsWith("/embed/")) {
+        return `https://www.youtube.com${parsed.pathname}`;
+      }
+      const shortsMatch = parsed.pathname.match(/^\/shorts\/([^/]+)/);
+      if (shortsMatch) {
+        return `https://www.youtube.com/embed/${shortsMatch[1]}`;
+      }
+    }
+
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 export const emptyNotificationForm: INotification = {
   sk: "",
   title: "",
-  category: "",
-  state: "",
+  category: "job",
+  state: "CT",
   department: "",
   total_vacancies: 0,
 

@@ -2,7 +2,9 @@ import React, { createContext, useContext } from "react";
 
 interface AuthContextValue {
   isAuthenticated: boolean;
-  onShowAuthPopup: () => void;
+  /** Opens the sign-in popup. Pass a path to automatically navigate there
+   *  once login succeeds, instead of leaving the user where they started. */
+  onShowAuthPopup: (redirectTo?: string) => void;
 }
 
 const AuthContext = createContext<AuthContextValue>({
@@ -12,7 +14,7 @@ const AuthContext = createContext<AuthContextValue>({
 
 export const AuthProvider: React.FC<{
   isAuthenticated: boolean;
-  onShowAuthPopup: () => void;
+  onShowAuthPopup: (redirectTo?: string) => void;
   children: React.ReactNode;
 }> = ({ isAuthenticated, onShowAuthPopup, children }) => (
   <AuthContext.Provider value={{ isAuthenticated, onShowAuthPopup }}>

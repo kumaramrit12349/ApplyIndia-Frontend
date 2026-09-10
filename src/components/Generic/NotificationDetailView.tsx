@@ -179,6 +179,24 @@ const isDeadlinePassed = (lastDateToApply?: string): boolean => {
   return deadline < Date.now();
 };
 
+type DeadlineVariant = "closed" | "urgent" | "soon" | "open";
+
+const getDeadlineInfo = (
+  lastDateToApply?: string,
+): { label: string; variant: DeadlineVariant } | null => {
+  if (!lastDateToApply) return null;
+  const deadline = new Date(lastDateToApply).getTime();
+  if (isNaN(deadline)) return null;
+
+  const daysLeft = Math.ceil((deadline - Date.now()) / (1000 * 60 * 60 * 24));
+
+  if (daysLeft < 0) return { label: "Applications Closed", variant: "closed" };
+  if (daysLeft === 0) return { label: "Last Day to Apply", variant: "urgent" };
+  if (daysLeft <= 3) return { label: `${daysLeft} Day${daysLeft > 1 ? "s" : ""} Left`, variant: "urgent" };
+  if (daysLeft <= 10) return { label: `${daysLeft} Days Left`, variant: "soon" };
+  return { label: `${daysLeft} Days Left`, variant: "open" };
+};
+
 /* ──────────────── Sub-components ──────────────── */
 
 const LabelValue = ({
@@ -449,6 +467,7 @@ export default function NotificationDetailView({
   };
 
   const deadlinePassed = isDeadlinePassed(notification.last_date_to_apply);
+  const deadlineInfo = getDeadlineInfo(notification.last_date_to_apply);
   const hasAlreadyApplied = currentStatus !== null && currentStatus !== 0;
 
   const getStepState = (stepIndex: number) => {
@@ -530,6 +549,10 @@ export default function NotificationDetailView({
     <main className="ndv-page">
       {/* ═══════════════════ HERO ═══════════════════ */}
       <section className="ndv-hero">
+        <div className="ndv-hero-blob ndv-hero-blob--a" aria-hidden="true" />
+        <div className="ndv-hero-blob ndv-hero-blob--b" aria-hidden="true" />
+        <div className="ndv-hero-blob ndv-hero-blob--c" aria-hidden="true" />
+        <div className="ndv-hero-shine" aria-hidden="true" />
         <div className="ndv-hero-inner">
           {/* Admin bar inside hero */}
           {isAdmin && (
@@ -583,6 +606,11 @@ export default function NotificationDetailView({
                 🏛 {notification.department}
               </span>
             )}
+            {deadlineInfo && (
+              <span className={`ndv-badge ndv-badge--deadline ndv-badge--deadline-${deadlineInfo.variant}`}>
+                <BsClockHistory /> {deadlineInfo.label}
+              </span>
+            )}
           </div>
 
           {/* Title */}
@@ -633,15 +661,22 @@ export default function NotificationDetailView({
       <div className="ndv-content">
         {/* Short description */}
         {notification.details?.short_description && (
-          <div
-            className="ndv-short-desc"
-            dangerouslySetInnerHTML={{
-              __html: notification.details.short_description.replace(
-                /&nbsp;/g,
-                " ",
-              ),
-            }}
-          />
+          <div className="ndv-short-desc">
+            <div className="ndv-short-desc-label">
+              <span className="ndv-card-icon ndv-card-icon--blue">
+                <FcViewDetails />
+              </span>
+              Quick Overview
+            </div>
+            <div
+              dangerouslySetInnerHTML={{
+                __html: notification.details.short_description.replace(
+                  /&nbsp;/g,
+                  " ",
+                ),
+              }}
+            />
+          </div>
         )}
 
         {/* ═══════════════ INFO CARDS ═══════════════ */}
@@ -753,7 +788,7 @@ export default function NotificationDetailView({
                     groupedFees.map(([fee, cats]) => (
                       <LabelValue
                         key={fee}
-                        label={`${cats.join("/")} Fee`}
+                        label={cats.join("/")}
                         value={fee}
                       />
                     ))
@@ -805,22 +840,32 @@ export default function NotificationDetailView({
 
         {/* ═══════════════ LONG DESCRIPTION ═══════════════ */}
         {notification.details?.long_description && (
-          <div
-            className="ndv-long-desc"
-            dangerouslySetInnerHTML={{
-              __html: notification.details.long_description.replace(
-                /&nbsp;/g,
-                " ",
-              ),
-            }}
-          />
+          <div className="ndv-long-desc">
+            <div className="ndv-long-desc-label">
+              <span className="ndv-card-icon ndv-card-icon--teal">
+                <BsFileEarmarkText />
+              </span>
+              Full Notification Details
+            </div>
+            <div
+              dangerouslySetInnerHTML={{
+                __html: notification.details.long_description.replace(
+                  /&nbsp;/g,
+                  " ",
+                ),
+              }}
+            />
+          </div>
         )}
 
         {/* ═══════════════ IMPORTANT LINKS ═══════════════ */}
         {hasAnyLinks && (
           <div className="ndv-links">
             <h2 className="ndv-links-title">
-              <BsLink45Deg style={{ color: "var(--color-secondary)" }} /> Important Links
+              <span className="ndv-card-icon ndv-card-icon--blue">
+                <BsLink45Deg />
+              </span>
+              Important Links
             </h2>
 
             {notification.links?.apply_online_url && (
@@ -887,11 +932,16 @@ export default function NotificationDetailView({
         {/* ═══════════════ TRACK YOUR PROGRESS ═══════════════ */}
         {!isAdmin && (
           <div className="ndv-track" id="track-progress-section">
-            <div className="ndv-track-title">🚀 Track Your Progress</div>
-            <p className="ndv-track-subtitle">
-              Follow your journey step by step — each milestone unlocks the
-              next!
-            </p>
+            <div className="ndv-track-header">
+              <div className="ndv-track-header-row">
+                <span className="ndv-card-icon ndv-card-icon--green">🚀</span>
+                <h3 className="ndv-track-title">Track Your Progress</h3>
+              </div>
+              <p className="ndv-track-subtitle">
+                Follow your journey step by step — each milestone unlocks the
+                next!
+              </p>
+            </div>
 
             {deadlinePassed && !hasAlreadyApplied && (
               <div className="ndv-track-note" style={{ borderColor: "var(--color-danger)" }}>

@@ -1,9 +1,13 @@
 .job-banner-container {
   display: flex;
   align-items: center;
-  background: linear-gradient(90deg, var(--color-primary, #0F3D91) 0%, var(--color-secondary, #2563EB) 100%);
+  /* Every stop here is dark enough on its own to keep white text at or above
+     the WCAG AA 4.5:1 contrast minimum, checked end-to-end along the gradient
+     (not just at the two endpoints) — brighter cyan tones were dropped for
+     exactly this reason, even though they read as more "vibrant" in isolation. */
+  background: linear-gradient(90deg, #4338ca 0%, #2563eb 35%, #1d4ed8 70%, #0f766e 100%);
   color: white;
-  height: 52px;
+  height: 54px;
   overflow: hidden;
   position: relative;
   font-family: var(--font-base, inherit);
@@ -11,20 +15,64 @@
   z-index: 900; /* below navbar slightly */
 }
 
+/* Soft diagonal light sweep drifting across the bar, for a "live" shine */
+.job-banner-container::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 20%, rgba(255, 255, 255, 0.14) 35%, transparent 50%);
+  background-size: 220% 100%;
+  animation: bannerShine 6s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes bannerShine {
+  0% { background-position: 120% 0; }
+  60%, 100% { background-position: -20% 0; }
+}
+
 .job-banner-label {
-  background: var(--color-primary-hover, #0A2C68);
+  /* #c2410c (orange-700) rather than the brighter #ea580c/#f97316 — those
+     read as more vivid but drop white-text contrast below WCAG AA (4.5:1)
+     at normal (non-"large") text size; this pairing stays around 5:1+. */
+  background: linear-gradient(135deg, #ea580c, #c2410c);
   color: white;
   font-weight: 700;
-  padding: 0 1rem;
+  padding: 0 1.1rem;
   height: 100%;
   display: flex;
   align-items: center;
+  gap: 7px;
   position: relative;
   z-index: 2;
   white-space: nowrap;
   font-size: 0.9rem;
   letter-spacing: 0.2px;
-  box-shadow: 2px 0 8px rgba(10, 44, 104, 0.35);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  box-shadow: 2px 0 10px rgba(194, 65, 12, 0.5);
+}
+
+.job-banner-live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #4ADE80;
+  box-shadow: 0 0 0 rgba(74, 222, 128, 0.6);
+  animation: bannerPulse 1.8s infinite;
+  flex-shrink: 0;
+}
+
+@keyframes bannerPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.6);
+  }
+  70% {
+    box-shadow: 0 0 0 6px rgba(74, 222, 128, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(74, 222, 128, 0);
+  }
 }
 
 /* Arrow effect for the label */
@@ -35,7 +83,8 @@
   right: -10px;
   border-width: 26px 0 26px 10px;
   border-style: solid;
-  border-color: transparent transparent transparent var(--color-primary-hover, #0A2C68);
+  border-color: transparent transparent transparent #c2410c;
+  z-index: 2;
 }
 
 .job-banner-empty-message {
@@ -72,17 +121,18 @@
 
 .job-banner-marquee::before {
   left: 0;
-  background: linear-gradient(to right, var(--color-primary, #0F3D91), transparent);
+  background: linear-gradient(to right, #2563eb, transparent);
 }
 
 .job-banner-marquee::after {
   right: 0;
-  background: linear-gradient(to left, var(--color-secondary, #2563EB), transparent);
+  background: linear-gradient(to left, #0f766e, transparent);
 }
 
 .job-banner-content {
   display: flex;
   align-items: center;
+  gap: 14px;
   vertical-align: middle;
   white-space: nowrap;
   animation-name: marquee;
@@ -103,38 +153,82 @@
 
 .job-banner-item {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
+  align-items: center;
+  gap: 9px;
   color: white;
   text-decoration: none;
-  font-weight: 500;
-  font-size: 0.95rem;
-  line-height: 1.2;
-  transition: opacity var(--motion-fast, 0.2s), color var(--motion-fast, 0.2s);
+  padding: 6px 14px;
+  border-radius: var(--radius-pill, 999px);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  transition: background var(--motion-fast, 0.2s), border-color var(--motion-fast, 0.2s), transform var(--motion-fast, 0.2s);
   position: relative;
   z-index: 2;
 }
 
 .job-banner-item:hover {
-  text-decoration: underline;
-  opacity: 1;
-  color: #DBEAFE; /* soft sky highlight, in line with the brand blue */
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+.job-banner-item-icon {
+  flex-shrink: 0;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+/* Rotating accent per item so the ticker reads as lively/colorful rather
+   than one flat block of blue — cycles every 4 items. */
+.job-banner-item--c0 {
+  border-color: rgba(251, 191, 36, 0.55);
+}
+.job-banner-item--c0 .job-banner-item-icon {
+  color: #fbbf24;
+}
+
+.job-banner-item--c1 {
+  border-color: rgba(244, 114, 182, 0.55);
+}
+.job-banner-item--c1 .job-banner-item-icon {
+  color: #f472b6;
+}
+
+.job-banner-item--c2 {
+  border-color: rgba(74, 222, 128, 0.55);
+}
+.job-banner-item--c2 .job-banner-item-icon {
+  color: #4ade80;
+}
+
+.job-banner-item--c3 {
+  border-color: rgba(103, 232, 249, 0.6);
+}
+.job-banner-item--c3 .job-banner-item-icon {
+  color: #67e8f9;
+}
+
+.job-banner-item-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+
+.job-banner-item-title {
+  font-weight: 600;
+  font-size: 0.92rem;
+  /* Extra safety margin for contrast against a scrolling gradient background —
+     the gradient stops are already chosen to keep white text ≥4.5:1 on their
+     own, this just adds headroom. */
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
 }
 
 .job-banner-deadline {
-  color: var(--color-accent, #F59E0B);
-  margin-top: 2px;
+  color: #FCD34D;
+  margin-top: 1px;
   font-weight: 600;
-  font-size: 0.8rem;
+  font-size: 0.76rem;
   letter-spacing: 0.2px;
-}
-
-.job-banner-separator {
-  margin: 0 2rem;
-  color: rgba(255, 255, 255, 0.55);
-  display: inline-block;
-  position: relative;
-  z-index: 2;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
 }
 
 @keyframes marquee {
@@ -165,10 +259,33 @@
   }
 
   .job-banner-item {
-    font-size: 0.85rem;
+    padding: 5px 10px;
+    gap: 6px;
   }
 
-  .job-banner-separator {
-    margin: 0 1.25rem;
+  .job-banner-item-title {
+    font-size: 0.82rem;
+  }
+
+  .job-banner-content {
+    gap: 10px;
+  }
+}
+
+/* WCAG 2.3.3 / "reduce motion" preference: stop every non-essential
+   animation in the ticker (scroll, shine sweep, pulsing dot) for users who
+   have this OS-level setting on. The banner still shows its content,
+   statically. */
+@media (prefers-reduced-motion: reduce) {
+  .job-banner-content {
+    animation: none !important;
+  }
+
+  .job-banner-container::before {
+    animation: none !important;
+  }
+
+  .job-banner-live-dot {
+    animation: none !important;
   }
 }

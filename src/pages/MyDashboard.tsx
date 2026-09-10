@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import {
     getUserActivities,
     removeActivity,
@@ -10,6 +10,7 @@ import { formatCategoryTitle } from "../utils/utils";
 import { toast } from "react-toastify";
 import ConfirmationModal from "../components/Generic/ConfirmationModal";
 import SupportPopup from "../components/SupportPopup";
+import OpenNotificationsBrowser from "../features/notifications/components/OpenNotificationsBrowser";
 import "./MyDashboard.css";
 
 const STATUS_CONFIG: Record<
@@ -64,6 +65,10 @@ function slugify(title: string): string {
 }
 
 const MyDashboard: React.FC = () => {
+    const [searchParams, setSearchParams] = useSearchParams();
+    const [viewMode, setViewMode] = useState<"tracked" | "open">(
+        searchParams.get("tab") === "open" ? "open" : "tracked"
+    );
     const [activities, setActivities] = useState<IUserActivityItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [filterStatus, setFilterStatus] = useState<UserActivityStatus | "ALL">("ALL");
@@ -71,6 +76,11 @@ const MyDashboard: React.FC = () => {
     const [showConfirm, setShowConfirm] = useState(false);
     const [showSupport, setShowSupport] = useState(false);
     const [skToRemove, setSkToRemove] = useState<string | null>(null);
+
+    const switchViewMode = (mode: "tracked" | "open") => {
+        setViewMode(mode);
+        setSearchParams(mode === "open" ? { tab: "open" } : {}, { replace: true });
+    };
 
     useEffect(() => {
         loadActivities();
@@ -126,24 +136,40 @@ const MyDashboard: React.FC = () => {
         {} as Record<UserActivityStatus, number>
     );
 
-    if (loading) {
-        return (
-            <div className="container mt-5 text-center">
-                <div className="spinner-border" style={{ color: "var(--color-primary)" }} role="status">
-                    <span className="visually-hidden">Loading...</span>
-                </div>
-            </div>
-        );
-    }
-
     return (
         <div className="container py-4 mb-5">
             {/* Header */}
             <div className="text-center mb-4">
                 <h2 className="fw-bold dashboard-title">📋 My Dashboard</h2>
-                <p className="text-muted">Track all your applications in one place</p>
+                <p className="text-muted">Track all your applications, or browse what's currently open</p>
             </div>
 
+            {/* View Mode Toggle */}
+            <div className="d-flex justify-content-center gap-2 mb-4 flex-wrap">
+                <button
+                    className={`dashboard-filter-btn ${viewMode === "tracked" ? "dashboard-filter-btn--active" : ""}`}
+                    onClick={() => switchViewMode("tracked")}
+                >
+                    📊 My Applications
+                </button>
+                <button
+                    className={`dashboard-filter-btn ${viewMode === "open" ? "dashboard-filter-btn--active" : ""}`}
+                    onClick={() => switchViewMode("open")}
+                >
+                    🚀 Explore Open Opportunities
+                </button>
+            </div>
+
+            {viewMode === "open" ? (
+                <OpenNotificationsBrowser />
+            ) : loading ? (
+                <div className="text-center py-5">
+                    <div className="spinner-border" style={{ color: "var(--color-primary)" }} role="status">
+                        <span className="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            ) : (
+            <>
             {/* Summary Cards */}
             <div className="row g-3 mb-4">
                 {STATUS_ORDER.map((status) => (
@@ -298,6 +324,8 @@ const MyDashboard: React.FC = () => {
                         );
                     })}
                 </div>
+            )}
+            </>
             )}
 
             <ConfirmationModal

@@ -24,13 +24,16 @@
 .ai-faq-item {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
+  border-left: 3px solid var(--color-border);
   border-radius: var(--radius-lg);
   overflow: hidden;
-  transition: border-color var(--motion-base);
+  transition: border-color var(--motion-base), box-shadow var(--motion-base);
 }
 
 .ai-faq-item--open {
   border-color: rgba(var(--color-primary-rgb), 0.3);
+  border-left-color: var(--color-primary);
+  box-shadow: var(--shadow-sm);
 }
 
 .ai-faq-question {
@@ -47,6 +50,36 @@
   font: var(--text-h3);
   font-size: 1rem;
   color: var(--color-heading);
+  transition: background var(--motion-fast);
+}
+
+.ai-faq-question:hover {
+  background: rgba(var(--color-primary-rgb), 0.04);
+}
+
+.ai-faq-question-text {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.ai-faq-number {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(var(--color-primary-rgb), 0.1);
+  color: var(--color-primary);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.ai-faq-item--open .ai-faq-number {
+  background: var(--color-primary);
+  color: #fff;
 }
 
 .ai-faq-chevron {
