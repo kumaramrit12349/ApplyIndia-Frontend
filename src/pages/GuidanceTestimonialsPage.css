@@ -1,0 +1,70 @@
+.gtp-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+  background: linear-gradient(135deg, #6366f1, #4338ca);
+  color: #fff;
+  font-size: 1.5rem;
+  box-shadow: 0 8px 20px rgba(67, 56, 202, 0.28);
+}
+
+.gtp-title {
+  font-weight: 700;
+  color: var(--color-heading);
+  margin-bottom: 0.5rem;
+}
+
+.gtp-card {
+  height: 100%;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl, 18px);
+  box-shadow: var(--shadow-sm);
+  padding: 20px;
+  position: relative;
+}
+
+.gtp-card--featured {
+  border-color: rgba(245, 158, 11, 0.5);
+  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.15);
+}
+
+.gtp-stars {
+  display: flex;
+  gap: 2px;
+  margin-bottom: 10px;
+}
+
+.gtp-message {
+  font-size: 0.95rem;
+  color: var(--color-body);
+  line-height: 1.6;
+  font-style: italic;
+  margin-bottom: 12px;
+}
+
+.gtp-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.gtp-tag {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(67, 56, 202, 0.08);
+  color: #4338ca;
+}
+
+.gtp-author {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-muted);
+}

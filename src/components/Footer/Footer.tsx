@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { FiShield, FiFileText, FiAlertTriangle, FiInfo, FiArrowUp } from "react-icons/fi";
+import { FiShield, FiFileText, FiAlertTriangle, FiInfo, FiArrowUp, FiMessageCircle } from "react-icons/fi";
 import {
   APPLYINDIA_SOCIAL_LINKS,
   WEBSITE_NAME,
@@ -76,6 +76,12 @@ const Footer: React.FC = () => {
                   />
                 </a>
               ))}
+            </div>
+
+            <div className="mb-3">
+              <Link to="/testimonials" className="ai-footer-inline-link">
+                <FiMessageCircle size={14} aria-hidden="true" /> Success Stories
+              </Link>
             </div>
 
             <div>

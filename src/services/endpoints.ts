@@ -10,6 +10,9 @@ export const PUBLIC_API = {
   FEEDBACK: {
     SUBMIT: "/public/feedback",
   },
+  GUIDANCE_FEEDBACK: {
+    LIST: "/public/guidance-feedback",
+  },
   FORGOT_PASSWORD: "/public/forgot-password"
 };
 
@@ -32,6 +35,7 @@ export const PRIVATE_API = {
     ARCHIVE_BULK: "api/notification/bulk-archive",
     DAILY_VIDEO: (id: string) => `api/notification/${id}/daily-video`,
     DAILY_VIDEO_BULK: "api/notification/daily-video/bulk",
+    GUIDANCE_AVAILABLE: (id: string) => `api/notification/${id}/guidance`,
     WEEKLY_VIDEO_BULK: "api/notification/weekly-video/bulk",
     DISTRIBUTION_STATUS: (id: string) => `api/notification/${id}/distribution-status`,
     RETRY_DISTRIBUTION: (id: string) => `api/notification/${id}/retry-distribution`,
@@ -65,6 +69,25 @@ export const PRIVATE_API = {
   },
   USERS: {
     STATS: "api/users/stats",
+  },
+  GUIDANCE: {
+    SLOTS: "api/guidance/slots",
+    ALLOWANCE: (notificationId: string) => `api/guidance/allowance/${encodeURIComponent(notificationId)}`,
+    BOOKINGS: "api/guidance/bookings",
+    BOOKINGS_MINE: "api/guidance/bookings/mine",
+    CANCEL_BOOKING: (bookingSk: string) => `api/guidance/bookings/${encodeURIComponent(bookingSk)}/cancel`,
+    SUBMIT_FEEDBACK: (bookingSk: string) => `api/guidance/bookings/${encodeURIComponent(bookingSk)}/feedback`,
+  },
+  GUIDANCE_ADMIN: {
+    SLOTS_ADD: "api/guidance-admin/slots",
+    SLOTS_LIST: "api/guidance-admin/slots/list",
+    SLOT_AVAILABILITY: (slotSk: string) => `api/guidance-admin/slots/${encodeURIComponent(slotSk)}/availability`,
+    SLOT_CANCEL: (slotSk: string) => `api/guidance-admin/slots/${encodeURIComponent(slotSk)}/cancel`,
+    BOOKINGS_LIST: "api/guidance-admin/bookings/list",
+    BOOKING_OUTCOME: (bookingSk: string) => `api/guidance-admin/bookings/${encodeURIComponent(bookingSk)}/outcome`,
+    FEEDBACK_LIST: "api/guidance-admin/feedback/list",
+    FEEDBACK_MODERATE: (feedbackSk: string) => `api/guidance-admin/feedback/${encodeURIComponent(feedbackSk)}/moderate`,
+    STATS: "api/guidance-admin/stats",
   },
 };
 

@@ -51,6 +51,8 @@ const ProfilePage = lazy(() => import("./pages/ProfilePage"));
 const NotificationPreferencesPage = lazy(() => import("./pages/NotificationPreferencesPage"));
 const MyDashboard = lazy(() => import("./pages/MyDashboard"));
 const GoogleCallbackPage = lazy(() => import("./pages/GoogleCallbackPage"));
+const GuidanceTestimonialsPage = lazy(() => import("./pages/GuidanceTestimonialsPage"));
+const AdminGuidancePage = lazy(() => import("./pages/admin/AdminGuidancePage"));
 
 const RouteFallback: React.FC = () => (
   <div className="d-flex justify-content-center align-items-center py-5">
@@ -336,6 +338,17 @@ const AppLayout: React.FC = () => {
               }
             />
             <Route
+              path="/admin/guidance"
+              element={
+                <ProtectedRoute
+                  isAuthenticated={isAuthenticated}
+                  checkingAuth={checkingAuth}
+                >
+                  <AdminGuidancePage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/admin/scraper"
               element={
                 <ProtectedRoute
@@ -426,6 +439,9 @@ const AppLayout: React.FC = () => {
 
             {/* feedback page */}
             <Route path="/feedback" element={<FeedbackPage />} />
+
+            {/* Guidance public testimonials */}
+            <Route path="/testimonials" element={<GuidanceTestimonialsPage />} />
 
             {/* Profile page – protected */}
             <Route
