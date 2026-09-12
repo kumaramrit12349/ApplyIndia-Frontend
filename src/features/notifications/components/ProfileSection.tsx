@@ -170,11 +170,27 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({
               </button>
             )}
 
+            {adminRole === "admin" && (
+              <button
+                className="ai-dropdown-item"
+                onClick={() => { setOpen(false); navigate("/admin/guidance"); }}
+              >
+                🎓 Online Application Assistance
+              </button>
+            )}
+
             <button
               className="ai-dropdown-item"
               onClick={() => { setOpen(false); navigate("/dashboard"); }}
             >
               📋 My Dashboard
+            </button>
+
+            <button
+              className="ai-dropdown-item"
+              onClick={() => { setOpen(false); navigate("/dashboard?tab=guidance"); }}
+            >
+              🆘 My Guidance Bookings
             </button>
 
             <button

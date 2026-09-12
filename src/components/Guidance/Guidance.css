@@ -1,0 +1,122 @@
+.guidance-modal .modal-title {
+  display: flex;
+  align-items: center;
+}
+
+.guidance-confirm-summary {
+  background: var(--color-bg);
+  border-radius: 12px;
+  padding: 14px 16px;
+  font-size: 0.9rem;
+  line-height: 1.9;
+}
+
+/* --- Guidance card on the notification detail page --- */
+.ndv-card-header--indigo::before {
+  background: linear-gradient(180deg, #6366f1, #4338ca);
+}
+.ndv-card-icon--indigo {
+  background: rgba(99, 102, 241, 0.12);
+  color: #4338ca;
+}
+
+.guidance-card-allowance {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--color-muted);
+  margin-bottom: 12px;
+}
+
+.guidance-card-progress {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--color-border);
+  overflow: hidden;
+}
+.guidance-card-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #6366f1, #4338ca);
+  border-radius: 3px;
+}
+
+.guidance-book-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  border: none;
+  border-radius: 50px;
+  background: linear-gradient(135deg, #6366f1, #4338ca);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.92rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.guidance-book-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(67, 56, 202, 0.35);
+}
+
+.guidance-steps {
+  list-style: none;
+  margin: 0 0 4px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.guidance-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.guidance-step-num {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(99, 102, 241, 0.12);
+  color: #4338ca;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.guidance-step-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.guidance-step-title {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--color-heading, #1f2937);
+}
+
+.guidance-step-desc {
+  font-size: 0.82rem;
+  color: var(--color-muted);
+  margin-top: 2px;
+}
+
+.guidance-testimonial-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 10px;
+  font-size: 0.82rem;
+  color: var(--color-secondary);
+  text-decoration: none;
+  font-weight: 600;
+}
+.guidance-testimonial-link:hover {
+  text-decoration: underline;
+}

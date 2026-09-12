@@ -52,6 +52,13 @@ export interface INotification {
   count_admit_card?: number;
   count_result?: number;
   count_selected?: number;
+
+  /** Online Application Assistance eligibility — set by an admin once a
+   * "How to Apply" guidance video exists for this notification. */
+  guidance_available?: boolean;
+  guidance_link?: string | null;
+  guidance_marked_by?: string | null;
+  guidance_marked_at?: number | null;
 }
 
 export interface INotificationDetails {

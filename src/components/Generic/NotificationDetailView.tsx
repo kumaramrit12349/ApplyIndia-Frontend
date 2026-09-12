@@ -47,6 +47,7 @@ import {
   type SocialPostStatus,
 } from "../../services/private/notificationApi";
 import { toast } from "react-toastify";
+import GuidanceBookingCard from "../Guidance/GuidanceBookingCard";
 import "./NotificationDetailView.css";
 
 /* ──────────────── Helpers ──────────────── */
@@ -898,6 +899,21 @@ export default function NotificationDetailView({
                 ))}
               </div>
             )}
+          </div>
+        )}
+
+        {/* ═══════════════ GUIDANCE BOOKING ═══════════════ */}
+        {/* Only offered once an admin has linked a "How to Apply" guidance
+            video and the application is still open. */}
+        {!isAdmin && notification.guidance_available && notification.guidance_link && !deadlinePassed && (
+          <div className="row g-3 mb-3">
+            <GuidanceBookingCard
+              notificationId={getId(notification.sk)}
+              notificationTitle={notification.title}
+              isAuthenticated={isAuthenticated}
+              onShowAuthPopup={onShowAuthPopup}
+              guidanceLink={notification.guidance_link}
+            />
           </div>
         )}
 
