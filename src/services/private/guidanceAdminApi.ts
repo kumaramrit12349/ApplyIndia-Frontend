@@ -42,6 +42,13 @@ export const bulkCancelAvailableGuidanceSlots = (notificationId: string) => {
   );
 };
 
+export const bulkDeleteGuidanceSlots = (slotSks: string[]) => {
+  return privateFetch<{ success: boolean; data: { deletedCount: number; skippedCount: number } }>(
+    PRIVATE_API.GUIDANCE_ADMIN.SLOTS_BULK_DELETE,
+    { method: "POST", body: JSON.stringify({ slot_sks: slotSks }) },
+  );
+};
+
 export const listAdminGuidanceBookings = (filters: {
   notificationId?: string;
   status?: string;

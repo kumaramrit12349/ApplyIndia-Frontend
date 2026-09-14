@@ -8,6 +8,7 @@ import {
   setGuidanceSlotAvailability,
   cancelGuidanceSlot,
   bulkCancelAvailableGuidanceSlots,
+  bulkDeleteGuidanceSlots,
   listAdminGuidanceBookings,
   markGuidanceBookingOutcome,
   listGuidanceFeedbackForModeration,
@@ -89,6 +90,9 @@ const SlotsTab: React.FC = () => {
   const [cancellingSlot, setCancellingSlot] = useState<IGuidanceSlot | null>(null);
   const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false);
   const [bulkDeleting, setBulkDeleting] = useState(false);
+  const [selectedSlotSks, setSelectedSlotSks] = useState<Set<string>>(new Set());
+  const [showDeleteSelectedConfirm, setShowDeleteSelectedConfirm] = useState(false);
+  const [deletingSelected, setDeletingSelected] = useState(false);
 
   // Automatically load every notification that's guidance-available (has a
   // "How to Apply" video linked) and still open (last date to apply not
@@ -103,6 +107,7 @@ const SlotsTab: React.FC = () => {
 
   const loadSlots = useCallback((notificationId: string) => {
     setLoading(true);
+    setSelectedSlotSks(new Set());
     listAdminGuidanceSlots({ notificationId, limit: 50 })
       .then((res) => setSlots(res.results || []))
       .catch(() => toast.error("Failed to load slots"))
@@ -188,6 +193,41 @@ const SlotsTab: React.FC = () => {
     }
   };
 
+  const toggleSlotSelected = (slotSk: string) => {
+    setSelectedSlotSks((prev) => {
+      const next = new Set(prev);
+      if (next.has(slotSk)) next.delete(slotSk);
+      else next.add(slotSk);
+      return next;
+    });
+  };
+
+  const toggleSelectAllAvailable = () => {
+    setSelectedSlotSks((prev) =>
+      prev.size === availableSlots.length ? new Set() : new Set(availableSlots.map((s) => s.sk))
+    );
+  };
+
+  const handleDeleteSelected = async () => {
+    if (!selectedNotification || deletingSelected || selectedSlotSks.size === 0) return;
+    setDeletingSelected(true);
+    try {
+      const res = await bulkDeleteGuidanceSlots(Array.from(selectedSlotSks));
+      const { deletedCount, skippedCount } = res.data;
+      if (deletedCount > 0) {
+        toast.success(`Deleted ${deletedCount} slot${deletedCount === 1 ? "" : "s"}${skippedCount > 0 ? ` (${skippedCount} skipped)` : ""}`);
+      } else {
+        toast.error("Failed to delete selected slots");
+      }
+      loadSlots(selectedNotification.id);
+    } catch {
+      toast.error("Failed to delete selected slots");
+    } finally {
+      setDeletingSelected(false);
+      setShowDeleteSelectedConfirm(false);
+    }
+  };
+
   return (
     <div>
       <div className="mb-3">
@@ -239,7 +279,15 @@ const SlotsTab: React.FC = () => {
                 (change)
               </button>
             </h5>
-            <div className="d-flex gap-2">
+            <div className="d-flex gap-2 flex-wrap">
+              {selectedSlotSks.size > 0 && (
+                <button
+                  className="btn btn-danger btn-sm"
+                  onClick={() => setShowDeleteSelectedConfirm(true)}
+                >
+                  🗑️ Delete Selected ({selectedSlotSks.size})
+                </button>
+              )}
               {availableSlots.length > 0 && (
                 <button
                   className="btn btn-outline-danger btn-sm"
@@ -254,6 +302,21 @@ const SlotsTab: React.FC = () => {
             </div>
           </div>
 
+          {availableSlots.length > 0 && (
+            <div className="form-check mb-2">
+              <input
+                type="checkbox"
+                className="form-check-input"
+                id="agp-select-all-available"
+                checked={selectedSlotSks.size === availableSlots.length}
+                onChange={toggleSelectAllAvailable}
+              />
+              <label className="form-check-label small text-muted" htmlFor="agp-select-all-available">
+                Select all available slots
+              </label>
+            </div>
+          )}
+
           {loading ? (
             <div className="text-center py-4">
               <span className="spinner-border" style={{ color: "var(--color-primary)" }} />
@@ -267,7 +330,18 @@ const SlotsTab: React.FC = () => {
                   <div className="card border-0 shadow-sm">
                     <div className="card-body p-3">
                       <div className="d-flex justify-content-between align-items-start mb-1">
-                        <strong>{formatDateTime(slot.start_time)}</strong>
+                        <div className="d-flex align-items-center gap-2">
+                          {slot.status === "available" && (
+                            <input
+                              type="checkbox"
+                              className="form-check-input mt-0"
+                              checked={selectedSlotSks.has(slot.sk)}
+                              onChange={() => toggleSlotSelected(slot.sk)}
+                              aria-label="Select this slot"
+                            />
+                          )}
+                          <strong>{formatDateTime(slot.start_time)}</strong>
+                        </div>
                         <span className={`badge agp-status agp-status--${slot.status}`}>{slot.status}</span>
                       </div>
                       <a href={slot.meet_link} target="_blank" rel="noopener noreferrer" className="d-block small mb-2 text-truncate">
@@ -318,6 +392,15 @@ const SlotsTab: React.FC = () => {
             confirmButtonClassName="btn btn-danger"
             onConfirm={handleBulkDeleteAvailable}
             onCancel={() => setShowBulkDeleteConfirm(false)}
+          />
+          <ConfirmModal
+            show={showDeleteSelectedConfirm}
+            title="Delete Selected Slots"
+            message={`Permanently delete the ${selectedSlotSks.size} selected slot${selectedSlotSks.size === 1 ? "" : "s"}? This can't be undone.`}
+            confirmText="Delete Slots"
+            confirmButtonClassName="btn btn-danger"
+            onConfirm={handleDeleteSelected}
+            onCancel={() => setShowDeleteSelectedConfirm(false)}
           />
         </>
       )}
