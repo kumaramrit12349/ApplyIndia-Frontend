@@ -56,7 +56,7 @@ const GuidanceBookingCard: React.FC<GuidanceBookingCardProps> = ({
           <h3 className="ndv-card-title">Stuck While Applying?</h3>
         </div>
         <div className="ndv-card-body">
-          <p className="mb-3" style={{ fontSize: "0.92rem", color: "var(--color-body)" }}>
+          <p className="guidance-card-intro">
             Before booking, follow these 3 quick steps — most applicants can finish on their own
             after watching the video.
           </p>
@@ -74,8 +74,7 @@ const GuidanceBookingCard: React.FC<GuidanceBookingCardProps> = ({
                     href={guidanceLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="guidance-testimonial-link"
-                    style={{ marginTop: 6 }}
+                    className="guidance-chip-link guidance-chip-link--solid"
                   >
                     <FiYoutube aria-hidden="true" /> Watch: How to Apply
                   </a>
@@ -108,26 +107,35 @@ const GuidanceBookingCard: React.FC<GuidanceBookingCardProps> = ({
                 </div>
 
                 {isAuthenticated && allowance && (
-                  <div className="guidance-card-allowance" style={{ marginTop: 8 }}>
-                    <span>{allowance.used} of {allowance.max} free sessions used</span>
-                    <div className="guidance-card-progress">
-                      <div
-                        className="guidance-card-progress-fill"
-                        style={{ width: `${Math.min(100, (allowance.used / allowance.max) * 100)}%` }}
-                      />
+                  <div className="guidance-status-panel guidance-status-panel--meter">
+                    <div className="guidance-card-allowance">
+                      <span>{allowance.used} of {allowance.max} free sessions used</span>
+                      <div className="guidance-card-progress">
+                        <div
+                          className="guidance-card-progress-fill"
+                          style={{ width: `${Math.min(100, (allowance.used / allowance.max) * 100)}%` }}
+                        />
+                      </div>
                     </div>
                   </div>
                 )}
 
                 {isAuthenticated && allowance?.hasActiveUpcoming ? (
-                  <p className="small text-muted mb-0" style={{ marginTop: 6 }}>
-                    You have an upcoming session booked — manage it from{" "}
-                    <Link to="/dashboard?tab=guidance">My Guidance Bookings</Link>.
-                  </p>
+                  <div className="guidance-status-panel guidance-status-panel--info">
+                    <div>You have an upcoming session booked for this application.</div>
+                    <Link
+                      to="/dashboard?tab=guidance"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="guidance-chip-link guidance-chip-link--solid"
+                    >
+                      Manage My Booking <span className="guidance-link-arrow">→</span>
+                    </Link>
+                  </div>
                 ) : isAuthenticated && usedUp ? (
-                  <p className="small text-muted mb-0" style={{ marginTop: 6 }}>
+                  <div className="guidance-status-panel guidance-status-panel--muted">
                     You've used all 3 free guidance sessions for this application.
-                  </p>
+                  </div>
                 ) : (
                   <button
                     type="button"
@@ -142,9 +150,9 @@ const GuidanceBookingCard: React.FC<GuidanceBookingCardProps> = ({
             </li>
           </ol>
 
-          <div>
-            <Link to="/testimonials" className="guidance-testimonial-link">
-              Read what others say →
+          <div className="guidance-card-footer">
+            <Link to="/testimonials" target="_blank" rel="noopener noreferrer" className="guidance-chip-link guidance-chip-link--ghost">
+              Read what others say <span className="guidance-link-arrow">→</span>
             </Link>
           </div>
         </div>

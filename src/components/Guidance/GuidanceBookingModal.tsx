@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { toast } from "react-toastify";
-import { FiVideo, FiCheckCircle } from "react-icons/fi";
+import { FiVideo, FiCheckCircle, FiCalendar, FiClock } from "react-icons/fi";
 import { fetchAvailableSlots, createGuidanceBooking } from "../../services/private/guidanceApi";
 import type { IGuidanceSlot, IGuidanceBooking } from "../../interface/GuidanceInterface";
 import "./Guidance.css";
@@ -108,26 +108,42 @@ const GuidanceBookingModal: React.FC<GuidanceBookingModalProps> = ({
           <div className="modal-content guidance-modal">
             <div className="modal-header">
               <h5 className="modal-title">
-                <FiVideo className="me-2" aria-hidden="true" /> Free Application Guidance
+                <span className="guidance-modal-icon">
+                  <FiVideo aria-hidden="true" />
+                </span>
+                Free Application Guidance
               </h5>
               <button type="button" className="btn-close" onClick={onClose}></button>
             </div>
             <div className="modal-body">
-              <p className="text-muted small mb-3">Application: <strong>{notificationTitle}</strong></p>
+              <div className="guidance-modal-app-tag">
+                <span>Application:</span>
+                <strong>{notificationTitle}</strong>
+              </div>
 
               {step === "list" && (
                 <>
                   {loading ? (
-                    <div className="text-center py-4">
+                    <div className="guidance-loading-state">
                       <span className="spinner-border" style={{ color: "var(--color-primary)" }} />
+                      <div>Loading available slots…</div>
                     </div>
                   ) : slots.length === 0 ? (
-                    <div className="text-center text-muted py-4">
-                      No guidance slots are available right now. Please check back later.
+                    <div className="guidance-empty-state">
+                      <div className="guidance-empty-state-icon">
+                        <FiCalendar aria-hidden="true" />
+                      </div>
+                      <h6>No slots available right now</h6>
+                      <p>
+                        Every guidance slot for this application is currently booked. Please check
+                        back later — new slots open up regularly.
+                      </p>
                     </div>
                   ) : (
                     <>
-                      <label className="form-label small fw-semibold">Select a Date</label>
+                      <label className="guidance-field-label">
+                        <FiCalendar aria-hidden="true" /> Select a Date
+                      </label>
                       <select
                         className="form-select mb-3"
                         value={selectedDate}
@@ -146,7 +162,9 @@ const GuidanceBookingModal: React.FC<GuidanceBookingModalProps> = ({
 
                       {selectedDate && (
                         <>
-                          <label className="form-label small fw-semibold">Select a Time Slot</label>
+                          <label className="guidance-field-label">
+                            <FiClock aria-hidden="true" /> Select a Time Slot
+                          </label>
                           <select
                             className="form-select"
                             value={selectedSlot?.sk || ""}
@@ -172,13 +190,42 @@ const GuidanceBookingModal: React.FC<GuidanceBookingModalProps> = ({
               {step === "confirm" && selectedSlot && (
                 <div>
                   <div className="guidance-confirm-summary">
-                    <div><strong>Date:</strong> {formatDateHeading(selectedSlot.start_time)}</div>
-                    <div><strong>Time:</strong> {formatTimeRange(selectedSlot.start_time, selectedSlot.end_time)}</div>
-                    <div><strong>Duration:</strong> 15 minutes</div>
-                    <div><strong>Mode:</strong> Google Meet</div>
-                    <div><strong>Cost:</strong> <span className="text-success fw-bold">FREE</span></div>
+                    <div className="guidance-confirm-row">
+                      <span className="guidance-confirm-row-icon">
+                        <FiCalendar aria-hidden="true" />
+                      </span>
+                      <div className="guidance-confirm-row-text">
+                        <div className="guidance-confirm-row-label">Date</div>
+                        <div className="guidance-confirm-row-value">{formatDateHeading(selectedSlot.start_time)}</div>
+                      </div>
+                    </div>
+                    <div className="guidance-confirm-row">
+                      <span className="guidance-confirm-row-icon">
+                        <FiClock aria-hidden="true" />
+                      </span>
+                      <div className="guidance-confirm-row-text">
+                        <div className="guidance-confirm-row-label">Time · 15 minutes</div>
+                        <div className="guidance-confirm-row-value">
+                          {formatTimeRange(selectedSlot.start_time, selectedSlot.end_time)}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="guidance-confirm-row">
+                      <span className="guidance-confirm-row-icon">
+                        <FiVideo aria-hidden="true" />
+                      </span>
+                      <div className="guidance-confirm-row-text">
+                        <div className="guidance-confirm-row-label">Mode</div>
+                        <div className="guidance-confirm-row-value">Google Meet</div>
+                      </div>
+                    </div>
                   </div>
-                  <label htmlFor="guidance-issue-note" className="form-label small fw-semibold mt-3">
+                  <div className="guidance-free-badge-row">
+                    <span className="guidance-free-badge">
+                      <FiCheckCircle aria-hidden="true" /> 100% Free
+                    </span>
+                  </div>
+                  <label htmlFor="guidance-issue-note" className="guidance-field-label mt-3">
                     What do you need help with? (optional)
                   </label>
                   <textarea
@@ -193,9 +240,11 @@ const GuidanceBookingModal: React.FC<GuidanceBookingModalProps> = ({
               )}
 
               {step === "success" && bookedResult && (
-                <div className="text-center py-3">
-                  <FiCheckCircle size={48} className="text-success mb-3" aria-hidden="true" />
-                  <h6>Guidance Slot Booked</h6>
+                <div className="text-center py-2">
+                  <div className="guidance-success-icon">
+                    <FiCheckCircle size={34} aria-hidden="true" />
+                  </div>
+                  <div className="guidance-success-title">Guidance Slot Booked!</div>
                   <p className="text-muted small mb-0">
                     We've sent you a confirmation email with the meeting link. You can join the
                     session — and find this booking anytime — under "My Guidance Bookings" in your
@@ -207,13 +256,13 @@ const GuidanceBookingModal: React.FC<GuidanceBookingModalProps> = ({
             <div className="modal-footer">
               {step === "list" && (
                 <>
-                  <button type="button" className="btn btn-secondary" onClick={onClose}>
+                  <button type="button" className="guidance-btn-ghost" onClick={onClose}>
                     Close
                   </button>
                   {slots.length > 0 && (
                     <button
                       type="button"
-                      className="btn btn-success"
+                      className="guidance-btn-primary"
                       disabled={!selectedSlot}
                       onClick={() => setStep("confirm")}
                     >
@@ -224,16 +273,16 @@ const GuidanceBookingModal: React.FC<GuidanceBookingModalProps> = ({
               )}
               {step === "confirm" && (
                 <>
-                  <button type="button" className="btn btn-secondary" onClick={() => setStep("list")} disabled={confirming}>
+                  <button type="button" className="guidance-btn-ghost" onClick={() => setStep("list")} disabled={confirming}>
                     Back
                   </button>
-                  <button type="button" className="btn btn-success" onClick={handleConfirm} disabled={confirming}>
+                  <button type="button" className="guidance-btn-primary" onClick={handleConfirm} disabled={confirming}>
                     {confirming ? "Booking..." : "Confirm Booking"}
                   </button>
                 </>
               )}
               {step === "success" && (
-                <button type="button" className="btn btn-primary" onClick={onClose}>
+                <button type="button" className="guidance-btn-primary" onClick={onClose}>
                   Done
                 </button>
               )}
