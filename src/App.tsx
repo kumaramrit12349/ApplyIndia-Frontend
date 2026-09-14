@@ -344,7 +344,7 @@ const AppLayout: React.FC = () => {
                   isAuthenticated={isAuthenticated}
                   checkingAuth={checkingAuth}
                 >
-                  <AdminGuidancePage />
+                  <AdminGuidancePage adminRole={adminRole} />
                 </ProtectedRoute>
               }
             />

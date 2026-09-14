@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { fetchNotifications, getNotificationById } from "../../services/private/notificationApi";
 import {
@@ -23,21 +23,37 @@ type Tab = "slots" | "bookings" | "feedback" | "overview";
 
 const formatDateTime = (epoch?: number) => (epoch ? new Date(epoch).toLocaleString("en-IN") : "—");
 
-const AdminGuidancePage: React.FC = () => {
+interface AdminGuidancePageProps {
+  adminRole?: string;
+}
+
+const AdminGuidancePage: React.FC<AdminGuidancePageProps> = ({ adminRole }) => {
   const [tab, setTab] = useState<Tab>("slots");
+
+  // Client-side hardening only — the real enforcement is server-side. A
+  // Guidance Partner only manages their own slots/bookings and has no use
+  // for the notification-management dashboard or feedback/stats tabs.
+  const isGuidancePartner = adminRole === "guidance_partner";
+  const isAdmin = adminRole === "admin";
+
+  if (!isAdmin && !isGuidancePartner) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  const visibleTabs: Tab[] = isGuidancePartner ? ["slots", "bookings"] : ["slots", "bookings", "feedback", "overview"];
 
   return (
     <div className="min-vh-100" style={{ background: "var(--color-bg)" }}>
       <div className="container py-4">
         <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
           <h2 className="mb-0 fw-bold">🎓 Online Application Assistance</h2>
-          <Link to="/admin/dashboard" className="btn btn-outline-secondary btn-sm">
+          <Link to={isAdmin ? "/admin/dashboard" : "/dashboard"} className="btn btn-outline-secondary btn-sm">
             ← Back to Dashboard
           </Link>
         </div>
 
         <div className="d-flex gap-2 mb-4 flex-wrap">
-          {(["slots", "bookings", "feedback", "overview"] as Tab[]).map((t) => (
+          {visibleTabs.map((t) => (
             <button
               key={t}
               className={`btn btn-sm ${tab === t ? "btn-primary" : "btn-outline-secondary"}`}
@@ -51,8 +67,8 @@ const AdminGuidancePage: React.FC = () => {
 
         {tab === "slots" && <SlotsTab />}
         {tab === "bookings" && <BookingsTab />}
-        {tab === "feedback" && <FeedbackTab />}
-        {tab === "overview" && <OverviewTab />}
+        {tab === "feedback" && isAdmin && <FeedbackTab />}
+        {tab === "overview" && isAdmin && <OverviewTab />}
       </div>
     </div>
   );
