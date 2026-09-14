@@ -47,6 +47,7 @@ const ROLE_STYLES: Record<string, { bg: string; text: string; label: string }> =
   senior_reviewer: { bg: "rgba(124, 58, 237, 0.14)", text: "#7c3aed", label: "Senior Reviewer" },
   reviewer: { bg: "rgba(245, 158, 11, 0.15)", text: "#d97706", label: "Reviewer" },
   creator: { bg: "rgba(37, 99, 235, 0.12)", text: "var(--color-secondary)", label: "Creator" },
+  guidance_partner: { bg: "rgba(13, 148, 136, 0.14)", text: "#0d9488", label: "Guidance Partner" },
 };
 
 const AdminRolesPage: React.FC = () => {
@@ -56,7 +57,7 @@ const AdminRolesPage: React.FC = () => {
 
   // Form State
   const [email, setEmail] = useState<string>("");
-  const [role, setRole] = useState<"creator" | "reviewer" | "senior_reviewer" | "admin">("creator");
+  const [role, setRole] = useState<"creator" | "reviewer" | "senior_reviewer" | "admin" | "guidance_partner">("creator");
   const [allCategories, setAllCategories] = useState<boolean>(true);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [allStates, setAllStates] = useState<boolean>(true);
@@ -66,6 +67,10 @@ const AdminRolesPage: React.FC = () => {
   const [stateSearch, setStateSearch] = useState<string>("");
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [submitting, setSubmitting] = useState<boolean>(false);
+  // Snapshot of the form's values right after "Edit" is clicked — compared
+  // against the live form to decide whether Save Permissions should be
+  // enabled (no point re-submitting identical permissions).
+  const [editSnapshot, setEditSnapshot] = useState<string | null>(null);
 
   // Delete Confirm Modal State
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
@@ -93,41 +98,66 @@ const AdminRolesPage: React.FC = () => {
     fetchUsers();
   }, []);
 
+  const buildFormSnapshot = (
+    r: string,
+    allCats: boolean,
+    cats: string[],
+    allSts: boolean,
+    sts: string[],
+    window: string
+  ) =>
+    JSON.stringify({
+      role: r,
+      allCategories: allCats,
+      categories: [...cats].sort(),
+      allStates: allSts,
+      states: [...sts].sort(),
+      dataWindow: window,
+    });
+
   const handleEditClick = (user: AdminUser) => {
-    setIsEditing(true);
-    setEmail(user.email);
-    setRole(user.admin_role as "creator" | "reviewer" | "senior_reviewer" | "admin");
+    const newRole = user.admin_role as "creator" | "reviewer" | "senior_reviewer" | "admin" | "guidance_partner";
+    let newAllCategories = true;
+    let newSelectedCategories: string[] = [];
+    let newAllStates = true;
+    let newSelectedStates: string[] = [];
+    let newDataWindow = "all";
 
     const perms = user.admin_permissions;
     if (perms) {
       // Categories
       if (perms.categories.includes("all") || perms.categories.length === 0) {
-        setAllCategories(true);
-        setSelectedCategories([]);
+        newAllCategories = true;
+        newSelectedCategories = [];
       } else {
-        setAllCategories(false);
-        setSelectedCategories(perms.categories);
+        newAllCategories = false;
+        newSelectedCategories = perms.categories;
       }
 
       // States
       if (perms.states.includes("all") || perms.states.length === 0) {
-        setAllStates(true);
-        setSelectedStates([]);
+        newAllStates = true;
+        newSelectedStates = [];
       } else {
-        setAllStates(false);
-        setSelectedStates(perms.states);
+        newAllStates = false;
+        newSelectedStates = perms.states;
       }
 
       // Time lookback window
-      setDataWindow(perms.data_window || "all");
-    } else {
-      // Fallback defaults
-      setAllCategories(true);
-      setSelectedCategories([]);
-      setAllStates(true);
-      setSelectedStates([]);
-      setDataWindow("all");
+      newDataWindow = perms.data_window || "all";
     }
+
+    setIsEditing(true);
+    setEmail(user.email);
+    setRole(newRole);
+    setAllCategories(newAllCategories);
+    setSelectedCategories(newSelectedCategories);
+    setAllStates(newAllStates);
+    setSelectedStates(newSelectedStates);
+    setDataWindow(newDataWindow);
+    setEditSnapshot(
+      buildFormSnapshot(newRole, newAllCategories, newSelectedCategories, newAllStates, newSelectedStates, newDataWindow)
+    );
   };
 
   const handleClearForm = () => {
@@ -140,7 +170,15 @@ const AdminRolesPage: React.FC = () => {
     setSelectedStates([]);
     setDataWindow("all");
     setStateSearch("");
+    setEditSnapshot(null);
   };
+
+  // While editing an existing user, Save Permissions has nothing useful to
+  // do until at least one field actually differs from what was loaded.
+  const isUnchangedEdit =
+    isEditing &&
+    editSnapshot !== null &&
+    buildFormSnapshot(role, allCategories, selectedCategories, allStates, selectedStates, dataWindow) === editSnapshot;
 
   const handleCategoryCheckboxChange = (catVal: string) => {
     if (selectedCategories.includes(catVal)) {
@@ -462,13 +500,14 @@ const AdminRolesPage: React.FC = () => {
                       className="form-select"
                       value={role}
                       onChange={(e) =>
-                        setRole(e.target.value as "creator" | "reviewer" | "senior_reviewer" | "admin")
+                        setRole(e.target.value as "creator" | "reviewer" | "senior_reviewer" | "admin" | "guidance_partner")
                       }
                     >
                       <option value="creator">Creator (Add/Edit notifications)</option>
                       <option value="reviewer">Reviewer (Approve notifications)</option>
                       <option value="senior_reviewer">Senior Reviewer (Create, edit, approve & archive)</option>
                       <option value="admin">Admin (All actions, full control)</option>
+                      <option value="guidance_partner">Guidance Partner (Add slots & run sessions)</option>
                     </select>
                   </div>
 
@@ -637,7 +676,7 @@ const AdminRolesPage: React.FC = () => {
                     type="submit"
                     className="btn w-100 d-flex align-items-center justify-content-center gap-2 py-2 fw-semibold text-white border-0"
                     style={{ background: "var(--color-primary)" }}
-                    disabled={submitting}
+                    disabled={submitting || isUnchangedEdit}
                   >
                     {submitting ? (
                       <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true" />

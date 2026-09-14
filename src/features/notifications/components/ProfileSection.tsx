@@ -20,6 +20,7 @@ const ROLE_COLORS: Record<string, string> = {
   senior_reviewer: "linear-gradient(135deg, #7c3aed, #5b21b6)",
   reviewer: "linear-gradient(135deg, var(--color-accent), #d97706)",
   creator: "linear-gradient(135deg, var(--color-secondary), var(--status-result))",
+  guidance_partner: "linear-gradient(135deg, #0d9488, #0f766e)",
 };
 
 const ROLE_LABELS: Record<string, string> = {
@@ -27,6 +28,7 @@ const ROLE_LABELS: Record<string, string> = {
   senior_reviewer: "Senior Reviewer",
   reviewer: "Reviewer",
   creator: "Creator",
+  guidance_partner: "Guidance Partner",
 };
 
 const ProfileSection: React.FC<ProfileSectionProps> = ({
@@ -134,7 +136,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({
 
           {/* Actions */}
           <div className="ai-dropdown-actions">
-            {(isAdmin || adminRole) && (
+            {(isAdmin || (adminRole && adminRole !== "guidance_partner")) && (
               <button
                 className="ai-dropdown-item"
                 onClick={() => { setOpen(false); navigate("/admin/dashboard"); }}
@@ -170,11 +172,27 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({
               </button>
             )}
 
+            {(adminRole === "admin" || adminRole === "guidance_partner") && (
+              <button
+                className="ai-dropdown-item"
+                onClick={() => { setOpen(false); navigate("/admin/guidance"); }}
+              >
+                🎓 Online Application Assistance
+              </button>
+            )}
+
             <button
               className="ai-dropdown-item"
               onClick={() => { setOpen(false); navigate("/dashboard"); }}
             >
               📋 My Dashboard
+            </button>
+
+            <button
+              className="ai-dropdown-item"
+              onClick={() => { setOpen(false); navigate("/dashboard?tab=guidance"); }}
+            >
+              🆘 My Guidance Bookings
             </button>
 
             <button

@@ -20,10 +20,11 @@ export const fetchNotifications = (
   weeklyVideoDone?: boolean,
   openOnly?: boolean,
   closingSoon?: boolean,
+  guidanceAvailable?: boolean,
 ) => {
   return privateFetch<any>(PRIVATE_API.NOTIFICATION.LIST, {
     method: "POST",
-    body: JSON.stringify({ search, timeRange, category, state, dailyVideoDone, weeklyVideoDone, openOnly, closingSoon }),
+    body: JSON.stringify({ search, timeRange, category, state, dailyVideoDone, weeklyVideoDone, openOnly, closingSoon, guidanceAvailable }),
   });
 };
 
@@ -113,6 +114,14 @@ export const markDailyVideo = (id: string, done: boolean, videoUrl?: string) => 
   return privateFetch<any>(PRIVATE_API.NOTIFICATION.DAILY_VIDEO(id), {
     method: "PATCH",
     body: JSON.stringify({ done, video_url: videoUrl }),
+  });
+};
+
+// Mark (or unmark) a notification as eligible for Online Application Assistance
+export const markGuidanceAvailable = (id: string, available: boolean, guidanceLink?: string) => {
+  return privateFetch<any>(PRIVATE_API.NOTIFICATION.GUIDANCE_AVAILABLE(id), {
+    method: "PATCH",
+    body: JSON.stringify({ available, guidance_link: guidanceLink }),
   });
 };
 

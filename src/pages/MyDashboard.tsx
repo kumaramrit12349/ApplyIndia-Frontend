@@ -11,6 +11,7 @@ import { toast } from "react-toastify";
 import ConfirmationModal from "../components/Generic/ConfirmationModal";
 import SupportPopup from "../components/SupportPopup";
 import OpenNotificationsBrowser from "../features/notifications/components/OpenNotificationsBrowser";
+import MyGuidanceBookings from "../features/guidance/components/MyGuidanceBookings";
 import "./MyDashboard.css";
 
 const STATUS_CONFIG: Record<
@@ -66,8 +67,12 @@ function slugify(title: string): string {
 
 const MyDashboard: React.FC = () => {
     const [searchParams, setSearchParams] = useSearchParams();
-    const [viewMode, setViewMode] = useState<"tracked" | "open">(
-        searchParams.get("tab") === "open" ? "open" : "tracked"
+    const [viewMode, setViewMode] = useState<"tracked" | "open" | "guidance">(
+        searchParams.get("tab") === "open"
+            ? "open"
+            : searchParams.get("tab") === "guidance"
+                ? "guidance"
+                : "tracked"
     );
     const [activities, setActivities] = useState<IUserActivityItem[]>([]);
     const [loading, setLoading] = useState(true);
@@ -77,9 +82,9 @@ const MyDashboard: React.FC = () => {
     const [showSupport, setShowSupport] = useState(false);
     const [skToRemove, setSkToRemove] = useState<string | null>(null);
 
-    const switchViewMode = (mode: "tracked" | "open") => {
+    const switchViewMode = (mode: "tracked" | "open" | "guidance") => {
         setViewMode(mode);
-        setSearchParams(mode === "open" ? { tab: "open" } : {}, { replace: true });
+        setSearchParams(mode === "tracked" ? {} : { tab: mode }, { replace: true });
     };
 
     useEffect(() => {
@@ -158,10 +163,18 @@ const MyDashboard: React.FC = () => {
                 >
                     🚀 Explore Open Opportunities
                 </button>
+                <button
+                    className={`dashboard-filter-btn ${viewMode === "guidance" ? "dashboard-filter-btn--active" : ""}`}
+                    onClick={() => switchViewMode("guidance")}
+                >
+                    🆘 My Guidance Bookings
+                </button>
             </div>
 
             {viewMode === "open" ? (
                 <OpenNotificationsBrowser />
+            ) : viewMode === "guidance" ? (
+                <MyGuidanceBookings />
             ) : loading ? (
                 <div className="text-center py-5">
                     <div className="spinner-border" style={{ color: "var(--color-primary)" }} role="status">

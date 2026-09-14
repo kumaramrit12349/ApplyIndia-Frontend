@@ -17,6 +17,7 @@ import {
   markDailyVideo,
   markDailyVideoBulk,
   markWeeklyVideoBulk,
+  markGuidanceAvailable,
 } from "../../services/private/notificationApi";
 import { NOTIFICATION_CATEGORIES, INDIAN_STATES } from "../../constant/SharedConstant";
 import { Dropdown, Form } from "react-bootstrap";
@@ -360,6 +361,41 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
     setVideoModal({ type: "weekly", ids: [id] });
   };
 
+  /* Marking a notification "guidance available" needs the guidance YouTube
+     URL, collected via the same VideoUrlModal shell as daily/weekly video. */
+  const [guidanceModal, setGuidanceModal] = useState<{ id: string } | null>(null);
+
+  const handleToggleGuidance = async (id: string, currentlyAvailable: boolean) => {
+    if (currentlyAvailable) {
+      try {
+        await markGuidanceAvailable(id, false);
+        showToast("Guidance availability unmarked", "success");
+        loadNotifications(search, timeRange, categoryFilter, stateFilter, dailyVideoFilter, weeklyVideoFilter, openOnlyFilter);
+      } catch (err: any) {
+        showToast(err?.message || "Failed to update guidance availability", "error");
+      }
+      return;
+    }
+    setGuidanceModal({ id });
+  };
+
+  const handleGuidanceModalConfirm = async (guidanceUrl: string | undefined) => {
+    if (!guidanceModal) return;
+    const { id } = guidanceModal;
+    setGuidanceModal(null);
+    if (!guidanceUrl) {
+      showToast("A guidance video URL is required", "error");
+      return;
+    }
+    try {
+      await markGuidanceAvailable(id, true, guidanceUrl);
+      showToast("Marked guidance available", "success");
+      loadNotifications(search, timeRange, categoryFilter, stateFilter, dailyVideoFilter, weeklyVideoFilter, openOnlyFilter);
+    } catch (err: any) {
+      showToast(err?.message || "Failed to update guidance availability", "error");
+    }
+  };
+
   const handleMarkDailyVideoSelected = () => {
     if (selectedIds.length === 0) return;
     const ids = selectedIds.map((sk) => getId(sk)).filter(Boolean);
@@ -648,6 +684,21 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
               }}
             >
               👥 Users & Feedback
+            </Link>
+          )}
+          {role === "admin" && (
+            <Link
+              to="/admin/guidance"
+              className="btn fw-semibold shadow-sm w-100"
+              style={{
+                borderRadius: 12,
+                maxWidth: '200px',
+                background: 'rgba(255,255,255,0.15)',
+                color: '#fff',
+                border: '1px solid rgba(255,255,255,0.3)'
+              }}
+            >
+              🎓 Online Application Assistance
             </Link>
           )}
           {role === "admin" && (
@@ -1163,6 +1214,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                         >
                           {renderVideoBadge("Daily", "🎥", !!n.daily_video_done, n.daily_video_url, n.daily_video_marked_by)}
                           {renderVideoBadge("Weekly", "🎬", !!n.weekly_video_done, n.weekly_video_url, n.weekly_video_marked_by)}
+                          {renderVideoBadge("Guidance", "🎓", !!n.guidance_available, n.guidance_link, n.guidance_marked_by)}
 
                           <div className="d-flex flex-wrap gap-2 ms-auto">
                             <button
@@ -1215,6 +1267,25 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                                 onClick={() => handleToggleWeeklyVideo(getId(n.sk), !!n.weekly_video_done)}
                               >
                                 🎬 {n.weekly_video_done ? "Undo Weekly" : "Mark Weekly"}
+                              </button>
+                            )}
+
+                            {can(role, "video") && !n.is_archived && (
+                              <button
+                                className="btn btn-sm"
+                                style={{
+                                  borderRadius: '8px',
+                                  fontSize: "0.75rem",
+                                  fontWeight: 600,
+                                  backgroundColor: n.guidance_available ? "rgba(220, 38, 38, 0.08)" : "rgba(22, 163, 74, 0.12)",
+                                  color: n.guidance_available ? "var(--color-danger)" : "var(--color-success)",
+                                  border: 'none',
+                                  padding: '0.35rem 0.6rem',
+                                }}
+                                onClick={() => handleToggleGuidance(getId(n.sk), !!n.guidance_available)}
+                                title="Online Application Assistance eligibility"
+                              >
+                                🎓 {n.guidance_available ? "Undo Guidance" : "Mark Guidance Available"}
                               </button>
                             )}
                           </div>
@@ -1401,6 +1472,15 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
         }
         onConfirm={handleVideoModalConfirm}
         onCancel={() => setVideoModal(null)}
+      />
+      {/* Guidance Availability Modal */}
+      <VideoUrlModal
+        show={!!guidanceModal}
+        title="Mark Guidance Available"
+        message="Paste the 'How to Apply' YouTube video link for this notification. Users will only be able to book a free guidance slot once this is set."
+        confirmText="Mark Available"
+        onConfirm={handleGuidanceModalConfirm}
+        onCancel={() => setGuidanceModal(null)}
       />
       {/* Video Preview Modal */}
       <VideoPreviewModal
