@@ -7,6 +7,7 @@ import {
   listAdminGuidanceSlots,
   setGuidanceSlotAvailability,
   cancelGuidanceSlot,
+  bulkCancelAvailableGuidanceSlots,
   listAdminGuidanceBookings,
   markGuidanceBookingOutcome,
   listGuidanceFeedbackForModeration,
@@ -17,6 +18,7 @@ import type { IGuidanceBooking, IGuidanceFeedback, IGuidanceSlot, IGuidanceStats
 import { getId } from "../../utils/utils";
 import GuidanceSlotFormModal from "../../components/Guidance/GuidanceSlotFormModal";
 import CancelSlotModal from "../../components/Guidance/CancelSlotModal";
+import ConfirmModal from "../../components/ConfirmModal/ConfirmModal";
 import "./AdminGuidancePage.css";
 
 type Tab = "slots" | "bookings" | "feedback" | "overview";
@@ -85,6 +87,8 @@ const SlotsTab: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [cancellingSlot, setCancellingSlot] = useState<IGuidanceSlot | null>(null);
+  const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false);
+  const [bulkDeleting, setBulkDeleting] = useState(false);
 
   // Automatically load every notification that's guidance-available (has a
   // "How to Apply" video linked) and still open (last date to apply not
@@ -162,6 +166,28 @@ const SlotsTab: React.FC = () => {
     }
   };
 
+  const availableSlots = slots.filter((s) => s.status === "available");
+
+  const handleBulkDeleteAvailable = async () => {
+    if (!selectedNotification || bulkDeleting) return;
+    setBulkDeleting(true);
+    try {
+      const res = await bulkCancelAvailableGuidanceSlots(selectedNotification.id);
+      const { cancelledCount, failedCount } = res.data;
+      if (cancelledCount > 0) {
+        toast.success(`Deleted ${cancelledCount} available slot${cancelledCount === 1 ? "" : "s"}${failedCount > 0 ? ` (${failedCount} failed)` : ""}`);
+      } else {
+        toast.error("Failed to delete available slots");
+      }
+      loadSlots(selectedNotification.id);
+    } catch {
+      toast.error("Failed to delete available slots");
+    } finally {
+      setBulkDeleting(false);
+      setShowBulkDeleteConfirm(false);
+    }
+  };
+
   return (
     <div>
       <div className="mb-3">
@@ -213,9 +239,19 @@ const SlotsTab: React.FC = () => {
                 (change)
               </button>
             </h5>
-            <button className="btn btn-success btn-sm" onClick={() => setShowAddModal(true)}>
-              + Add Slot
-            </button>
+            <div className="d-flex gap-2">
+              {availableSlots.length > 0 && (
+                <button
+                  className="btn btn-outline-danger btn-sm"
+                  onClick={() => setShowBulkDeleteConfirm(true)}
+                >
+                  🗑️ Delete All Available ({availableSlots.length})
+                </button>
+              )}
+              <button className="btn btn-success btn-sm" onClick={() => setShowAddModal(true)}>
+                + Add Slot
+              </button>
+            </div>
           </div>
 
           {loading ? (
@@ -273,6 +309,15 @@ const SlotsTab: React.FC = () => {
             }
             onConfirm={handleCancelSlot}
             onCancel={() => setCancellingSlot(null)}
+          />
+          <ConfirmModal
+            show={showBulkDeleteConfirm}
+            title="Delete All Available Slots"
+            message={`Permanently delete all ${availableSlots.length} available (unbooked) slot${availableSlots.length === 1 ? "" : "s"} for this application? Booked, completed, and already-cancelled slots won't be affected. This can't be undone.`}
+            confirmText="Delete Slots"
+            confirmButtonClassName="btn btn-danger"
+            onConfirm={handleBulkDeleteAvailable}
+            onCancel={() => setShowBulkDeleteConfirm(false)}
           />
         </>
       )}

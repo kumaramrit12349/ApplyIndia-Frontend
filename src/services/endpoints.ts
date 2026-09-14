@@ -83,6 +83,7 @@ export const PRIVATE_API = {
     SLOTS_LIST: "api/guidance-admin/slots/list",
     SLOT_AVAILABILITY: (slotSk: string) => `api/guidance-admin/slots/${encodeURIComponent(slotSk)}/availability`,
     SLOT_CANCEL: (slotSk: string) => `api/guidance-admin/slots/${encodeURIComponent(slotSk)}/cancel`,
+    SLOTS_BULK_CANCEL_AVAILABLE: "api/guidance-admin/slots/bulk-cancel-available",
     BOOKINGS_LIST: "api/guidance-admin/bookings/list",
     BOOKING_OUTCOME: (bookingSk: string) => `api/guidance-admin/bookings/${encodeURIComponent(bookingSk)}/outcome`,
     FEEDBACK_LIST: "api/guidance-admin/feedback/list",

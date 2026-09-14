@@ -35,6 +35,13 @@ export const cancelGuidanceSlot = (slotSk: string, reason?: string) => {
   );
 };
 
+export const bulkCancelAvailableGuidanceSlots = (notificationId: string) => {
+  return privateFetch<{ success: boolean; data: { cancelledCount: number; failedCount: number } }>(
+    PRIVATE_API.GUIDANCE_ADMIN.SLOTS_BULK_CANCEL_AVAILABLE,
+    { method: "POST", body: JSON.stringify({ notification_id: notificationId }) },
+  );
+};
+
 export const listAdminGuidanceBookings = (filters: {
   notificationId?: string;
   status?: string;
