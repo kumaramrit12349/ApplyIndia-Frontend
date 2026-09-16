@@ -48,18 +48,20 @@ import {
 } from "../../services/private/notificationApi";
 import { toast } from "react-toastify";
 import GuidanceBookingCard from "../Guidance/GuidanceBookingCard";
+import { useTranslation } from "../../i18n/useTranslation";
+import type { DetailViewTranslations } from "../../i18n/translations";
 import "./NotificationDetailView.css";
 
 /* ──────────────── Helpers ──────────────── */
 
-const formatDate = (d?: string) =>
+const formatDate = (d: string | undefined, t: DetailViewTranslations) =>
   d
     ? new Date(d).toLocaleDateString("en-IN", {
         year: "numeric",
         month: "short",
         day: "numeric",
       })
-    : "Not Released";
+    : t.notReleased;
 
 const formatDateTime = (d?: number | string | null) => {
   if (!d) return "—";
@@ -72,23 +74,23 @@ const formatCurrency = (amount?: string | number | null) => {
   return `₹ ${Number(amount).toLocaleString()}`;
 };
 
-const formatPercentage = (value?: string | number | null) => {
+const formatPercentage = (value: string | number | null | undefined, t: DetailViewTranslations) => {
   if (value === null || value === undefined || value === 0 || value === "0")
-    return "Not Specified";
+    return t.notSpecified;
   return `${Number(value)} %`;
 };
 
-const getGroupedFees = (fee?: INotification["fee"]) => {
+const getGroupedFees = (fee: INotification["fee"] | undefined, t: DetailViewTranslations) => {
   if (fee === null || fee === undefined) return [];
   const map: Record<string, string[]> = {};
   const fees = [
-    { key: "general_fee", label: "Gen" },
-    { key: "ews_fee", label: "EWS" },
-    { key: "obc_fee", label: "OBC" },
-    { key: "sc_fee", label: "SC" },
-    { key: "st_fee", label: "ST" },
-    { key: "ph_fee", label: "PH" },
-    { key: "female_fee", label: "Female" },
+    { key: "general_fee", label: t.feeGen },
+    { key: "ews_fee", label: t.feeEws },
+    { key: "obc_fee", label: t.feeObc },
+    { key: "sc_fee", label: t.feeSc },
+    { key: "st_fee", label: t.feeSt },
+    { key: "ph_fee", label: t.feePh },
+    { key: "female_fee", label: t.feeFemale },
   ] as const;
 
   fees.forEach(({ key, label }) => {
@@ -106,71 +108,71 @@ const getGroupedFees = (fee?: INotification["fee"]) => {
   });
 };
 
-const renderAgeInfo = (min?: number | null, max?: number | null) => {
+const renderAgeInfo = (min: number | null | undefined, max: number | null | undefined, t: DetailViewTranslations) => {
   const isMinZero = min === null || min === undefined || min === 0;
   const isMaxZero = max === null || max === undefined || max === 0;
 
-  if (isMinZero && isMaxZero) return "Not Specified";
-  if (!isMinZero && isMaxZero) return `Minimum ${min} Years`;
-  if (isMinZero && !isMaxZero) return `Maximum ${max} Years`;
-  return `${min} – ${max} Years`;
+  if (isMinZero && isMaxZero) return t.notSpecified;
+  if (!isMinZero && isMaxZero) return t.minAge(min as number);
+  if (isMinZero && !isMaxZero) return t.maxAge(max as number);
+  return t.ageRange(min as number, max as number);
 };
 
 /* ──────────────── Tracking Steps Config ──────────────── */
 
-const TRACKING_STEPS: {
+const getTrackingSteps = (
+  t: DetailViewTranslations,
+): {
   status: UserActivityStatus;
   label: string;
   emoji: string;
   congratsTitle: string;
   congratsMessage: string;
-}[] = [
+}[] => [
   {
     status: 1,
-    label: "Mark as Applied",
+    label: t.step1Label,
     emoji: "📝",
-    congratsTitle: "🎉 Application Submitted!",
-    congratsMessage:
-      "You've taken the first step towards your dream job! Stay focused and keep going!",
+    congratsTitle: t.step1CongratsTitle,
+    congratsMessage: t.step1CongratsMessage,
   },
   {
     status: 2,
-    label: "Admit Card Downloaded",
+    label: t.step2Label,
     emoji: "🎫",
-    congratsTitle: "🎉 Admit Card Ready!",
-    congratsMessage:
-      "Great progress! Your admit card is secured. Prepare well for the exam!",
+    congratsTitle: t.step2CongratsTitle,
+    congratsMessage: t.step2CongratsMessage,
   },
   {
     status: 3,
-    label: "Result Downloaded",
+    label: t.step3Label,
     emoji: "📊",
-    congratsTitle: "🎉 Result Checked!",
-    congratsMessage:
-      "Awesome! You've checked your result. Keep pushing towards the finish line!",
+    congratsTitle: t.step3CongratsTitle,
+    congratsMessage: t.step3CongratsMessage,
   },
   {
     status: 4,
-    label: "Selected / Joined",
+    label: t.step4Label,
     emoji: "🏆",
-    congratsTitle: "🏆 You Made It!",
-    congratsMessage:
-      "Incredible achievement! You've been selected! This is the start of something amazing!",
+    congratsTitle: t.step4CongratsTitle,
+    congratsMessage: t.step4CongratsMessage,
   },
 ];
 
 const STATUS_ORDER: UserActivityStatus[] = [1, 2, 3, 4];
 
-const ACTIVITY_STAT_ITEMS: {
+const getActivityStatItems = (
+  t: DetailViewTranslations,
+): {
   field: "count_wishlisted" | "count_applied" | "count_admit_card" | "count_result" | "count_selected";
   label: string;
   emoji: string;
-}[] = [
-  { field: "count_wishlisted", label: "Wishlisted", emoji: "❤️" },
-  { field: "count_applied", label: "Applied", emoji: "📝" },
-  { field: "count_admit_card", label: "Admit Card", emoji: "🎫" },
-  { field: "count_result", label: "Result Checked", emoji: "📊" },
-  { field: "count_selected", label: "Selected", emoji: "🏆" },
+}[] => [
+  { field: "count_wishlisted", label: t.statWishlisted, emoji: "❤️" },
+  { field: "count_applied", label: t.statApplied, emoji: "📝" },
+  { field: "count_admit_card", label: t.statAdmitCard, emoji: "🎫" },
+  { field: "count_result", label: t.statResult, emoji: "📊" },
+  { field: "count_selected", label: t.statSelected, emoji: "🏆" },
 ];
 
 const isDeadlinePassed = (lastDateToApply?: string): boolean => {
@@ -183,7 +185,8 @@ const isDeadlinePassed = (lastDateToApply?: string): boolean => {
 type DeadlineVariant = "closed" | "urgent" | "soon" | "open";
 
 const getDeadlineInfo = (
-  lastDateToApply?: string,
+  lastDateToApply: string | undefined,
+  t: DetailViewTranslations,
 ): { label: string; variant: DeadlineVariant } | null => {
   if (!lastDateToApply) return null;
   const deadline = new Date(lastDateToApply).getTime();
@@ -191,11 +194,11 @@ const getDeadlineInfo = (
 
   const daysLeft = Math.ceil((deadline - Date.now()) / (1000 * 60 * 60 * 24));
 
-  if (daysLeft < 0) return { label: "Applications Closed", variant: "closed" };
-  if (daysLeft === 0) return { label: "Last Day to Apply", variant: "urgent" };
-  if (daysLeft <= 3) return { label: `${daysLeft} Day${daysLeft > 1 ? "s" : ""} Left`, variant: "urgent" };
-  if (daysLeft <= 10) return { label: `${daysLeft} Days Left`, variant: "soon" };
-  return { label: `${daysLeft} Days Left`, variant: "open" };
+  if (daysLeft < 0) return { label: t.applicationsClosed, variant: "closed" };
+  if (daysLeft === 0) return { label: t.lastDayToApply, variant: "urgent" };
+  if (daysLeft <= 3) return { label: t.daysLeft(daysLeft), variant: "urgent" };
+  if (daysLeft <= 10) return { label: t.daysLeft(daysLeft), variant: "soon" };
+  return { label: t.daysLeft(daysLeft), variant: "open" };
 };
 
 /* ──────────────── Sub-components ──────────────── */
@@ -211,12 +214,13 @@ const LabelValue = ({
   highlight?: boolean;
   fallback?: string;
 }) => {
+  const { detail: t } = useTranslation();
   const displayValue =
     value === null || value === undefined || value === ""
-      ? (fallback ?? "Not Available")
+      ? (fallback ?? t.notAvailable)
       : value;
 
-  if (displayValue === "Not Available") {
+  if (displayValue === t.notAvailable) {
     return null; // hide completely if totally missing and no fallback provided
   }
 
@@ -286,6 +290,9 @@ export default function NotificationDetailView({
   onApprove?: () => void;
   approving?: boolean;
 }) {
+  const { detail: t } = useTranslation();
+  const TRACKING_STEPS = getTrackingSteps(t);
+  const ACTIVITY_STAT_ITEMS = getActivityStatItems(t);
   const [currentStatus, setCurrentStatus] = useState<UserActivityStatus | null>(
     null,
   );
@@ -345,9 +352,9 @@ export default function NotificationDetailView({
     try {
       const res = await retrySocialPost(getId(notification.sk), platform);
       if (res.success) setSocialPosts(res.socialPosts);
-      toast.success("Retry triggered");
+      toast.success(t.retryTriggered);
     } catch {
-      toast.error("Retry failed");
+      toast.error(t.retryFailed);
     } finally {
       setSocialRetrying(false);
     }
@@ -359,9 +366,9 @@ export default function NotificationDetailView({
     try {
       const res = await retryDistribution(getId(notification.sk));
       if (res.success) setDistribution(res.distribution);
-      toast.success("Retry triggered");
+      toast.success(t.retryTriggered);
     } catch {
-      toast.error("Retry failed");
+      toast.error(t.retryFailed);
     } finally {
       setRetrying(false);
     }
@@ -369,7 +376,7 @@ export default function NotificationDetailView({
 
   const handleTrackAction = async (step: (typeof TRACKING_STEPS)[number]) => {
     if (!isAuthenticated) {
-      toast.info("🔒 Please login to track your progress!", {
+      toast.info(t.loginToTrack, {
         autoClose: 3000,
       });
       if (onShowAuthPopup) onShowAuthPopup();
@@ -390,13 +397,13 @@ export default function NotificationDetailView({
       });
       setShowCongrats(true);
     } catch (error: any) {
-      const msg = error?.message || "Failed to track activity";
+      const msg = error?.message || t.trackActivityFailed;
       if (msg.includes("ATTEMPT_LIMIT_REACHED")) {
         setShowSupport(true);
       } else if (msg.includes("DEADLINE_PASSED")) {
-        toast.error("Applications for this notification have closed.");
+        toast.error(t.applicationsClosedToast);
       } else if (msg.includes("Invalid status transition")) {
-        toast.warning("Complete the previous step first!");
+        toast.warning(t.completePreviousStep);
       } else {
         toast.error(msg);
       }
@@ -407,12 +414,12 @@ export default function NotificationDetailView({
 
   const handleWishlistToggle = async () => {
     if (!isAuthenticated) {
-      toast.info("🔒 Please login to add to wishlist!", { autoClose: 3000 });
+      toast.info(t.loginToWishlist, { autoClose: 3000 });
       if (onShowAuthPopup) onShowAuthPopup();
       return;
     }
     if (currentStatus !== 0 && deadlinePassed) {
-      toast.error("Applications for this notification have closed.");
+      toast.error(t.applicationsClosedToast);
       return;
     }
 
@@ -421,7 +428,7 @@ export default function NotificationDetailView({
       if (currentStatus === 0) {
         await removeActivity(notification.sk);
         setCurrentStatus(null);
-        toast.success("Removed from wishlist");
+        toast.success(t.removedFromWishlist);
       } else {
         await trackActivity(
           notification.sk,
@@ -430,14 +437,14 @@ export default function NotificationDetailView({
           0,
         );
         setCurrentStatus(0);
-        toast.success("Added to wishlist!");
+        toast.success(t.addedToWishlist);
       }
     } catch (error: any) {
-      const msg = error?.message || "Failed to update wishlist";
+      const msg = error?.message || t.wishlistUpdateFailed;
       if (msg.includes("ATTEMPT_LIMIT_REACHED")) {
         setShowSupport(true);
       } else if (msg.includes("DEADLINE_PASSED")) {
-        toast.error("Applications for this notification have closed.");
+        toast.error(t.applicationsClosedToast);
       } else {
         toast.error(msg);
       }
@@ -448,7 +455,7 @@ export default function NotificationDetailView({
 
   const handleCheckEligibility = async () => {
     if (!isAuthenticated) {
-      toast.info("🔒 Please login to check your eligibility!", { autoClose: 3000 });
+      toast.info(t.loginToCheckEligibility, { autoClose: 3000 });
       if (onShowAuthPopup) onShowAuthPopup();
       return;
     }
@@ -461,14 +468,14 @@ export default function NotificationDetailView({
       setEligibilityResult(result);
     } catch (error: any) {
       setShowEligibility(false);
-      toast.error(error?.message || "Failed to check eligibility");
+      toast.error(error?.message || t.eligibilityCheckFailed);
     } finally {
       setEligibilityLoading(false);
     }
   };
 
   const deadlinePassed = isDeadlinePassed(notification.last_date_to_apply);
-  const deadlineInfo = getDeadlineInfo(notification.last_date_to_apply);
+  const deadlineInfo = getDeadlineInfo(notification.last_date_to_apply, t);
   const hasAlreadyApplied = currentStatus !== null && currentStatus !== 0;
 
   const getStepState = (stepIndex: number) => {
@@ -488,43 +495,43 @@ export default function NotificationDetailView({
   const linkItems = [
     notification.links?.admit_card_url && {
       href: notification.links.admit_card_url,
-      label: "Admit Card",
+      label: t.linkAdmitCard,
       icon: <BsDownload />,
       iconClass: "ndv-link-icon--green",
     },
     notification.links?.notification_pdf_url && {
       href: notification.links.notification_pdf_url,
-      label: "Notification PDF",
+      label: t.linkNotificationPdf,
       icon: <BsFileEarmarkText />,
       iconClass: "ndv-link-icon--red",
     },
     notification.links?.official_website_url && {
       href: notification.links.official_website_url,
-      label: "Official Website",
+      label: t.linkOfficialWebsite,
       icon: <BsGlobe />,
       iconClass: "ndv-link-icon--dark",
     },
     notification.links?.result_url && {
       href: notification.links.result_url,
-      label: "Result",
+      label: t.linkResult,
       icon: <BsCheckCircle />,
       iconClass: "ndv-link-icon--amber",
     },
     notification.links?.answer_key_url && {
       href: notification.links.answer_key_url,
-      label: "Answer Key",
+      label: t.linkAnswerKey,
       icon: <BsFileEarmarkText />,
       iconClass: "ndv-link-icon--gray",
     },
     notification.links?.youtube_link && {
       href: notification.links.youtube_link,
-      label: "YouTube",
+      label: t.linkYoutube,
       icon: <BsYoutube />,
       iconClass: "ndv-link-icon--youtube",
     },
     notification.links?.other_links && {
       href: notification.links.other_links,
-      label: "Other Links",
+      label: t.linkOtherLinks,
       icon: <BsLink45Deg />,
       iconClass: "ndv-link-icon--dark",
     },
@@ -543,7 +550,7 @@ export default function NotificationDetailView({
     notification.category,
   );
   const needsEligibility = notification.category !== "documents";
-  const groupedFees = getGroupedFees(notification.fee);
+  const groupedFees = getGroupedFees(notification.fee, t);
   const isAllFeesZero = groupedFees.length === 1 && groupedFees[0][0] === "₹ 0";
 
   return (
@@ -631,11 +638,11 @@ export default function NotificationDetailView({
                     <span className="spinner-border spinner-border-sm" />
                   ) : currentStatus === 0 ? (
                     <>
-                      <BsHeartFill /> Wishlisted
+                      <BsHeartFill /> {t.wishlisted}
                     </>
                   ) : (
                     <>
-                      <BsHeart /> Add to Wishlist
+                      <BsHeart /> {t.addToWishlist}
                     </>
                   )}
                 </button>
@@ -644,7 +651,7 @@ export default function NotificationDetailView({
                 className="ndv-btn-eligibility"
                 onClick={handleCheckEligibility}
               >
-                <BsCheckCircle /> Check Eligibility
+                <BsCheckCircle /> {t.checkEligibility}
               </button>
             </div>
           )}
@@ -667,7 +674,7 @@ export default function NotificationDetailView({
               <span className="ndv-card-icon ndv-card-icon--blue">
                 <FcViewDetails />
               </span>
-              Quick Overview
+              {t.quickOverview}
             </div>
             <div
               dangerouslySetInnerHTML={{
@@ -689,29 +696,29 @@ export default function NotificationDetailView({
                 <div className="ndv-card-icon ndv-card-icon--blue">
                   <FcViewDetails />
                 </div>
-                <h3 className="ndv-card-title">Basic Details</h3>
+                <h3 className="ndv-card-title">{t.basicDetails}</h3>
               </div>
               <div className="ndv-card-body">
                 <LabelValue
-                  label="Category"
+                  label={t.category}
                   value={formatCategoryTitle(notification.category)}
                 />
                 <LabelValue
-                  label="Department"
+                  label={t.department}
                   value={notification.department}
                 />
                 <LabelValue
-                  label="State / Region"
+                  label={t.stateRegion}
                   value={formatStateName(notification.state)}
                   highlight
                 />
                 {isJob && (
                   <LabelValue
-                    label="Total Vacancies"
+                    label={t.totalVacancies}
                     value={
                       notification.total_vacancies
                         ? notification.total_vacancies
-                        : "Not Specified"
+                        : t.notSpecified
                     }
                   />
                 )}
@@ -727,32 +734,32 @@ export default function NotificationDetailView({
                   <div className="ndv-card-icon ndv-card-icon--orange">
                     <BsCalendar />
                   </div>
-                  <h3 className="ndv-card-title">Important Dates</h3>
+                  <h3 className="ndv-card-title">{t.importantDates}</h3>
                 </div>
                 <div className="ndv-card-body">
                   <LabelValue
-                    label="Start Date"
-                    value={formatDate(notification.start_date)}
+                    label={t.startDate}
+                    value={formatDate(notification.start_date, t)}
                   />
                   <LabelValue
-                    label="Last Date To Apply"
-                    value={formatDate(notification.last_date_to_apply)}
+                    label={t.lastDateToApplyLabel}
+                    value={formatDate(notification.last_date_to_apply, t)}
                     highlight
                   />
                   <LabelValue
-                    label="Exam Date"
-                    value={formatDate(notification.exam_date)}
+                    label={t.examDate}
+                    value={formatDate(notification.exam_date, t)}
                   />
                   {(notification as any).admit_card_date && (
                     <LabelValue
-                      label="Admit Card Date"
-                      value={formatDate((notification as any).admit_card_date)}
+                      label={t.admitCardDate}
+                      value={formatDate((notification as any).admit_card_date, t)}
                     />
                   )}
                   {(notification as any).result_date && (
                     <LabelValue
-                      label="Result Date"
-                      value={formatDate((notification as any).result_date)}
+                      label={t.resultDate}
+                      value={formatDate((notification as any).result_date, t)}
                     />
                   )}
                 </div>
@@ -768,7 +775,7 @@ export default function NotificationDetailView({
                   <div className="ndv-card-icon ndv-card-icon--green">
                     <BsCurrencyRupee />
                   </div>
-                  <h3 className="ndv-card-title">Application Fees</h3>
+                  <h3 className="ndv-card-title">{t.applicationFees}</h3>
                 </div>
                 <div className="ndv-card-body">
                   {isAllFeesZero ? (
@@ -782,7 +789,7 @@ export default function NotificationDetailView({
                           padding: "0.4rem 0.8rem",
                         }}
                       >
-                        No Application Fee
+                        {t.noApplicationFee}
                       </span>
                     </div>
                   ) : (
@@ -807,29 +814,31 @@ export default function NotificationDetailView({
                   <div className="ndv-card-icon ndv-card-icon--purple">
                     <BsFillPersonFill />
                   </div>
-                  <h3 className="ndv-card-title">Eligibility</h3>
+                  <h3 className="ndv-card-title">{t.eligibilityTitle}</h3>
                 </div>
                 <div className="ndv-card-body">
                   <LabelValue
-                    label="Age"
+                    label={t.age}
                     value={renderAgeInfo(
                       notification.eligibility?.min_age,
                       notification.eligibility?.max_age,
+                      t,
                     )}
                   />
                   <LabelValue
-                    label="Qualification"
+                    label={t.qualification}
                     value={notification.eligibility?.qualification}
                   />
                   <LabelValue
-                    label="Specialization"
+                    label={t.specialization}
                     value={notification.eligibility?.specialization}
                   />
                   {notification.eligibility?.min_percentage ? (
                     <LabelValue
-                      label="Minimum Percentage"
+                      label={t.minimumPercentage}
                       value={formatPercentage(
                         notification.eligibility?.min_percentage,
+                        t,
                       )}
                     />
                   ) : null}
@@ -846,7 +855,7 @@ export default function NotificationDetailView({
               <span className="ndv-card-icon ndv-card-icon--teal">
                 <BsFileEarmarkText />
               </span>
-              Full Notification Details
+              {t.fullNotificationDetails}
             </div>
             <div
               dangerouslySetInnerHTML={{
@@ -866,7 +875,7 @@ export default function NotificationDetailView({
               <span className="ndv-card-icon ndv-card-icon--blue">
                 <BsLink45Deg />
               </span>
-              Important Links
+              {t.importantLinks}
             </h2>
 
             {notification.links?.apply_online_url && (
@@ -877,7 +886,7 @@ export default function NotificationDetailView({
                 className="ndv-links-primary"
               >
                 <BsArrowUpRightCircle style={{ marginRight: 8 }} />
-                Apply Online
+                {t.applyOnline}
               </a>
             )}
 
@@ -925,7 +934,7 @@ export default function NotificationDetailView({
                 <div className="ndv-card-icon ndv-card-icon--teal">
                   <BsBarChartFill />
                 </div>
-                <h3 className="ndv-card-title">Applicant Activity</h3>
+                <h3 className="ndv-card-title">{t.applicantActivity}</h3>
               </div>
               <div className="ndv-card-body">
                 <div className="ndv-stats-grid">
@@ -951,21 +960,16 @@ export default function NotificationDetailView({
             <div className="ndv-track-header">
               <div className="ndv-track-header-row">
                 <span className="ndv-card-icon ndv-card-icon--green">🚀</span>
-                <h3 className="ndv-track-title">Track Your Progress</h3>
+                <h3 className="ndv-track-title">{t.trackYourProgress}</h3>
               </div>
-              <p className="ndv-track-subtitle">
-                Follow your journey step by step — each milestone unlocks the
-                next!
-              </p>
+              <p className="ndv-track-subtitle">{t.trackSubtitle}</p>
             </div>
 
             {deadlinePassed && !hasAlreadyApplied && (
               <div className="ndv-track-note" style={{ borderColor: "var(--color-danger)" }}>
                 <BsLockFill color="var(--color-danger)" />
                 <span>
-                  <strong>Applications closed</strong> — the last date to
-                  apply for this notification has passed, so it can no
-                  longer be marked as Applied.
+                  <strong>{t.closedNoticeBold}</strong> {t.closedNoticeRest}
                 </span>
               </div>
             )}
@@ -982,8 +986,8 @@ export default function NotificationDetailView({
                 <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0z" />
               </svg>
               <span className="d-flex align-items-center flex-wrap gap-2">
-                <strong>Note:</strong> You can track an application a maximum of{" "}
-                <strong>3 times</strong>. To remove it, go to your
+                <strong>{t.noteLabel}</strong> {t.trackNotePart1}{" "}
+                <strong>{t.threeTimesLabel}</strong> {t.trackNotePart2}
                 <button
                   onClick={() => window.open("/dashboard", "_blank")}
                   style={{
@@ -997,8 +1001,9 @@ export default function NotificationDetailView({
                     cursor: "pointer",
                   }}
                 >
-                  Dashboard
+                  {t.dashboardBtn}
                 </button>
+                {t.trackNotePart3}
               </span>
             </div>
 
@@ -1049,7 +1054,7 @@ export default function NotificationDetailView({
                     }
                     title={
                       i === 0 && state === "locked" && deadlinePassed
-                        ? "Applications for this notification have closed"
+                        ? t.trackTooltipClosed
                         : undefined
                     }
                     onClick={() => handleTrackAction(step)}
@@ -1059,7 +1064,7 @@ export default function NotificationDetailView({
                         className="spinner-border spinner-border-sm"
                         role="status"
                       >
-                        <span className="visually-hidden">Loading...</span>
+                        <span className="visually-hidden">{t.loading}</span>
                       </div>
                     ) : (
                       <>

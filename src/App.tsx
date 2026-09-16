@@ -31,6 +31,7 @@ import { checkAuthStatus, logoutUser } from "./services/authApi";
 import { fetchAvailableFilters } from "./services/public/notiifcationApi";
 import { AuthProvider } from "./context/AuthContext";
 import { ThemeProvider } from "./context/ThemeContext";
+import { LanguageProvider } from "./context/LanguageContext";
 import ScrollToTop from "./components/ScrollToTop";
 
 const DashboardPage = lazy(() => import("./pages/admin/DashboardPage"));
@@ -521,9 +522,11 @@ const AppLayout: React.FC = () => {
 
 const App: React.FC = () => (
   <ThemeProvider>
-    <Router>
-      <AppLayout />
-    </Router>
+    <LanguageProvider>
+      <Router>
+        <AppLayout />
+      </Router>
+    </LanguageProvider>
   </ThemeProvider>
 );
 

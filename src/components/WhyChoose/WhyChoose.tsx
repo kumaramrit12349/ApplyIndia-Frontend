@@ -1,56 +1,34 @@
 import React from "react";
 import { FiCheckCircle, FiClock, FiLayers, FiBookmark } from "react-icons/fi";
+import { useTranslation } from "../../i18n/useTranslation";
 import "./WhyChoose.css";
 
-const REASONS = [
-  {
-    icon: <FiCheckCircle size={22} />,
-    title: "Verified, Not Just Scraped",
-    description:
-      "Every notification is reviewed by our team before it goes live — filtering out spam, duplicates, and stale postings.",
-    accent: "#2563eb",
-  },
-  {
-    icon: <FiClock size={22} />,
-    title: "Never Miss a Deadline",
-    description:
-      "Every listing shows its last date to apply at a glance, with a clear Open, Closing Soon, or Closed status.",
-    accent: "#d97706",
-  },
-  {
-    icon: <FiLayers size={22} />,
-    title: "Everything in One Place",
-    description:
-      "Jobs, admit cards, results, answer keys, and syllabus — linked together so you don't have to hunt across a dozen sites.",
-    accent: "#7c3aed",
-  },
-  {
-    icon: <FiBookmark size={22} />,
-    title: "Track Your Own Applications",
-    description:
-      "Wishlist any notification and follow it from Applied through to Result on your personal dashboard.",
-    accent: "#db2777",
-  },
+const ICONS = [
+  <FiCheckCircle size={22} key="check" />,
+  <FiClock size={22} key="clock" />,
+  <FiLayers size={22} key="layers" />,
+  <FiBookmark size={22} key="bookmark" />,
 ];
+const ACCENTS = ["#2563eb", "#d97706", "#7c3aed", "#db2777"];
 
 const WhyChoose: React.FC = () => {
+  const { whyChoose: t } = useTranslation();
+
   return (
     <section className="ai-why-choose" aria-label="Why choose Apply India">
       <div className="container">
         <div className="ai-why-choose-header">
-          <h2 className="ai-why-choose-title">Why Choose Apply India</h2>
-          <p className="ai-why-choose-subtitle">
-            Built to cut through the noise of government notification sites.
-          </p>
+          <h2 className="ai-why-choose-title">{t.title}</h2>
+          <p className="ai-why-choose-subtitle">{t.subtitle}</p>
         </div>
         <div className="ai-why-choose-grid">
-          {REASONS.map((reason) => (
+          {t.reasons.map((reason, index) => (
             <div
               className="ai-why-choose-card"
               key={reason.title}
-              style={{ "--reason-accent": reason.accent } as React.CSSProperties}
+              style={{ "--reason-accent": ACCENTS[index] } as React.CSSProperties}
             >
-              <div className="ai-why-choose-icon">{reason.icon}</div>
+              <div className="ai-why-choose-icon">{ICONS[index]}</div>
               <h3 className="ai-why-choose-card-title">{reason.title}</h3>
               <p className="ai-why-choose-card-desc">{reason.description}</p>
             </div>

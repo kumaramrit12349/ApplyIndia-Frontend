@@ -3,9 +3,11 @@ import { FiBell, FiFileText } from "react-icons/fi";
 import { fetchLatestNotifications } from "../../services/public/notiifcationApi";
 import { makeSlug } from "../../utils/utils";
 import type { HomePageNotification } from "../../types/notification";
+import { useTranslation } from "../../i18n/useTranslation";
 import "./JobBanner.css";
 
 const JobBanner: React.FC = () => {
+    const { jobBanner: t } = useTranslation();
     const [latestItems, setLatestItems] = useState<HomePageNotification[]>([]);
     const [loading, setLoading] = useState(true);
     // No manual pause control, but still auto-pause for users with the
@@ -39,9 +41,9 @@ const JobBanner: React.FC = () => {
             <div className="job-banner-container job-banner-empty">
                 <div className="job-banner-label">
                     <span className="job-banner-live-dot" aria-hidden="true" />
-                    <FiBell aria-hidden="true" /> Latest Updates
+                    <FiBell aria-hidden="true" /> {t.latestUpdates}
                 </div>
-                <div className="job-banner-empty-message">No active application notifications available. New government opportunities will appear here soon.</div>
+                <div className="job-banner-empty-message">{t.noActive}</div>
             </div>
         );
     }
@@ -61,7 +63,7 @@ const JobBanner: React.FC = () => {
         <div className="job-banner-container">
             <div className="job-banner-label">
                 <span className="job-banner-live-dot" aria-hidden="true" />
-                <FiBell aria-hidden="true" /> Latest Updates
+                <FiBell aria-hidden="true" /> {t.latestUpdates}
             </div>
             {/* The scrolling content below repeats each notification ~30x purely so
                 the marquee loops seamlessly — it's a visual effect, not real content.
@@ -95,7 +97,7 @@ const JobBanner: React.FC = () => {
                                 <span className="job-banner-item-title">{item.title}</span>
                                 {item.last_date_to_apply && (
                                     <span className="job-banner-deadline">
-                                        Last Date: {(() => {
+                                        {t.lastDate}: {(() => {
                                             const d = new Date(item.last_date_to_apply as string);
                                             return isNaN(d.getTime()) ? item.last_date_to_apply : d.toLocaleDateString("en-GB", { day: '2-digit', month: 'short', year: 'numeric' });
                                         })()}

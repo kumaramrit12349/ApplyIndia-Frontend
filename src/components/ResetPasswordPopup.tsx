@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Modal from "react-bootstrap/Modal";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { resetPassword } from "../services/authApi";
+import { useTranslation } from "../i18n/useTranslation";
 
 interface ResetPasswordPopupProps {
     show: boolean;
@@ -16,6 +17,7 @@ const ResetPasswordPopup: React.FC<ResetPasswordPopupProps> = ({
     onClose,
     onSuccess,
 }) => {
+    const { authFlow: t } = useTranslation();
     const [code, setCode] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
@@ -27,7 +29,7 @@ const ResetPasswordPopup: React.FC<ResetPasswordPopupProps> = ({
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (password !== confirmPassword) {
-            setError("Passwords do not match");
+            setError(t.passwordsDontMatch);
             return;
         }
         setLoading(true);
@@ -37,7 +39,7 @@ const ResetPasswordPopup: React.FC<ResetPasswordPopupProps> = ({
             await resetPassword(email, code, password);
             onSuccess();
         } catch (err: any) {
-            setError(err?.message || "Failed to reset password");
+            setError(err?.message || t.resetPasswordFailed);
         } finally {
             setLoading(false);
         }
@@ -47,23 +49,21 @@ const ResetPasswordPopup: React.FC<ResetPasswordPopupProps> = ({
         <Modal show={show} onHide={onClose} centered contentClassName="border-0 shadow-lg rounded-4">
             <Modal.Header closeButton className="border-0 pb-1">
                 <Modal.Title className="w-100 fs-2" style={{ fontWeight: 700, color: "var(--color-heading)" }}>
-                    Reset Password
+                    {t.resetPasswordTitle}
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body className="pt-0 px-4 pb-4">
-                <p className="text-muted mb-4">
-                    Enter the code sent to <strong>{email}</strong> and your new password.
-                </p>
+                <p className="text-muted mb-4">{t.resetPasswordDesc(email)}</p>
                 <form onSubmit={handleSubmit}>
                     <div className="mb-3">
                         <label className="form-label fw-semibold" htmlFor="reset-code">
-                            Verification Code
+                            {t.verificationCode}
                         </label>
                         <input
                             id="reset-code"
                             className="form-control bg-body-tertiary"
                             style={{ borderRadius: 10 }}
-                            placeholder="Enter code"
+                            placeholder={t.enterCode}
                             type="text"
                             value={code}
                             onChange={(e) => setCode(e.target.value)}
@@ -72,14 +72,14 @@ const ResetPasswordPopup: React.FC<ResetPasswordPopupProps> = ({
                     </div>
                     <div className="mb-3">
                         <label className="form-label fw-semibold" htmlFor="new-password">
-                            New Password
+                            {t.newPassword}
                         </label>
                         <div className="position-relative">
                             <input
                                 id="new-password"
                                 className="form-control bg-body-tertiary"
                                 style={{ borderRadius: 10, paddingRight: "40px" }}
-                                placeholder="Enter new password"
+                                placeholder={t.enterNewPassword}
                                 type={showPassword ? "text" : "password"}
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
@@ -97,14 +97,14 @@ const ResetPasswordPopup: React.FC<ResetPasswordPopupProps> = ({
                     </div>
                     <div className="mb-4">
                         <label className="form-label fw-semibold" htmlFor="confirm-password">
-                            Confirm New Password
+                            {t.confirmNewPassword}
                         </label>
                         <div className="position-relative">
                             <input
                                 id="confirm-password"
                                 className="form-control bg-body-tertiary"
                                 style={{ borderRadius: 10, paddingRight: "40px" }}
-                                placeholder="Confirm new password"
+                                placeholder={t.confirmNewPasswordPlaceholder}
                                 type={showConfirmPassword ? "text" : "password"}
                                 value={confirmPassword}
                                 onChange={(e) => setConfirmPassword(e.target.value)}
@@ -130,7 +130,7 @@ const ResetPasswordPopup: React.FC<ResetPasswordPopupProps> = ({
                         }}
                         disabled={loading}
                     >
-                        {loading ? "Resetting..." : "Reset Password"}
+                        {loading ? t.resetting : t.resetPasswordBtn}
                     </button>
                 </form>
                 {error && (

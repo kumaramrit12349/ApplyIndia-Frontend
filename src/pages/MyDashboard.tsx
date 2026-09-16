@@ -12,43 +12,44 @@ import ConfirmationModal from "../components/Generic/ConfirmationModal";
 import SupportPopup from "../components/SupportPopup";
 import OpenNotificationsBrowser from "../features/notifications/components/OpenNotificationsBrowser";
 import MyGuidanceBookings from "../features/guidance/components/MyGuidanceBookings";
+import { useTranslation } from "../i18n/useTranslation";
+import type { DashboardTranslations } from "../i18n/translations";
 import "./MyDashboard.css";
 
-const STATUS_CONFIG: Record<
-    UserActivityStatus,
-    { label: string; emoji: string; color: string; bg: string }
-> = {
+const getStatusConfig = (
+    t: DashboardTranslations,
+): Record<UserActivityStatus, { label: string; emoji: string; color: string; bg: string }> => ({
     0: {
-        label: "Wishlisted",
+        label: t.statWishlisted,
         emoji: "❤️",
         color: "#ff4757",
         bg: "linear-gradient(135deg, #ff4757, #ff6b81)",
     },
     1: {
-        label: "Applied",
+        label: t.statApplied,
         emoji: "📝",
         color: "var(--color-secondary)",
         bg: "linear-gradient(135deg, var(--color-secondary), var(--color-primary))",
     },
     2: {
-        label: "Admit Card",
+        label: t.statAdmitCard,
         emoji: "🎫",
         color: "var(--color-accent)",
         bg: "linear-gradient(135deg, var(--color-accent), #d97706)",
     },
     3: {
-        label: "Result",
+        label: t.statResult,
         emoji: "📊",
         color: "var(--status-result)",
         bg: "linear-gradient(135deg, var(--status-result), #5b21b6)",
     },
     4: {
-        label: "Selected",
+        label: t.statSelected,
         emoji: "🏆",
         color: "var(--color-success)",
         bg: "linear-gradient(135deg, var(--color-success), #15803d)",
     },
-};
+});
 
 const STATUS_ORDER: UserActivityStatus[] = [0, 1, 2, 3, 4];
 
@@ -66,6 +67,8 @@ function slugify(title: string): string {
 }
 
 const MyDashboard: React.FC = () => {
+    const { dashboard: t } = useTranslation();
+    const STATUS_CONFIG = getStatusConfig(t);
     const [searchParams, setSearchParams] = useSearchParams();
     const [viewMode, setViewMode] = useState<"tracked" | "open" | "guidance">(
         searchParams.get("tab") === "open"
@@ -96,7 +99,7 @@ const MyDashboard: React.FC = () => {
             const res = await getUserActivities();
             setActivities(res.data || []);
         } catch {
-            toast.error("Failed to load your activities");
+            toast.error(t.loadFailed);
         } finally {
             setLoading(false);
         }
@@ -114,9 +117,9 @@ const MyDashboard: React.FC = () => {
         try {
             await removeActivity(skToRemove);
             setActivities((prev) => prev.filter((a) => a.sk !== skToRemove));
-            toast.success("Entry removed");
+            toast.success(t.entryRemoved);
         } catch (error: any) {
-            const msg = error?.message || "Failed to remove entry";
+            const msg = error?.message || t.removeFailed;
             if (msg.includes("ATTEMPT_LIMIT_REACHED")) {
                 setShowSupport(true);
             } else {
@@ -145,8 +148,8 @@ const MyDashboard: React.FC = () => {
         <div className="container py-4 mb-5">
             {/* Header */}
             <div className="text-center mb-4">
-                <h2 className="fw-bold dashboard-title">📋 My Dashboard</h2>
-                <p className="text-muted">Track all your applications, or browse what's currently open</p>
+                <h2 className="fw-bold dashboard-title">{t.title}</h2>
+                <p className="text-muted">{t.subtitle}</p>
             </div>
 
             {/* View Mode Toggle */}
@@ -155,19 +158,19 @@ const MyDashboard: React.FC = () => {
                     className={`dashboard-filter-btn ${viewMode === "tracked" ? "dashboard-filter-btn--active" : ""}`}
                     onClick={() => switchViewMode("tracked")}
                 >
-                    📊 My Applications
+                    {t.myApplications}
                 </button>
                 <button
                     className={`dashboard-filter-btn ${viewMode === "open" ? "dashboard-filter-btn--active" : ""}`}
                     onClick={() => switchViewMode("open")}
                 >
-                    🚀 Explore Open Opportunities
+                    {t.exploreOpen}
                 </button>
                 <button
                     className={`dashboard-filter-btn ${viewMode === "guidance" ? "dashboard-filter-btn--active" : ""}`}
                     onClick={() => switchViewMode("guidance")}
                 >
-                    🆘 My Guidance Bookings
+                    {t.myGuidanceBookings}
                 </button>
             </div>
 
@@ -178,7 +181,7 @@ const MyDashboard: React.FC = () => {
             ) : loading ? (
                 <div className="text-center py-5">
                     <div className="spinner-border" style={{ color: "var(--color-primary)" }} role="status">
-                        <span className="visually-hidden">Loading...</span>
+                        <span className="visually-hidden">{t.loading}</span>
                     </div>
                 </div>
             ) : (
@@ -212,7 +215,7 @@ const MyDashboard: React.FC = () => {
                     className={`dashboard-filter-btn ${filterStatus === "ALL" ? "dashboard-filter-btn--active" : ""}`}
                     onClick={() => setFilterStatus("ALL")}
                 >
-                    All ({activities.length})
+                    {t.all(activities.length)}
                 </button>
                 {STATUS_ORDER.map((s) => (
                     <button
@@ -229,16 +232,14 @@ const MyDashboard: React.FC = () => {
             {filteredActivities.length === 0 ? (
                 <div className="text-center py-5">
                     <div style={{ fontSize: 48 }}>📭</div>
-                    <h5 className="text-muted mt-3">No tracked notifications yet</h5>
-                    <p className="text-muted">
-                        Start by applying to a notification and tracking your progress!
-                    </p>
+                    <h5 className="text-muted mt-3">{t.emptyTitle}</h5>
+                    <p className="text-muted">{t.emptyDesc}</p>
                     <Link
                         to="/"
                         className="btn mt-2 text-white fw-semibold"
                         style={{ background: "var(--color-primary)", border: "none" }}
                     >
-                        Browse Notifications
+                        {t.browseNotifications}
                     </Link>
                 </div>
             ) : (
@@ -270,7 +271,7 @@ const MyDashboard: React.FC = () => {
                                                 style={{ width: 28, height: 28, padding: 0, fontSize: 12 }}
                                                 onClick={() => initiateRemove(activity.sk)}
                                                 disabled={removingId === activity.sk}
-                                                title="Remove tracking"
+                                                title={t.removeTracking}
                                             >
                                                 ✕
                                             </button>
@@ -325,7 +326,7 @@ const MyDashboard: React.FC = () => {
 
                                         {/* Date */}
                                         <small className="text-muted d-block mt-2">
-                                            Updated: {new Date(activity.modified_at).toLocaleDateString("en-IN", {
+                                            {t.updated}: {new Date(activity.modified_at).toLocaleDateString("en-IN", {
                                                 day: "numeric",
                                                 month: "short",
                                                 year: "numeric",
@@ -345,14 +346,14 @@ const MyDashboard: React.FC = () => {
                 show={showConfirm}
                 onHide={() => setShowConfirm(false)}
                 onConfirm={confirmRemove}
-                title="Remove Tracking Entry"
+                title={t.removeModalTitle}
                 variant="danger"
-                confirmText="Yes, Remove"
+                confirmText={t.removeModalConfirm}
                 message={
                     <>
-                        <p>Are you sure you want to remove this tracked application from your dashboard?</p>
+                        <p>{t.removeModalMessage}</p>
                         <div className="alert alert-warning mt-3 py-2 px-3 mb-0" style={{ fontSize: "0.85rem" }}>
-                            <strong>Note:</strong> You can only remove and re-mark a notification a maximum of <strong>3 times</strong>. Reaching this limit will disable tracking for this notification.
+                            {t.removeModalNote}
                         </div>
                     </>
                 }

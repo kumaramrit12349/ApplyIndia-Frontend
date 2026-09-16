@@ -331,6 +331,12 @@ h1, h2, h3, h4, h5, h6 {
   border-color: rgba(255, 255, 255, 0.26);
 }
 
+.ai-lang-toggle {
+  font-size: 0.72rem;
+  font-weight: 700;
+  font-family: "Noto Sans Devanagari", "Nirmala UI", sans-serif;
+}
+
 /* ========================================
    PROFILE SECTION (in navbar)
    ======================================== */

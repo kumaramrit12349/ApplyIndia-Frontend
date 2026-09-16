@@ -4,6 +4,7 @@ import { fetchPublicTestimonials } from "../services/public/guidanceFeedbackApi"
 import type { IPublicGuidanceFeedback } from "../interface/GuidanceInterface";
 import { GUIDANCE_TOPIC_TAGS } from "../constant/GuidanceConstant";
 import SEO from "../components/SEO/SEO";
+import { useTranslation } from "../i18n/useTranslation";
 import "./GuidanceTestimonialsPage.css";
 
 const getTagLabel = (value: string) => GUIDANCE_TOPIC_TAGS.find((t) => t.value === value)?.label || value;
@@ -11,6 +12,7 @@ const getTagLabel = (value: string) => GUIDANCE_TOPIC_TAGS.find((t) => t.value =
 const GuidanceTestimonialsPage: React.FC = () => {
   const [items, setItems] = useState<IPublicGuidanceFeedback[]>([]);
   const [loading, setLoading] = useState(true);
+  const { testimonials: t } = useTranslation();
 
   useEffect(() => {
     fetchPublicTestimonials()
@@ -29,10 +31,8 @@ const GuidanceTestimonialsPage: React.FC = () => {
         <div className="gtp-icon">
           <FiMessageCircle />
         </div>
-        <h1 className="gtp-title">What Users Say</h1>
-        <p className="text-muted">
-          Genuine feedback from users who booked a free guidance session while applying.
-        </p>
+        <h1 className="gtp-title">{t.title}</h1>
+        <p className="text-muted">{t.subtitle}</p>
       </div>
 
       {loading ? (
@@ -40,9 +40,7 @@ const GuidanceTestimonialsPage: React.FC = () => {
           <span className="spinner-border" style={{ color: "var(--color-primary)" }} />
         </div>
       ) : items.length === 0 ? (
-        <div className="text-center text-muted py-5">
-          No testimonials published yet — check back soon!
-        </div>
+        <div className="text-center text-muted py-5">{t.empty}</div>
       ) : (
         <div className="row g-4">
           {items.map((item) => (

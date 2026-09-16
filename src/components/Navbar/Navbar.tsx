@@ -4,6 +4,7 @@ import { FiSun, FiMoon } from "react-icons/fi";
 import ProfileSection from "../../features/notifications/components/ProfileSection";
 import { WEBSITE_NAME } from "../../constant/SharedConstant";
 import { useTheme } from "../../context/ThemeContext";
+import { useLanguage } from "../../context/LanguageContext";
 
 interface NavbarProps {
   isAuthenticated: boolean;
@@ -33,6 +34,7 @@ const Navbar: React.FC<NavbarProps> = ({
   onShowSignUpPopup,
 }) => {
   const { theme, toggleTheme } = useTheme();
+  const { language, toggleLanguage } = useLanguage();
 
   return (
     <nav className="ai-navbar">
@@ -48,6 +50,15 @@ const Navbar: React.FC<NavbarProps> = ({
 
         {/* RIGHT: Theme toggle + Profile */}
         <div className="d-flex align-items-center gap-2">
+          <button
+            type="button"
+            className="ai-theme-toggle ai-lang-toggle"
+            onClick={toggleLanguage}
+            aria-label={language === "en" ? "हिंदी में देखें" : "Switch to English"}
+            title={language === "en" ? "हिंदी में देखें" : "Switch to English"}
+          >
+            {language === "en" ? "हिं" : "EN"}
+          </button>
           <button
             type="button"
             className="ai-theme-toggle"

@@ -10,6 +10,7 @@ import { PROFILE_FIELD_LABELS } from "../../../constant/SharedConstant";
 import { useAuth } from "../../../context/AuthContext";
 import SEO from "../../../components/SEO/SEO";
 import { buildBreadcrumbSchema, SITE_URL } from "../../../seo/site";
+import { useTranslation } from "../../../i18n/useTranslation";
 
 const PAGE_SIZE = 20;
 
@@ -53,6 +54,7 @@ const CategoryView: React.FC = () => {
   const query = useQuery();
   const searchValue = query.get("searchValue") ?? "";
   const { isAuthenticated, onShowAuthPopup } = useAuth();
+  const { browse: t } = useTranslation();
 
   const [items, setItems] = useState<HomePageNotification[]>([]);
   const [lastKey, setLastKey] = useState<string | undefined>(undefined);
@@ -228,21 +230,21 @@ const CategoryView: React.FC = () => {
                 className={`ai-elig-toggle-btn ${mode === "all" ? "active" : ""}`}
                 onClick={() => setMode("all")}
               >
-                All Notifications
+                {t.allNotifications}
               </button>
               <button
                 type="button"
                 className={`ai-elig-toggle-btn ${mode === "eligible" ? "active" : ""}`}
                 onClick={handleShowEligible}
               >
-                ✓ Eligible Notifications
+                {t.eligibleNotifications}
               </button>
             </div>
           </div>
 
           {searchValue && mode === "all" && (
             <p className="text-center text-muted mb-3" style={{ fontSize: "0.92rem" }}>
-              Showing results for <strong>"{searchValue}"</strong>
+              {t.showingResultsFor(searchValue)}
             </p>
           )}
 
@@ -254,22 +256,20 @@ const CategoryView: React.FC = () => {
             ) : eligIncompleteProfile ? (
               <div className="ai-elig-prompt">
                 <div className="ai-elig-prompt-icon">⚠️</div>
-                <div className="ai-elig-prompt-title">Complete Your Profile</div>
-                <p className="ai-elig-prompt-text">
-                  We need a bit more information to calculate your eligibility:
-                </p>
+                <div className="ai-elig-prompt-title">{t.completeProfileTitle}</div>
+                <p className="ai-elig-prompt-text">{t.completeProfileDesc}</p>
                 <ul className="ai-elig-prompt-fields">
                   {eligMissingFields.map((field) => (
                     <li key={field}>{PROFILE_FIELD_LABELS[field] || field}</li>
                   ))}
                 </ul>
                 <a href="/profile" className="ai-elig-prompt-cta">
-                  Complete Profile
+                  {t.completeProfileCta}
                 </a>
               </div>
             ) : eligItems.length === 0 ? (
               <div className="text-center py-5 text-muted">
-                <b>No eligible notifications found based on your current profile.</b>
+                <b>{t.noEligibleFound}</b>
               </div>
             ) : (
               <ListView
@@ -286,7 +286,7 @@ const CategoryView: React.FC = () => {
             </div>
           ) : items.length === 0 ? (
             <div className="text-center py-5 text-muted">
-              <b>No notifications available.</b>
+              <b>{t.noNotificationsAvailable}</b>
             </div>
           ) : (
             <InfiniteScroll
@@ -301,7 +301,7 @@ const CategoryView: React.FC = () => {
               endMessage={
                 !hasMore && (
                   <p className="text-center text-muted py-4 mb-0">
-                    <b>No more notifications.</b>
+                    <b>{t.noMoreNotifications}</b>
                   </p>
                 )
               }

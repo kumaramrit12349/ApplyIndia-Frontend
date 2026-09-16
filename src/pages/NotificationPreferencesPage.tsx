@@ -3,12 +3,14 @@ import { toast } from "react-toastify";
 import { fetchNotificationPreferences, updateNotificationPreferences } from "../services/authApi";
 import { NOTIFICATION_TOPICS } from "../constant/SharedConstant";
 import { FiEdit2, FiBell } from "react-icons/fi";
+import { useTranslation } from "../i18n/useTranslation";
 
 interface NotificationPreferencesPageProps {
     onProfileUpdated?: () => void;
 }
 
 const NotificationPreferencesPage: React.FC<NotificationPreferencesPageProps> = ({ onProfileUpdated }) => {
+    const { notifPrefs: t } = useTranslation();
     const [loading, setLoading] = useState(true);
     const [updating, setUpdating] = useState(false);
     const [isEditMode, setIsEditMode] = useState(false);
@@ -74,7 +76,7 @@ const NotificationPreferencesPage: React.FC<NotificationPreferencesPageProps> = 
         e.preventDefault();
         const changedFields = getChangedFields();
         if (Object.keys(changedFields).length === 0) {
-            toast.info("No changes to save");
+            toast.info(t.noChangesToSave);
             setIsEditMode(false);
             return;
         }
@@ -82,12 +84,12 @@ const NotificationPreferencesPage: React.FC<NotificationPreferencesPageProps> = 
         setUpdating(true);
         try {
             await updateNotificationPreferences(changedFields);
-            toast.success("Notification preferences updated successfully!");
+            toast.success(t.updated);
             setIsEditMode(false);
             await fetchPrefs();
             onProfileUpdated?.();
         } catch (error: any) {
-            toast.error(error.message || "Failed to update notification preferences");
+            toast.error(error.message || t.updateFailed);
         } finally {
             setUpdating(false);
         }
@@ -97,7 +99,7 @@ const NotificationPreferencesPage: React.FC<NotificationPreferencesPageProps> = 
         return (
             <div className="container py-5 text-center">
                 <div className="spinner-border" style={{ color: "var(--color-primary)" }} role="status">
-                    <span className="visually-hidden">Loading...</span>
+                    <span className="visually-hidden">{t.loading}</span>
                 </div>
             </div>
         );
@@ -110,13 +112,13 @@ const NotificationPreferencesPage: React.FC<NotificationPreferencesPageProps> = 
                     <div className="ai-list-card overflow-hidden">
                         <div className="position-relative ai-profile-banner">
                             <div className="d-flex justify-content-between align-items-start position-relative z-index-2 w-100 p-4">
-                                <h3 className="text-white fw-bold mb-0" style={{ textShadow: "0 2px 4px rgba(0,0,0,0.2)" }}>Notification Preferences</h3>
+                                <h3 className="text-white fw-bold mb-0" style={{ textShadow: "0 2px 4px rgba(0,0,0,0.2)" }}>{t.title}</h3>
                                 {!isEditMode && (
                                     <button
                                         className="ai-profile-edit-btn"
                                         onClick={() => setIsEditMode(true)}
                                     >
-                                        <FiEdit2 size={16} /> Edit Preferences
+                                        <FiEdit2 size={16} /> {t.editPreferences}
                                     </button>
                                 )}
                             </div>
@@ -129,8 +131,8 @@ const NotificationPreferencesPage: React.FC<NotificationPreferencesPageProps> = 
                                         <div className="ai-profile-data-box">
                                             <div className="icon"><FiBell /></div>
                                             <div className="info">
-                                                <label>Email Notifications</label>
-                                                <p>{formData.email_notifications ? "Enabled" : "Disabled"}</p>
+                                                <label>{t.emailNotifications}</label>
+                                                <p>{formData.email_notifications ? t.enabled : t.disabled}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -138,8 +140,8 @@ const NotificationPreferencesPage: React.FC<NotificationPreferencesPageProps> = 
                                         <div className="ai-profile-data-box">
                                             <div className="icon"><FiBell /></div>
                                             <div className="info">
-                                                <label>WhatsApp Notifications</label>
-                                                <p>{formData.whatsapp_notifications ? "Enabled" : "Disabled"}</p>
+                                                <label>{t.whatsappNotifications}</label>
+                                                <p>{formData.whatsapp_notifications ? t.enabled : t.disabled}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -147,13 +149,13 @@ const NotificationPreferencesPage: React.FC<NotificationPreferencesPageProps> = 
                                         <div className="ai-profile-data-box">
                                             <div className="icon"><FiBell /></div>
                                             <div className="info">
-                                                <label>Subscribed Topics</label>
+                                                <label>{t.subscribedTopics}</label>
                                                 <p>
                                                     {formData.subscribed_topics.length > 0
                                                         ? formData.subscribed_topics
-                                                            .map((t) => NOTIFICATION_TOPICS.find((topic) => topic.value === t)?.label || t)
+                                                            .map((topicVal) => NOTIFICATION_TOPICS.find((topic) => topic.value === topicVal)?.label || topicVal)
                                                             .join(", ")
-                                                        : "All topics (no filter)"}
+                                                        : t.allTopics}
                                                 </p>
                                             </div>
                                         </div>
@@ -175,7 +177,7 @@ const NotificationPreferencesPage: React.FC<NotificationPreferencesPageProps> = 
                                                         onChange={handleChange}
                                                     />
                                                     <label className="form-check-label" htmlFor="emailNotificationsSwitch">
-                                                        Email Notifications
+                                                        {t.emailNotifications}
                                                     </label>
                                                 </div>
                                                 <div className="form-check form-switch">
@@ -189,18 +191,16 @@ const NotificationPreferencesPage: React.FC<NotificationPreferencesPageProps> = 
                                                         onChange={handleChange}
                                                     />
                                                     <label className="form-check-label" htmlFor="whatsappNotificationsSwitch">
-                                                        WhatsApp Notifications
+                                                        {t.whatsappNotifications}
                                                     </label>
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="col-12">
                                             <label className="form-label fw-semibold text-secondary small mt-3">
-                                                Subscribed Topics
+                                                {t.subscribedTopics}
                                             </label>
-                                            <div className="form-text text-muted small mb-2 mt-0">
-                                                Leave all unchecked to receive notifications on every topic.
-                                            </div>
+                                            <div className="form-text text-muted small mb-2 mt-0">{t.topicsHint}</div>
                                             <div className="row g-2">
                                                 {NOTIFICATION_TOPICS.map((topic) => (
                                                     <div key={topic.value} className="col-6 col-md-4">
@@ -233,7 +233,7 @@ const NotificationPreferencesPage: React.FC<NotificationPreferencesPageProps> = 
                                             disabled={updating}
                                             style={{ borderRadius: "8px" }}
                                         >
-                                            Cancel
+                                            {t.cancel}
                                         </button>
                                         <button
                                             type="submit"
@@ -241,7 +241,7 @@ const NotificationPreferencesPage: React.FC<NotificationPreferencesPageProps> = 
                                             disabled={updating || Object.keys(getChangedFields()).length === 0}
                                             style={{ background: "linear-gradient(135deg, var(--color-secondary) 0%, var(--color-primary) 100%)", border: "none", borderRadius: "8px" }}
                                         >
-                                            {updating ? "Saving..." : "Save Changes"}
+                                            {updating ? t.saving : t.saveChanges}
                                         </button>
                                     </div>
                                 </form>

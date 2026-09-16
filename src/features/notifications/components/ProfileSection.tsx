@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "../../../i18n/useTranslation";
 
 interface ProfileSectionProps {
   isAuthenticated: boolean;
@@ -47,6 +48,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({
   const [open, setOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const { nav: t } = useTranslation();
 
   /* ---------- Close on outside click ---------- */
   useEffect(() => {
@@ -74,10 +76,10 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({
     return (
       <div className="ai-auth-buttons">
         <button className="ai-btn-login" onClick={onShowAuthPopup}>
-          Log in
+          {t.login}
         </button>
         <button className="ai-btn-signup" onClick={onShowSignUpPopup ?? onShowAuthPopup}>
-          Sign up
+          {t.signup}
         </button>
       </div>
     );
@@ -185,35 +187,35 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({
               className="ai-dropdown-item"
               onClick={() => { setOpen(false); navigate("/dashboard"); }}
             >
-              📋 My Dashboard
+              📋 {t.myDashboard}
             </button>
 
             <button
               className="ai-dropdown-item"
               onClick={() => { setOpen(false); navigate("/dashboard?tab=guidance"); }}
             >
-              🆘 My Guidance Bookings
+              🆘 {t.myGuidanceBookings}
             </button>
 
             <button
               className="ai-dropdown-item"
               onClick={() => { setOpen(false); navigate("/profile"); }}
             >
-              👤 Profile
+              👤 {t.profile}
             </button>
 
             <button
               className="ai-dropdown-item"
               onClick={() => { setOpen(false); navigate("/notification-preferences"); }}
             >
-              🔔 Notification Preferences
+              🔔 {t.notificationPreferences}
             </button>
 
             <button
               className="ai-dropdown-item danger"
               onClick={() => { setOpen(false); onLogout(); }}
             >
-              🚪 Logout
+              🚪 {t.logout}
             </button>
           </div>
         </div>

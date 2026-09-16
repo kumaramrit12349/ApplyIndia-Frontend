@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import { resendVerificationCode, verifyAccount } from "../services/authApi";
+import { useTranslation } from "../i18n/useTranslation";
 
 interface VerifyAccountPopupProps {
   show: boolean;
@@ -16,6 +17,7 @@ const VerifyAccountPopup: React.FC<VerifyAccountPopupProps> = ({
   onClose,
   onVerified,
 }) => {
+  const { authFlow: t } = useTranslation();
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string>("");
@@ -27,10 +29,10 @@ const VerifyAccountPopup: React.FC<VerifyAccountPopupProps> = ({
 
     try {
       await verifyAccount(email, code); // calls /api/auth/confirm
-      setMessage("Account verified. You can now log in.");
+      setMessage(t.accountVerified);
       onVerified(); // parent will update auth state / close popup
     } catch (err: any) {
-      setMessage(err?.message || "Verification failed");
+      setMessage(err?.message || t.verificationFailed);
     } finally {
       setLoading(false);
     }
@@ -41,9 +43,9 @@ const VerifyAccountPopup: React.FC<VerifyAccountPopupProps> = ({
     setMessage("");
     try {
       await resendVerificationCode(email); // calls /api/auth/resend-code
-      setMessage("Verification code resent to your email.");
+      setMessage(t.codeResent);
     } catch (err: any) {
-      setMessage(err?.message || "Failed to resend code");
+      setMessage(err?.message || t.resendFailed);
     } finally {
       setLoading(false);
     }
@@ -53,24 +55,21 @@ const VerifyAccountPopup: React.FC<VerifyAccountPopupProps> = ({
     <Modal show={show} onHide={onClose} centered contentClassName="border-0 shadow-lg rounded-4">
       <Modal.Header closeButton className="border-0 pb-1">
         <Modal.Title className="fs-4" style={{ fontWeight: 800, color: "var(--color-heading)" }}>
-          Verify your account
+          {t.verifyAccountTitle}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body className="pt-0 px-4 pb-4">
-        <p className="mb-3">
-          We have sent a verification code to <strong>{email}</strong>. Enter it
-          below to activate your account.
-        </p>
+        <p className="mb-3">{t.verifyAccountDesc(email)}</p>
         <form onSubmit={handleVerify}>
           <div className="mb-3">
             <label className="form-label fw-semibold" htmlFor="code">
-              Verification code
+              {t.verificationCode}
             </label>
             <input
               id="code"
               className="form-control bg-body-tertiary"
               style={{ borderRadius: 10, fontSize: "1.08em" }}
-              placeholder="Enter code"
+              placeholder={t.enterCode}
               value={code}
               onChange={(e) => setCode(e.target.value)}
               required
@@ -86,7 +85,7 @@ const VerifyAccountPopup: React.FC<VerifyAccountPopupProps> = ({
             }}
             disabled={loading}
           >
-            {loading ? "Verifying..." : "Verify"}
+            {loading ? t.verifying : t.verify}
           </button>
         </form>
         <Button
@@ -97,7 +96,7 @@ const VerifyAccountPopup: React.FC<VerifyAccountPopupProps> = ({
           onClick={handleResend}
           disabled={loading}
         >
-          Resend code
+          {t.resendCode}
         </Button>
         {message && (
           <div className="mt-3 text-center small text-muted">{message}</div>

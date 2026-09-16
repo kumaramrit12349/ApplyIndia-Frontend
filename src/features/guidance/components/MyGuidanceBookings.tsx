@@ -9,17 +9,10 @@ import { GUIDANCE_CANCEL_CUTOFF_MINUTES, MAX_GUIDANCE_BOOKINGS_PER_NOTIFICATION 
 import { makeSlug } from "../../../utils/utils";
 import ConfirmationModal from "../../../components/Generic/ConfirmationModal";
 import GuidanceFeedbackModal from "../../../components/Guidance/GuidanceFeedbackModal";
+import { useTranslation } from "../../../i18n/useTranslation";
 import "./MyGuidanceBookings.css";
 
 const PAGE_SIZE = 20;
-
-const STATUS_LABEL: Record<string, { label: string; className: string }> = {
-  upcoming: { label: "Upcoming", className: "mgb-badge--upcoming" },
-  completed: { label: "Completed", className: "mgb-badge--completed" },
-  no_show: { label: "No Show", className: "mgb-badge--no-show" },
-  cancelled_by_user: { label: "Cancelled", className: "mgb-badge--cancelled" },
-  cancelled_by_admin: { label: "Cancelled by Apply India", className: "mgb-badge--cancelled" },
-};
 
 const formatDateTime = (start: number, end: number) =>
   `${new Date(start).toLocaleDateString("en-IN", { day: "numeric", month: "short" })} · ${new Date(start).toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit" })}–${new Date(end).toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit" })}`;
@@ -38,6 +31,14 @@ const isJoinable = (booking: IGuidanceBooking, now: number) =>
 const isToday = (epoch: number, now: number) => new Date(epoch).toDateString() === new Date(now).toDateString();
 
 const MyGuidanceBookings: React.FC = () => {
+  const { myBookings: t } = useTranslation();
+  const STATUS_LABEL: Record<string, { label: string; className: string }> = {
+    upcoming: { label: t.statusUpcoming, className: "mgb-badge--upcoming" },
+    completed: { label: t.statusCompleted, className: "mgb-badge--completed" },
+    no_show: { label: t.statusNoShow, className: "mgb-badge--no-show" },
+    cancelled_by_user: { label: t.statusCancelled, className: "mgb-badge--cancelled" },
+    cancelled_by_admin: { label: t.statusCancelledByAdmin, className: "mgb-badge--cancelled" },
+  };
   const [bookings, setBookings] = useState<IGuidanceBooking[]>([]);
   const [loading, setLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);
@@ -61,7 +62,7 @@ const MyGuidanceBookings: React.FC = () => {
       setLastEvaluatedKey(res.lastEvaluatedKey);
       setHasMore(!!res.lastEvaluatedKey);
     } catch {
-      toast.error("Failed to load your guidance bookings");
+      toast.error(t.loadFailed);
       setHasMore(false);
     } finally {
       setLoading(false);
@@ -80,13 +81,13 @@ const MyGuidanceBookings: React.FC = () => {
     try {
       await cancelGuidanceBooking(sk);
       setBookings((prev) => prev.map((b) => (b.sk === sk ? { ...b, status: "cancelled_by_user" } : b)));
-      toast.success("Booking cancelled");
+      toast.success(t.cancelledToast);
     } catch (error) {
       const msg = error instanceof Error ? error.message : "";
       if (msg.includes("CANCEL_WINDOW_PASSED")) {
-        toast.error(`Bookings can only be cancelled up to ${GUIDANCE_CANCEL_CUTOFF_MINUTES} minutes before the session.`);
+        toast.error(t.cancelWindowPassed(GUIDANCE_CANCEL_CUTOFF_MINUTES));
       } else {
-        toast.error("Failed to cancel booking");
+        toast.error(t.cancelFailed);
       }
     }
   };
@@ -103,10 +104,8 @@ const MyGuidanceBookings: React.FC = () => {
     return (
       <div className="text-center py-5 text-muted">
         <div style={{ fontSize: 40 }}>🆘</div>
-        <b>No guidance sessions booked yet.</b>
-        <p className="mt-2">
-          Stuck while applying? Open a notification and look for "Stuck While Applying?" to book a free session.
-        </p>
+        <b>{t.emptyTitle}</b>
+        <p className="mt-2">{t.emptyDesc}</p>
       </div>
     );
   }
@@ -144,7 +143,7 @@ const MyGuidanceBookings: React.FC = () => {
                   </div>
                   <div className="mgb-time">
                     <FiClock aria-hidden="true" /> {formatDateTime(booking.slot_start_time, booking.slot_end_time)}
-                    {todaysSlot && <span className="mgb-today-tag">Today</span>}
+                    {todaysSlot && <span className="mgb-today-tag">{t.today}</span>}
                   </div>
                   {booking.issue_note && <p className="mgb-issue">"{booking.issue_note}"</p>}
 
@@ -152,27 +151,27 @@ const MyGuidanceBookings: React.FC = () => {
                     {booking.status === "upcoming" && (
                       isJoinable(booking, now) ? (
                         <a href={booking.meet_link} target="_blank" rel="noopener noreferrer" className="mgb-btn mgb-btn--join">
-                          <FiVideo aria-hidden="true" /> Join Meeting
+                          <FiVideo aria-hidden="true" /> {t.joinMeeting}
                         </a>
                       ) : (
                         <button
                           type="button"
                           className="mgb-btn mgb-btn--join mgb-btn--disabled"
                           disabled
-                          title={`Available ${JOIN_WINDOW_BEFORE_MS / 60000} minutes before your session starts`}
+                          title={t.joinAvailableHint(JOIN_WINDOW_BEFORE_MS / 60000)}
                         >
-                          <FiVideo aria-hidden="true" /> Join Meeting
+                          <FiVideo aria-hidden="true" /> {t.joinMeeting}
                         </button>
                       )
                     )}
                     {isCancellable(booking) && (
                       <button type="button" className="mgb-btn mgb-btn--cancel" onClick={() => setCancellingSk(booking.sk)}>
-                        <FiXCircle aria-hidden="true" /> Cancel
+                        <FiXCircle aria-hidden="true" /> {t.cancel}
                       </button>
                     )}
                     {booking.status === "completed" && !feedbackGiven && (
                       <button type="button" className="mgb-btn mgb-btn--feedback" onClick={() => setFeedbackBooking(booking)}>
-                        <FiMessageSquare aria-hidden="true" /> Give Feedback
+                        <FiMessageSquare aria-hidden="true" /> {t.giveFeedback}
                       </button>
                     )}
                   </div>
@@ -183,23 +182,20 @@ const MyGuidanceBookings: React.FC = () => {
         </div>
       </InfiniteScroll>
 
-      <p className="text-muted small mt-3 mb-0">
-        Up to {MAX_GUIDANCE_BOOKINGS_PER_NOTIFICATION} free guidance sessions per application.
-      </p>
+      <p className="text-muted small mt-3 mb-0">{t.maxSessionsNote(MAX_GUIDANCE_BOOKINGS_PER_NOTIFICATION)}</p>
 
       <ConfirmationModal
         show={!!cancellingSk}
         onHide={() => setCancellingSk(null)}
         onConfirm={confirmCancel}
-        title="Cancel Guidance Session"
+        title={t.cancelModalTitle}
         variant="danger"
-        confirmText="Yes, Cancel"
+        confirmText={t.cancelModalConfirm}
         message={
           <>
-            <p>Are you sure you want to cancel this guidance session? This slot will become available for other users.</p>
+            <p>{t.cancelModalMessage}</p>
             <div className="alert alert-warning mb-0 py-2 px-3" style={{ fontSize: "0.85rem" }}>
-              <strong>Note:</strong> Cancelling will count as 1 of your {MAX_GUIDANCE_BOOKINGS_PER_NOTIFICATION} free
-              sessions for this application.
+              {t.cancelModalNote(MAX_GUIDANCE_BOOKINGS_PER_NOTIFICATION)}
             </div>
           </>
         }

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "../i18n/useTranslation";
 import "./CongratulationsPopup.css";
 
 interface CongratulationsPopupProps {
@@ -20,11 +21,15 @@ const CONFETTI_COLORS = [
 const CongratulationsPopup: React.FC<CongratulationsPopupProps> = ({
     show,
     onClose,
-    title = "🎉 Congratulations!",
-    message = "You've taken the first step towards your dream!",
-    actionLabel = "Continue",
+    title,
+    message,
+    actionLabel,
     onAction,
 }) => {
+    const { congrats: t } = useTranslation();
+    const resolvedTitle = title ?? t.defaultTitle;
+    const resolvedMessage = message ?? t.defaultMessage;
+    const resolvedActionLabel = actionLabel ?? t.continueLabel;
     const [confettiPieces, setConfettiPieces] = useState<
         { id: number; left: number; color: string; delay: number; size: number; type: string }[]
     >([]);
@@ -68,10 +73,10 @@ const CongratulationsPopup: React.FC<CongratulationsPopupProps> = ({
 
             <div className="congrats-modal" onClick={(e) => e.stopPropagation()}>
                 <div className="congrats-emoji">🏆</div>
-                <h2 className="congrats-title">{title}</h2>
-                <p className="congrats-message">{message}</p>
+                <h2 className="congrats-title">{resolvedTitle}</h2>
+                <p className="congrats-message">{resolvedMessage}</p>
                 <button className="congrats-button" onClick={onAction || onClose}>
-                    {actionLabel}
+                    {resolvedActionLabel}
                 </button>
             </div>
         </div>

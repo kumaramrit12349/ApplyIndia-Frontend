@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { FiLifeBuoy, FiClock, FiYoutube } from "react-icons/fi";
 import { fetchBookingAllowance } from "../../services/private/guidanceApi";
 import type { IGuidanceBookingAllowance } from "../../interface/GuidanceInterface";
+import { useTranslation } from "../../i18n/useTranslation";
 import GuidanceBookingModal from "./GuidanceBookingModal";
 import "./Guidance.css";
 
@@ -23,6 +24,7 @@ const GuidanceBookingCard: React.FC<GuidanceBookingCardProps> = ({
 }) => {
   const [allowance, setAllowance] = useState<IGuidanceBookingAllowance | null>(null);
   const [showModal, setShowModal] = useState(false);
+  const { guidance: t } = useTranslation();
 
   const loadAllowance = () => {
     if (!isAuthenticated) return;
@@ -53,22 +55,17 @@ const GuidanceBookingCard: React.FC<GuidanceBookingCardProps> = ({
           <div className="ndv-card-icon ndv-card-icon--indigo">
             <FiLifeBuoy />
           </div>
-          <h3 className="ndv-card-title">Stuck While Applying?</h3>
+          <h3 className="ndv-card-title">{t.cardTitle}</h3>
         </div>
         <div className="ndv-card-body">
-          <p className="guidance-card-intro">
-            Before booking, follow these 3 quick steps — most applicants can finish on their own
-            after watching the video.
-          </p>
+          <p className="guidance-card-intro">{t.intro}</p>
 
           <ol className="guidance-steps">
             <li className="guidance-step">
               <span className="guidance-step-num">1</span>
               <div className="guidance-step-body">
-                <div className="guidance-step-title">Watch the guidance video</div>
-                <div className="guidance-step-desc">
-                  See a walkthrough of the exact application form and common mistakes to avoid.
-                </div>
+                <div className="guidance-step-title">{t.step1Title}</div>
+                <div className="guidance-step-desc">{t.step1Desc}</div>
                 {guidanceLink ? (
                   <a
                     href={guidanceLink}
@@ -76,11 +73,11 @@ const GuidanceBookingCard: React.FC<GuidanceBookingCardProps> = ({
                     rel="noopener noreferrer"
                     className="guidance-chip-link guidance-chip-link--solid"
                   >
-                    <FiYoutube aria-hidden="true" /> Watch: How to Apply
+                    <FiYoutube aria-hidden="true" /> {t.watchVideo}
                   </a>
                 ) : (
                   <div className="small text-muted" style={{ marginTop: 4 }}>
-                    Video not available for this notification yet.
+                    {t.videoUnavailable}
                   </div>
                 )}
               </div>
@@ -89,27 +86,21 @@ const GuidanceBookingCard: React.FC<GuidanceBookingCardProps> = ({
             <li className="guidance-step">
               <span className="guidance-step-num">2</span>
               <div className="guidance-step-body">
-                <div className="guidance-step-title">Try applying yourself</div>
-                <div className="guidance-step-desc">
-                  Head to the official application portal and fill the form using what you just
-                  watched.
-                </div>
+                <div className="guidance-step-title">{t.step2Title}</div>
+                <div className="guidance-step-desc">{t.step2Desc}</div>
               </div>
             </li>
 
             <li className="guidance-step">
               <span className="guidance-step-num">3</span>
               <div className="guidance-step-body">
-                <div className="guidance-step-title">Still stuck? Book a free session</div>
-                <div className="guidance-step-desc">
-                  Get a FREE 15-minute 1:1 online guidance session. You can book up to 3 free
-                  sessions for this application.
-                </div>
+                <div className="guidance-step-title">{t.step3Title}</div>
+                <div className="guidance-step-desc">{t.step3Desc}</div>
 
                 {isAuthenticated && allowance && (
                   <div className="guidance-status-panel guidance-status-panel--meter">
                     <div className="guidance-card-allowance">
-                      <span>{allowance.used} of {allowance.max} free sessions used</span>
+                      <span>{t.sessionsUsed(allowance.used, allowance.max)}</span>
                       <div className="guidance-card-progress">
                         <div
                           className="guidance-card-progress-fill"
@@ -122,20 +113,18 @@ const GuidanceBookingCard: React.FC<GuidanceBookingCardProps> = ({
 
                 {isAuthenticated && allowance?.hasActiveUpcoming ? (
                   <div className="guidance-status-panel guidance-status-panel--info">
-                    <div>You have an upcoming session booked for this application.</div>
+                    <div>{t.upcomingSession}</div>
                     <Link
                       to="/dashboard?tab=guidance"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="guidance-chip-link guidance-chip-link--solid"
                     >
-                      Manage My Booking <span className="guidance-link-arrow">→</span>
+                      {t.manageBooking} <span className="guidance-link-arrow">→</span>
                     </Link>
                   </div>
                 ) : isAuthenticated && usedUp ? (
-                  <div className="guidance-status-panel guidance-status-panel--muted">
-                    You've used all 3 free guidance sessions for this application.
-                  </div>
+                  <div className="guidance-status-panel guidance-status-panel--muted">{t.usedUp}</div>
                 ) : (
                   <button
                     type="button"
@@ -143,7 +132,7 @@ const GuidanceBookingCard: React.FC<GuidanceBookingCardProps> = ({
                     style={{ marginTop: 8 }}
                     onClick={handleBookClick}
                   >
-                    <FiClock aria-hidden="true" /> Book Free Guidance Slot
+                    <FiClock aria-hidden="true" /> {t.bookSlot}
                   </button>
                 )}
               </div>
@@ -152,7 +141,7 @@ const GuidanceBookingCard: React.FC<GuidanceBookingCardProps> = ({
 
           <div className="guidance-card-footer">
             <Link to="/testimonials" target="_blank" rel="noopener noreferrer" className="guidance-chip-link guidance-chip-link--ghost">
-              Read what others say <span className="guidance-link-arrow">→</span>
+              {t.readTestimonials} <span className="guidance-link-arrow">→</span>
             </Link>
           </div>
         </div>
