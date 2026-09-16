@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Dropdown } from "react-bootstrap";
 import { FiChevronDown } from "react-icons/fi";
 import { NOTIFICATION_CATEGORIES, INDIAN_STATES } from "../../constant/SharedConstant";
+import { useTranslation } from "../../i18n/useTranslation";
 
 interface SearchBarProps {
   onSearch?: (query: string, filter: string) => void;
@@ -12,11 +13,12 @@ interface SearchBarProps {
 
 const SearchBar: React.FC<SearchBarProps> = ({
   onSearch,
-  placeholder = "Search notifications...",
+  placeholder,
   availableStates,
 }) => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { search: t } = useTranslation();
 
   const categoryMatch = location.pathname.match(/\/notification\/category\/([^/]+)/i);
   const stateMatch = location.pathname.match(/\/notification\/state\/([^/]+)/i);
@@ -73,7 +75,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
   const currentFilterLabel =
     NOTIFICATION_CATEGORIES.find((c) => c.value === filter)?.label ??
     visibleStates.find((s) => s.value === filter)?.label ??
-    "Home";
+    t.home;
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -99,7 +101,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
                   {currentFilterLabel} <FiChevronDown className="ai-search-select-caret" aria-hidden="true" />
                 </Dropdown.Toggle>
                 <Dropdown.Menu style={{ maxHeight: 320, overflowY: "auto" }}>
-                  <Dropdown.Header>Categories</Dropdown.Header>
+                  <Dropdown.Header>{t.categoriesHeader}</Dropdown.Header>
                   {NOTIFICATION_CATEGORIES.map((c) => (
                     <Dropdown.Item key={c.value} eventKey={c.value} active={filter === c.value}>
                       {c.label}
@@ -107,7 +109,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
                   ))}
                   {visibleStates.length > 0 && (
                     <>
-                      <Dropdown.Header>States / Regions</Dropdown.Header>
+                      <Dropdown.Header>{t.statesHeader}</Dropdown.Header>
                       {visibleStates.map((s) => (
                         <Dropdown.Item key={s.value} eventKey={s.value} active={filter === s.value}>
                           {s.label}
@@ -120,7 +122,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
               <input
                 type="text"
                 value={query}
-                placeholder={placeholder}
+                placeholder={placeholder ?? t.placeholder}
                 onChange={handleInputChange}
                 onKeyDown={(e) => e.key === "Enter" && handleSearch()}
               />
@@ -130,7 +132,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
                   type="button"
                   onClick={handleClearSearch}
                   tabIndex={-1}
-                  aria-label="Clear search"
+                  aria-label={t.clearSearch}
                 >
                   &#x2715;
                 </button>
@@ -145,7 +147,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
                   cursor: !query.trim() ? 'not-allowed' : 'pointer'
                 }}
               >
-                Search
+                {t.search}
               </button>
             </div>
           </div>

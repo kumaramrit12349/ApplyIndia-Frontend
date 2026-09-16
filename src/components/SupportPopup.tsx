@@ -1,5 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import { useTranslation } from "../i18n/useTranslation";
 
 interface SupportPopupProps {
   show: boolean;
@@ -7,6 +8,8 @@ interface SupportPopupProps {
 }
 
 const SupportPopup: React.FC<SupportPopupProps> = ({ show, onClose }) => {
+  const { support: t } = useTranslation();
+
   if (!show) return null;
 
   return ReactDOM.createPortal(
@@ -15,18 +18,18 @@ const SupportPopup: React.FC<SupportPopupProps> = ({ show, onClose }) => {
         <button
           className="ai-wishlist-popup-close"
           onClick={onClose}
-          aria-label="Close"
+          aria-label={t.close}
         >
           ✕
         </button>
         <div className="ai-wishlist-popup-emoji">⚠️</div>
         <h4 className="ai-wishlist-popup-title" style={{ fontSize: "1.2rem", marginBottom: "12px", color: "#dc3545" }}>
-          Limit Reached
+          {t.limitReached}
         </h4>
         <p className="ai-wishlist-popup-message" style={{ fontSize: "0.95rem", lineHeight: "1.5" }}>
-          You have reached the maximum limit of 3 attempts for this notification. 
+          {t.limitReachedDesc}
           <br /><br />
-          If you want to track or mark this notification again, please mail us at:
+          {t.contactPrompt}
           <br />
           <a href="mailto:support@applyinida.online" style={{ fontWeight: "bold", color: "var(--color-secondary)", textDecoration: "none" }}>
             support@applyinida.online
@@ -37,7 +40,7 @@ const SupportPopup: React.FC<SupportPopupProps> = ({ show, onClose }) => {
           style={{ width: "100%", marginTop: "10px", background: "#f3f4f6", color: "#4b5563", boxShadow: "none" }}
           onClick={onClose}
         >
-          Close
+          {t.close}
         </button>
       </div>
     </div>,

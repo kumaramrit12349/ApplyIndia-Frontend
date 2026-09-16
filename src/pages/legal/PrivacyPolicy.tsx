@@ -1,39 +1,37 @@
 import { FiShield } from "react-icons/fi";
 import LegalLayout from "../../components/LegalLayout";
 import { WEBSITE_NAME } from "../../constant/SharedConstant";
+import { useTranslation } from "../../i18n/useTranslation";
 
 export default function PrivacyPolicy() {
+  const { legal: t } = useTranslation();
   return (
     <LegalLayout
-      title="Privacy Policy"
+      title={t.privacyTitle}
       icon={FiShield}
-      description="How we collect, use, and protect your information on Apply India."
+      description={t.privacyDesc}
     >
       <p>
-        At <strong>{WEBSITE_NAME}</strong>, we respect your privacy and are
-        committed to protecting your personal information.
+        At <strong>{WEBSITE_NAME}</strong>, {t.privacyIntro}
       </p>
 
-      <h5>Information We Collect</h5>
+      <h5>{t.infoWeCollect}</h5>
       <ul>
-        <li>Basic usage data (pages visited, device type)</li>
-        <li>Cookies for analytics and ads</li>
+        <li>{t.infoWeCollectItem1}</li>
+        <li>{t.infoWeCollectItem2}</li>
       </ul>
 
-      <h5>How We Use Information</h5>
+      <h5>{t.howWeUseInfo}</h5>
       <ul>
-        <li>Improve website experience</li>
-        <li>Display relevant advertisements</li>
-        <li>Analyze traffic and performance</li>
+        <li>{t.howWeUseInfoItem1}</li>
+        <li>{t.howWeUseInfoItem2}</li>
+        <li>{t.howWeUseInfoItem3}</li>
       </ul>
 
-      <h5>Cookies & Google AdSense</h5>
+      <h5>{t.cookiesAdsense}</h5>
+      <p>{t.cookiesAdsenseDesc}</p>
       <p>
-        We use Google AdSense, which uses cookies (including DoubleClick cookie)
-        to serve ads based on your visits to this and other websites.
-      </p>
-      <p>
-        Users may opt out of personalized advertising by visiting:
+        {t.optOutPrompt}
         <br />
         <a
           href="https://adssettings.google.com"
@@ -44,17 +42,11 @@ export default function PrivacyPolicy() {
         </a>
       </p>
 
-      <h5>Third-Party Links</h5>
-      <p>
-        Our website may contain links to external websites. We are not
-        responsible for their privacy practices.
-      </p>
+      <h5>{t.thirdPartyLinks}</h5>
+      <p>{t.thirdPartyLinksDesc}</p>
 
-      <h5>Contact Us</h5>
-      <p>
-        If you have any questions, contact us via the feedback option available
-        on our website.
-      </p>
+      <h5>{t.contactUs}</h5>
+      <p>{t.contactUsDesc}</p>
     </LegalLayout>
   );
 }

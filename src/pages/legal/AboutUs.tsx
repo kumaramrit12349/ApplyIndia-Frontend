@@ -2,13 +2,15 @@ import { FiInfo } from "react-icons/fi";
 import LegalLayout from "../../components/LegalLayout";
 import { WEBSITE_NAME } from "../../constant/SharedConstant";
 import { SITE_URL } from "../../seo/site";
+import { useTranslation } from "../../i18n/useTranslation";
 
 export default function AboutUs() {
+  const { legal: t } = useTranslation();
   return (
     <LegalLayout
-      title="About Apply India"
+      title={t.aboutTitle}
       icon={FiInfo}
-      description="Learn about Apply India Online, a platform for government jobs, sarkari naukri updates, exam notifications, results, admissions, and scholarships across India."
+      description={t.aboutDesc}
       canonical={`${SITE_URL}/about`}
       keywords={[
         "about apply india",
@@ -18,21 +20,13 @@ export default function AboutUs() {
       ]}
     >
       <p>
-        <strong>{WEBSITE_NAME}</strong>, also known as <strong>Apply India Online</strong>,
-        is a platform dedicated to publishing verified government job notifications,
-        exam updates, admit cards, results, admissions, and educational opportunities
-        across India.
+        <strong>{WEBSITE_NAME}</strong>, also known as <strong>Apply India Online</strong>,{" "}
+        {t.aboutP1}
       </p>
 
-      <p>
-        Our goal is to simplify access to authentic information and help users
-        stay informed without visiting multiple websites or missing important official deadlines.
-      </p>
+      <p>{t.aboutP2}</p>
 
-      <p>
-        We do not charge users for accessing information and always encourage
-        verification from official sources before applying for any job, exam, scholarship, or admission update.
-      </p>
+      <p>{t.aboutP3}</p>
     </LegalLayout>
   );
 }

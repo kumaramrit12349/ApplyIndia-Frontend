@@ -14,6 +14,7 @@ import {
     FiShield,
 } from "react-icons/fi";
 import { BsGenderAmbiguous } from "react-icons/bs";
+import { useTranslation } from "../i18n/useTranslation";
 
 interface ProfilePageProps {
     onProfileUpdated?: () => void;
@@ -21,6 +22,7 @@ interface ProfilePageProps {
 }
 
 const ProfilePage: React.FC<ProfilePageProps> = ({ onProfileUpdated, isAdmin: propIsAdmin }) => {
+    const { profile: t } = useTranslation();
     const [loading, setLoading] = useState(true);
     const [updating, setUpdating] = useState(false);
     const [isEditMode, setIsEditMode] = useState(false);
@@ -97,7 +99,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onProfileUpdated, isAdmin: pr
         e.preventDefault();
         const changedFields = getChangedFields();
         if (Object.keys(changedFields).length === 0) {
-            toast.info("No changes to save");
+            toast.info(t.noChangesToSave);
             setIsEditMode(false);
             return;
         }
@@ -105,12 +107,12 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onProfileUpdated, isAdmin: pr
         setUpdating(true);
         try {
             await updateProfile(changedFields);
-            toast.success("Profile updated successfully!");
+            toast.success(t.profileUpdated);
             setIsEditMode(false);
             await fetchUser();
             onProfileUpdated?.();
         } catch (error: any) {
-            toast.error(error.message || "Failed to update profile");
+            toast.error(error.message || t.updateFailed);
         } finally {
             setUpdating(false);
         }
@@ -120,7 +122,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onProfileUpdated, isAdmin: pr
         return (
             <div className="container py-5 text-center">
                 <div className="spinner-border" style={{ color: "var(--color-primary)" }} role="status">
-                    <span className="visually-hidden">Loading...</span>
+                    <span className="visually-hidden">{t.loading}</span>
                 </div>
             </div>
         );
@@ -148,11 +150,11 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onProfileUpdated, isAdmin: pr
                             <div className="d-flex justify-content-between align-items-start position-relative z-index-2 w-100 p-4 flex-wrap gap-2">
                                 <div>
                                     <h3 className="text-white fw-bold mb-1" style={{ textShadow: "0 2px 4px rgba(0,0,0,0.2)" }}>
-                                        My Profile
+                                        {t.myProfile}
                                     </h3>
                                     {effectiveIsAdmin && (
                                         <span className="badge bg-warning text-dark fw-bold px-2 py-1 shadow-sm d-inline-flex align-items-center gap-1">
-                                            <FiShield size={12} /> Administrator {adminRole ? `(${adminRole})` : ""}
+                                            <FiShield size={12} /> {t.administrator} {adminRole ? `(${adminRole})` : ""}
                                         </span>
                                     )}
                                 </div>
@@ -161,7 +163,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onProfileUpdated, isAdmin: pr
                                         className="ai-profile-edit-btn"
                                         onClick={() => setIsEditMode(true)}
                                     >
-                                        <FiEdit2 size={16} /> Edit Profile
+                                        <FiEdit2 size={16} /> {t.editProfile}
                                     </button>
                                 )}
                             </div>
@@ -180,19 +182,19 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onProfileUpdated, isAdmin: pr
                                     <div className="text-center mb-5">
                                         <h4 className="fw-bold mb-1 fs-3">{formData.given_name} {formData.family_name}</h4>
                                         <p className="text-muted mb-0 d-flex align-items-center justify-content-center gap-2">
-                                            <FiMapPin /> {getStateLabel(formData.state) || "Location not specified"}
+                                            <FiMapPin /> {getStateLabel(formData.state) || t.locationNotSpecified}
                                         </p>
                                     </div>
 
                                     <div className="row g-4">
                                         <div className="col-12">
-                                            <h6 className="ai-profile-section-title">Personal Information</h6>
+                                            <h6 className="ai-profile-section-title">{t.personalInfo}</h6>
                                         </div>
                                         <div className="col-md-6">
                                             <div className="ai-profile-data-box">
                                                 <div className="icon"><FiUser /></div>
                                                 <div className="info">
-                                                    <label>Full Name</label>
+                                                    <label>{t.fullName}</label>
                                                     <p>{formData.given_name} {formData.family_name}</p>
                                                 </div>
                                             </div>
@@ -201,8 +203,8 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onProfileUpdated, isAdmin: pr
                                             <div className="ai-profile-data-box">
                                                 <div className="icon"><BsGenderAmbiguous /></div>
                                                 <div className="info">
-                                                    <label>Gender</label>
-                                                    <p>{formData.gender || "Not specified"}</p>
+                                                    <label>{t.gender}</label>
+                                                    <p>{formData.gender || t.notSpecified}</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -210,8 +212,8 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onProfileUpdated, isAdmin: pr
                                             <div className="ai-profile-data-box">
                                                 <div className="icon"><FiCalendar /></div>
                                                 <div className="info">
-                                                    <label>Date of Birth</label>
-                                                    <p>{formData.dob || "Not specified"}</p>
+                                                    <label>{t.dob}</label>
+                                                    <p>{formData.dob || t.notSpecified}</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -219,8 +221,8 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onProfileUpdated, isAdmin: pr
                                             <div className="ai-profile-data-box">
                                                 <div className="icon"><FiBriefcase /></div>
                                                 <div className="info">
-                                                    <label>Category</label>
-                                                    <p>{formData.category || "Not specified"}</p>
+                                                    <label>{t.category}</label>
+                                                    <p>{formData.category || t.notSpecified}</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -228,21 +230,21 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onProfileUpdated, isAdmin: pr
                                             <div className="ai-profile-data-box">
                                                 <div className="icon"><FiPhone /></div>
                                                 <div className="info">
-                                                    <label>Phone Number</label>
-                                                    <p>{formData.phone || "Not specified"}</p>
+                                                    <label>{t.phoneNumber}</label>
+                                                    <p>{formData.phone || t.notSpecified}</p>
                                                 </div>
                                             </div>
                                         </div>
 
                                         <div className="col-12 mt-5">
-                                            <h6 className="ai-profile-section-title">Education & Skills</h6>
+                                            <h6 className="ai-profile-section-title">{t.educationSkills}</h6>
                                         </div>
                                         <div className="col-md-6">
                                             <div className="ai-profile-data-box">
                                                 <div className="icon"><FiAward /></div>
                                                 <div className="info">
-                                                    <label>Highest Qualification</label>
-                                                    <p>{formData.qualification || "Not specified"}</p>
+                                                    <label>{t.highestQualification}</label>
+                                                    <p>{formData.qualification || t.notSpecified}</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -250,8 +252,8 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onProfileUpdated, isAdmin: pr
                                             <div className="ai-profile-data-box">
                                                 <div className="icon"><FiBook /></div>
                                                 <div className="info">
-                                                    <label>Specialization</label>
-                                                    <p>{formData.specialization || "Not specified"}</p>
+                                                    <label>{t.specialization}</label>
+                                                    <p>{formData.specialization || t.notSpecified}</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -259,8 +261,8 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onProfileUpdated, isAdmin: pr
                                             <div className="ai-profile-data-box">
                                                 <div className="icon"><FiAward /></div>
                                                 <div className="info">
-                                                    <label>Percentage / CGPA Obtained</label>
-                                                    <p>{formData.qualification_percentage ? `${formData.qualification_percentage}%` : "Not specified"}</p>
+                                                    <label>{t.percentageObtained}</label>
+                                                    <p>{formData.qualification_percentage ? `${formData.qualification_percentage}%` : t.notSpecified}</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -268,51 +270,51 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onProfileUpdated, isAdmin: pr
                                 </div>
                             ) : (
                                 <form onSubmit={handleSubmit} className="ai-profile-form">
-                                    <h5 className="fw-bold mb-4 text-center">Edit Your Profile</h5>
+                                    <h5 className="fw-bold mb-4 text-center">{t.editYourProfile}</h5>
                                     <div className="row g-4">
                                         <div className="col-md-6">
                                             <div className="form-group ai-input-group">
-                                                <label className="form-label">First Name</label>
+                                                <label className="form-label">{t.firstName}</label>
                                                 <input type="text" name="given_name" className="form-control" value={formData.given_name} onChange={handleChange} required />
                                             </div>
                                         </div>
                                         <div className="col-md-6">
                                             <div className="form-group ai-input-group">
-                                                <label className="form-label">Last Name</label>
+                                                <label className="form-label">{t.lastName}</label>
                                                 <input type="text" name="family_name" className="form-control" value={formData.family_name} onChange={handleChange} required />
                                             </div>
                                         </div>
                                         <div className="col-md-6">
                                             <div className="form-group ai-input-group">
-                                                <label className="form-label">Gender</label>
+                                                <label className="form-label">{t.gender}</label>
                                                 <select name="gender" className="form-select" value={formData.gender} onChange={handleChange} required>
-                                                    <option value="">Select Gender</option>
-                                                    <option value="Male">Male</option>
-                                                    <option value="Female">Female</option>
-                                                    <option value="Other">Other</option>
+                                                    <option value="">{t.selectGender}</option>
+                                                    <option value="Male">{t.male}</option>
+                                                    <option value="Female">{t.female}</option>
+                                                    <option value="Other">{t.other}</option>
                                                 </select>
                                             </div>
                                         </div>
                                         <div className="col-md-6">
                                             <div className="form-group ai-input-group">
-                                                <label className="form-label">Date of Birth</label>
+                                                <label className="form-label">{t.dob}</label>
                                                 <input type="date" name="dob" className="form-control" value={formData.dob} onChange={handleChange} />
                                             </div>
                                         </div>
                                         <div className="col-md-6">
                                             <div className="form-group ai-input-group">
-                                                <label className="form-label">State</label>
+                                                <label className="form-label">{t.state}</label>
                                                 <select name="state" className="form-select" value={formData.state} onChange={handleChange} required>
-                                                    <option value="">Select State</option>
+                                                    <option value="">{t.selectState}</option>
                                                     {INDIAN_STATES.map((state) => <option key={state.value} value={state.value}>{state.label}</option>)}
                                                 </select>
                                             </div>
                                         </div>
                                         <div className="col-md-6">
                                             <div className="form-group ai-input-group">
-                                                <label className="form-label">Category</label>
+                                                <label className="form-label">{t.category}</label>
                                                 <select name="category" className="form-select" value={formData.category} onChange={handleChange} required>
-                                                    <option value="">Select Category</option>
+                                                    <option value="">{t.selectCategory}</option>
                                                     <option value="General">General</option>
                                                     <option value="OBC">OBC</option>
                                                     <option value="SC">SC</option>
@@ -323,38 +325,36 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onProfileUpdated, isAdmin: pr
                                         </div>
                                         <div className="col-md-6">
                                             <div className="form-group ai-input-group">
-                                                <label className="form-label">Phone Number</label>
+                                                <label className="form-label">{t.phoneNumber}</label>
                                                 <input
                                                     type="tel"
                                                     name="phone"
                                                     className="form-control"
                                                     value={formData.phone}
                                                     onChange={handleChange}
-                                                    placeholder="e.g. +919876543210"
+                                                    placeholder={t.phonePlaceholder}
                                                 />
-                                                <div className="form-text text-muted small mt-1">
-                                                    Include country code. Required to receive WhatsApp notifications.
-                                                </div>
+                                                <div className="form-text text-muted small mt-1">{t.phoneHint}</div>
                                             </div>
                                         </div>
                                         <div className="col-md-6">
                                             <div className="form-group ai-input-group">
-                                                <label className="form-label">Highest Qualification</label>
+                                                <label className="form-label">{t.highestQualification}</label>
                                                 <select name="qualification" className="form-select" value={formData.qualification} onChange={handleChange} required>
-                                                    <option value="">Select Qualification</option>
+                                                    <option value="">{t.selectQualification}</option>
                                                     {EDUCATIONAL_QUALIFICATIONS.map((q) => <option key={q.value} value={q.value}>{q.label}</option>)}
                                                 </select>
                                             </div>
                                         </div>
                                         <div className="col-md-6">
                                             <div className="form-group ai-input-group">
-                                                <label className="form-label">Specialization</label>
+                                                <label className="form-label">{t.specialization}</label>
                                                 <input type="text" name="specialization" className="form-control" value={formData.specialization} onChange={handleChange} />
                                             </div>
                                         </div>
                                         <div className="col-md-6">
                                             <div className="form-group ai-input-group">
-                                                <label className="form-label">Percentage / CGPA Obtained (%)</label>
+                                                <label className="form-label">{t.percentageObtained} (%)</label>
                                                 <input
                                                     type="number"
                                                     name="qualification_percentage"
@@ -364,11 +364,9 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onProfileUpdated, isAdmin: pr
                                                     step="0.01"
                                                     value={formData.qualification_percentage}
                                                     onChange={handleChange}
-                                                    placeholder="e.g. 72.5"
+                                                    placeholder={t.percentagePlaceholder}
                                                 />
-                                                <div className="form-text text-muted small mt-1">
-                                                    Used to check eligibility for notifications with a minimum percentage requirement.
-                                                </div>
+                                                <div className="form-text text-muted small mt-1">{t.percentageHint}</div>
                                             </div>
                                         </div>
                                     </div>
@@ -384,7 +382,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onProfileUpdated, isAdmin: pr
                                             disabled={updating}
                                             style={{ borderRadius: "8px" }}
                                         >
-                                            Cancel
+                                            {t.cancel}
                                         </button>
                                         <button
                                             type="submit"
@@ -392,7 +390,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onProfileUpdated, isAdmin: pr
                                             disabled={updating || Object.keys(getChangedFields()).length === 0}
                                             style={{ background: "linear-gradient(135deg, var(--color-secondary) 0%, var(--color-primary) 100%)", border: "none", borderRadius: "8px" }}
                                         >
-                                            {updating ? "Saving..." : "Save Changes"}
+                                            {updating ? t.saving : t.saveChanges}
                                         </button>
                                     </div>
                                 </form>

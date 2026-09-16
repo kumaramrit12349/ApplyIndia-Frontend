@@ -2,18 +2,20 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { FiCheckCircle, FiArrowRight, FiBriefcase, FiBookOpen, FiAward, FiEdit3, FiCompass } from "react-icons/fi";
 import { useAuth } from "../../context/AuthContext";
+import { useTranslation } from "../../i18n/useTranslation";
 import "./Hero.css";
-
-const KICKER_ITEMS = [
-  { icon: FiBriefcase, label: "Jobs" },
-  { icon: FiBookOpen, label: "Admissions" },
-  { icon: FiAward, label: "Scholarships" },
-  { icon: FiEdit3, label: "Exams" },
-];
 
 const Hero: React.FC = () => {
   const navigate = useNavigate();
   const { isAuthenticated, onShowAuthPopup } = useAuth();
+  const { hero: t } = useTranslation();
+
+  const KICKER_ITEMS = [
+    { icon: FiBriefcase, label: t.kickerJobs },
+    { icon: FiBookOpen, label: t.kickerAdmissions },
+    { icon: FiAward, label: t.kickerScholarships },
+    { icon: FiEdit3, label: t.kickerExams },
+  ];
 
   const handleExploreClick = () => {
     if (isAuthenticated) {
@@ -37,23 +39,21 @@ const Hero: React.FC = () => {
             ))}
           </div>
           <h1 className="ai-hero-title">
-            Your Gateway to <span className="ai-hero-highlight">Government Opportunities</span>
+            {t.titlePrefix} <span className="ai-hero-highlight">{t.titleHighlight}</span>
           </h1>
-          <p className="ai-hero-subtitle">
-            One place for every verified government opportunity across India — always free.
-          </p>
+          <p className="ai-hero-subtitle">{t.subtitle}</p>
           <div className="ai-hero-cta">
             <a href="#browse-notifications" className="ai-hero-btn ai-hero-btn--primary">
-              Browse Notifications <FiArrowRight aria-hidden="true" />
+              {t.browseNotifications} <FiArrowRight aria-hidden="true" />
             </a>
             <button type="button" className="ai-hero-btn ai-hero-btn--secondary" onClick={handleExploreClick}>
-              <FiCompass aria-hidden="true" /> Explore Open Opportunities
+              <FiCompass aria-hidden="true" /> {t.exploreOpenOpportunities}
             </button>
           </div>
           <div className="ai-hero-trust">
-            <span><FiCheckCircle aria-hidden="true" /> Verified sources</span>
-            <span><FiCheckCircle aria-hidden="true" /> Updated daily</span>
-            <span><FiCheckCircle aria-hidden="true" /> 100% free</span>
+            <span><FiCheckCircle aria-hidden="true" /> {t.verifiedSources}</span>
+            <span><FiCheckCircle aria-hidden="true" /> {t.updatedDaily}</span>
+            <span><FiCheckCircle aria-hidden="true" /> {t.free}</span>
           </div>
         </div>
       </div>

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Modal from "react-bootstrap/Modal";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { loginUser, signUpUser, getGoogleSignInUrl } from "../services/authApi";
+import { useTranslation } from "../i18n/useTranslation";
 
 type AuthTab = "login" | "register";
 
@@ -24,6 +25,7 @@ const AuthPopup: React.FC<AuthPopupProps> = ({
   initialError,
   initialTab = "login",
 }) => {
+  const { auth: t } = useTranslation();
   const [tab, setTab] = useState<AuthTab>("login");
   const [form, setForm] = useState({
     given_name: "",
@@ -98,7 +100,7 @@ const AuthPopup: React.FC<AuthPopupProps> = ({
     } catch (err: any) {
       const msg =
         err?.message ||
-        (tab === "login" ? "Login failed" : "Registration failed");
+        (tab === "login" ? t.loginFailed : t.registrationFailed);
 
       if (
         tab === "login" &&
@@ -156,31 +158,31 @@ const AuthPopup: React.FC<AuthPopupProps> = ({
             WebkitTextFillColor: "transparent"
           }}
         >
-          {tab === "login" ? "Log in" : "Create Account"}
+          {tab === "login" ? t.logIn : t.createAccount}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body className="pt-0 px-4 pb-2">
         <div className="d-flex align-items-center fs-6 mb-3" style={{ gap: 8 }}>
           {tab === "login" ? (
             <>
-              <span className="text-muted">New user?</span>
+              <span className="text-muted">{t.newUser}</span>
               <a
                 className="fw-bold text-decoration-none"
                 style={{ cursor: "pointer", color: "var(--color-primary)", transition: "color 0.2s" }}
                 onClick={() => swapTab("register")}
               >
-                Register Now
+                {t.registerNow}
               </a>
             </>
           ) : (
             <>
-              <span className="text-muted">Already have an account?</span>
+              <span className="text-muted">{t.alreadyHaveAccount}</span>
               <a
                 className="fw-bold text-decoration-none"
                 style={{ cursor: "pointer", color: "var(--color-primary)", transition: "color 0.2s" }}
                 onClick={() => swapTab("login")}
               >
-                Log in
+                {t.logIn}
               </a>
             </>
           )}
@@ -205,12 +207,12 @@ const AuthPopup: React.FC<AuthPopupProps> = ({
             className="me-2"
             style={{ height: 28, width: 28 }}
           />
-          Continue with Google
+          {t.continueWithGoogle}
         </button>
 
         <div className="d-flex align-items-center my-3">
           <hr className="flex-grow-1" />
-          <span className="px-3 text-muted" style={{ fontSize: '0.85em' }}>or</span>
+          <span className="px-3 text-muted" style={{ fontSize: '0.85em' }}>{t.or}</span>
           <hr className="flex-grow-1" />
         </div>
 
@@ -219,13 +221,13 @@ const AuthPopup: React.FC<AuthPopupProps> = ({
           {/* Email and Password always present */}
           <div className="mb-3">
             <label className="form-label fw-semibold" htmlFor="email">
-              Email
+              {t.email}
             </label>
             <input
               id="email"
               className="form-control bg-body-tertiary"
               style={{ borderRadius: 10, fontSize: "1.08em" }}
-              placeholder="Email"
+              placeholder={t.email}
               name="email"
               value={form.email}
               onChange={handleInput}
@@ -237,14 +239,14 @@ const AuthPopup: React.FC<AuthPopupProps> = ({
           </div>
           <div className="mb-3">
             <label className="form-label fw-semibold" htmlFor="password">
-              Password
+              {t.password}
             </label>
             <div className="position-relative">
               <input
                 id="password"
                 className="form-control bg-body-tertiary"
                 style={{ borderRadius: 10, fontSize: "1.08em", paddingRight: "40px" }}
-                placeholder="Enter Password"
+                placeholder={t.password}
                 name="password"
                 value={form.password}
                 onChange={handleInput}
@@ -270,13 +272,13 @@ const AuthPopup: React.FC<AuthPopupProps> = ({
             <div className="row">
               <div className="col-12 col-md-6 mb-3">
                 <label className="form-label fw-semibold" htmlFor="given_name">
-                  First Name
+                  {t.firstName}
                 </label>
                 <input
                   id="given_name"
                   className="form-control bg-body-tertiary"
                   style={{ borderRadius: 10 }}
-                  placeholder="First name"
+                  placeholder={t.firstName}
                   name="given_name"
                   value={form.given_name}
                   onChange={handleInput}
@@ -287,13 +289,13 @@ const AuthPopup: React.FC<AuthPopupProps> = ({
               </div>
               <div className="col-12 col-md-6 mb-3">
                 <label className="form-label fw-semibold" htmlFor="family_name">
-                  Last Name
+                  {t.lastName}
                 </label>
                 <input
                   id="family_name"
                   className="form-control bg-body-tertiary"
                   style={{ borderRadius: 10 }}
-                  placeholder="Last name"
+                  placeholder={t.lastName}
                   name="family_name"
                   value={form.family_name}
                   onChange={handleInput}
@@ -304,7 +306,7 @@ const AuthPopup: React.FC<AuthPopupProps> = ({
               </div>
               <div className="mb-3">
                 <label className="form-label fw-semibold" htmlFor="gender">
-                  Gender
+                  {t.gender}
                 </label>
                 <select
                   id="gender"
@@ -316,12 +318,12 @@ const AuthPopup: React.FC<AuthPopupProps> = ({
                   required
                 >
                   <option value="" disabled>
-                    Select gender
+                    {t.selectGender}
                   </option>
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
-                  <option value="other">Other</option>
-                  <option value="prefer_not_to_say">Prefer not to say</option>
+                  <option value="male">{t.male}</option>
+                  <option value="female">{t.female}</option>
+                  <option value="other">{t.other}</option>
+                  <option value="prefer_not_to_say">{t.preferNotToSay}</option>
                 </select>
               </div>
             </div>
@@ -335,7 +337,7 @@ const AuthPopup: React.FC<AuthPopupProps> = ({
                 style={{ fontSize: "0.95rem", cursor: "pointer", color: "var(--color-primary)", transition: "color 0.2s" }}
                 onClick={onForgotPassword}
               >
-                Forgot Password?
+                {t.forgotPassword}
               </a>
             )}
             {tab === "register" && <span />}
@@ -364,11 +366,11 @@ const AuthPopup: React.FC<AuthPopupProps> = ({
           >
             {loading
               ? tab === "login"
-                ? "Signing In..."
-                : "Signing Up..."
+                ? t.signingIn
+                : t.signingUp
               : tab === "login"
-                ? "Sign In"
-                : "Create Account"}
+                ? t.signIn
+                : t.createAccount}
           </button>
         </form>
 

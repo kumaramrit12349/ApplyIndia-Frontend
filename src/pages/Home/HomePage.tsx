@@ -17,6 +17,7 @@ import {
   WEBSITE_SCHEMA,
 } from "../../seo/site";
 import { INDIAN_STATES } from "../../constant/SharedConstant";
+import { useTranslation } from "../../i18n/useTranslation";
 
 interface GroupedNotifications {
   [category: string]: HomePageNotification[];
@@ -36,6 +37,7 @@ const HomePage: React.FC<HomePageProps> = ({ userState }) => {
   const query = useQuery();
   const searchValue = query.get("searchValue") ?? "";
   const { isAuthenticated } = useAuth();
+  const { home: t } = useTranslation();
 
   /* ================= STATE PERSONALIZATION ================= */
   const hasState = !!userState && userState.toUpperCase() !== "CT";
@@ -180,7 +182,7 @@ const HomePage: React.FC<HomePageProps> = ({ userState }) => {
         <div className="row justify-content-center gx-3 gx-md-4">
           <div className="col-12 col-md-10 col-lg-8">
             <h2 className="mb-3 text-center">
-              Search Results
+              {t.searchResults}
               <span className="text-muted ms-2">
                 (Search: "{searchValue}")
               </span>
@@ -192,7 +194,7 @@ const HomePage: React.FC<HomePageProps> = ({ userState }) => {
               </div>
             ) : searchResults.length === 0 ? (
               <div className="text-center py-5 text-muted">
-                <b>No matching notifications.</b>
+                <b>{t.noMatchingNotifications}</b>
               </div>
             ) : (
               <InfiniteScroll
@@ -207,7 +209,7 @@ const HomePage: React.FC<HomePageProps> = ({ userState }) => {
                 endMessage={
                   !searchHasMore && (
                     <p className="text-center text-muted py-4 mb-0">
-                      <b>No more results.</b>
+                      <b>{t.noMoreResults}</b>
                     </p>
                   )
                 }
@@ -284,14 +286,14 @@ const HomePage: React.FC<HomePageProps> = ({ userState }) => {
               className={`ai-elig-toggle-btn ${stateView === "personalized" ? "active" : ""}`}
               onClick={() => setStateView("personalized")}
             >
-              📍 {hasState ? `${stateLabel} + Central` : "Central Only"}
+              📍 {hasState ? t.stateAndCentral(stateLabel!) : t.centralOnly}
             </button>
             <button
               type="button"
               className={`ai-elig-toggle-btn ${stateView === "all" ? "active" : ""}`}
               onClick={() => setStateView("all")}
             >
-              🌐 All States
+              🌐 {t.allStates}
             </button>
           </div>
         </div>
@@ -300,18 +302,18 @@ const HomePage: React.FC<HomePageProps> = ({ userState }) => {
           <div className="ai-state-banner">
             {isAuthenticated ? (
               <>
-                <span>📍 Set your state to see notifications relevant to you, alongside Central Government notifications.</span>
-                <a href="/profile" className="ai-state-banner-cta">Set Your State</a>
+                <span>📍 {t.setStatePrompt}</span>
+                <a href="/profile" className="ai-state-banner-cta">{t.setYourState}</a>
               </>
             ) : (
               <>
-                <span>📍 Sign in and set your state to personalize your feed with notifications relevant to you.</span>
+                <span>📍 {t.signInStatePrompt}</span>
                 <button
                   type="button"
                   className="ai-state-banner-cta ai-state-banner-cta--btn"
                   onClick={() => window.dispatchEvent(new Event("openAuthPopup"))}
                 >
-                  Sign In
+                  {t.signIn}
                 </button>
               </>
             )}

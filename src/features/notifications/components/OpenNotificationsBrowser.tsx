@@ -7,6 +7,7 @@ import type { OpenNotificationItem } from "../../../services/private/openNotific
 import { fetchAvailableFilters } from "../../../services/public/notiifcationApi";
 import { NOTIFICATION_CATEGORIES, INDIAN_STATES } from "../../../constant/SharedConstant";
 import { makeSlug } from "../../../utils/utils";
+import { useTranslation } from "../../../i18n/useTranslation";
 import "./OpenNotificationsBrowser.css";
 
 const PAGE_SIZE = 12;
@@ -26,11 +27,6 @@ const formatDate = (epoch?: number) => {
   return new Date(epoch).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
 };
 
-const formatFee = (fee?: number) => {
-  if (!fee) return "Free";
-  return `₹${fee.toLocaleString("en-IN")}`;
-};
-
 const CLOSING_SOON_WINDOW_DAYS = 3;
 const CLOSING_LATER_WINDOW_DAYS = 10;
 
@@ -44,6 +40,11 @@ const getDateUrgency = (epoch?: number): "urgent" | "soon" | "normal" => {
 };
 
 const OpenNotificationsBrowser: React.FC = () => {
+  const { openBrowser: t } = useTranslation();
+  const formatFee = (fee?: number) => {
+    if (!fee) return t.free;
+    return `₹${fee.toLocaleString("en-IN")}`;
+  };
   const [items, setItems] = useState<OpenNotificationItem[]>([]);
   const [total, setTotal] = useState(0);
   const [hasMore, setHasMore] = useState(true);
@@ -126,7 +127,7 @@ const OpenNotificationsBrowser: React.FC = () => {
   return (
     <div>
       <p className="text-muted mb-3" style={{ fontSize: "0.9rem" }}>
-        {total} notification{total === 1 ? "" : "s"} currently accepting applications.
+        {t.acceptingApplications(total)}
       </p>
 
       {/* Filter Bar */}
@@ -134,7 +135,7 @@ const OpenNotificationsBrowser: React.FC = () => {
         <input
           type="text"
           className="onb-filter-input flex-grow-1"
-          placeholder="Search by title..."
+          placeholder={t.searchByTitle}
           value={searchInput}
           onChange={handleSearchChange}
           style={{ minWidth: 200, paddingLeft: 14 }}
@@ -142,10 +143,10 @@ const OpenNotificationsBrowser: React.FC = () => {
 
         <Dropdown>
           <Dropdown.Toggle as="div" role="button" className="onb-filter-btn">
-            📁 {categoryFilter === "all" ? "All Categories" : getCategoryLabel(categoryFilter)}
+            📁 {categoryFilter === "all" ? t.allCategories : getCategoryLabel(categoryFilter)}
           </Dropdown.Toggle>
           <Dropdown.Menu style={{ maxHeight: 320, overflowY: "auto" }}>
-            <Dropdown.Item active={categoryFilter === "all"} onClick={() => setCategoryFilter("all")}>All Categories</Dropdown.Item>
+            <Dropdown.Item active={categoryFilter === "all"} onClick={() => setCategoryFilter("all")}>{t.allCategories}</Dropdown.Item>
             {NOTIFICATION_CATEGORIES.filter((c) => c.value !== "all").map((c) => (
               <Dropdown.Item key={c.value} active={categoryFilter === c.value} onClick={() => setCategoryFilter(c.value)}>
                 {c.label}
@@ -156,13 +157,13 @@ const OpenNotificationsBrowser: React.FC = () => {
 
         <Dropdown>
           <Dropdown.Toggle as="div" role="button" className="onb-filter-btn">
-            📍 {stateFilter === "all" ? "All" : getStateLabel(stateFilter)}
+            📍 {stateFilter === "all" ? t.allStatesShort : getStateLabel(stateFilter)}
           </Dropdown.Toggle>
           <Dropdown.Menu style={{ maxHeight: 320, overflowY: "auto", minWidth: 220 }}>
             <div className="px-2 py-1">
-              <Form.Control size="sm" placeholder="Search state..." value={stateSearch} onChange={(e) => setStateSearch(e.target.value)} />
+              <Form.Control size="sm" placeholder={t.searchState} value={stateSearch} onChange={(e) => setStateSearch(e.target.value)} />
             </div>
-            <Dropdown.Item active={stateFilter === "all"} onClick={() => setStateFilter("all")}>All</Dropdown.Item>
+            <Dropdown.Item active={stateFilter === "all"} onClick={() => setStateFilter("all")}>{t.allStatesShort}</Dropdown.Item>
             {availableStates
               .filter((s) => getStateLabel(s).toLowerCase().includes(stateSearch.toLowerCase()))
               .map((s) => (
@@ -178,7 +179,7 @@ const OpenNotificationsBrowser: React.FC = () => {
           className={`onb-filter-toggle ${closingSoonFilter ? "onb-filter-toggle--active" : ""}`}
           onClick={() => setClosingSoonFilter((prev) => !prev)}
         >
-          ⏰ Closing in 2 Days
+          {t.closingIn2Days}
         </button>
       </div>
 
@@ -189,7 +190,7 @@ const OpenNotificationsBrowser: React.FC = () => {
       ) : items.length === 0 ? (
         <div className="text-center py-5 text-muted">
           <div style={{ fontSize: 40 }}>📭</div>
-          <b>No open notifications match these filters.</b>
+          <b>{t.noMatch}</b>
         </div>
       ) : (
         <InfiniteScroll
@@ -205,7 +206,7 @@ const OpenNotificationsBrowser: React.FC = () => {
           endMessage={
             !hasMore && (
               <p className="text-center text-muted py-4 mb-0">
-                <b>No more notifications.</b>
+                <b>{t.noMoreNotifications}</b>
               </p>
             )
           }
@@ -236,14 +237,14 @@ const OpenNotificationsBrowser: React.FC = () => {
                         <div className="onb-stat onb-stat--vacancy">
                           <span className="onb-stat-icon">👥</span>
                           <span className="onb-stat-text">
-                            <span className="onb-stat-label">Vacancies</span>
+                            <span className="onb-stat-label">{t.vacancies}</span>
                             <span className="onb-stat-value">{item.total_vacancies ?? "—"}</span>
                           </span>
                         </div>
                         <div className={`onb-stat ${isFree ? "onb-stat--fee-free" : "onb-stat--fee-paid"}`}>
                           <span className="onb-stat-icon">💰</span>
                           <span className="onb-stat-text">
-                            <span className="onb-stat-label">Fee</span>
+                            <span className="onb-stat-label">{t.fee}</span>
                             <span className="onb-stat-value">{formatFee(item.general_fee)}</span>
                           </span>
                         </div>
@@ -254,14 +255,14 @@ const OpenNotificationsBrowser: React.FC = () => {
                         >
                           <span className="onb-stat-icon">📅</span>
                           <span className="onb-stat-text">
-                            <span className="onb-stat-label">Last Date to Apply</span>
+                            <span className="onb-stat-label">{t.lastDateToApply}</span>
                             <span className="onb-stat-value">{formatDate(item.last_date_to_apply)}</span>
                           </span>
                         </div>
                       </div>
 
                       <Link to={detailUrl} className="onb-view-link" target="_blank" rel="noopener noreferrer">
-                        View Details →
+                        {t.viewDetails}
                       </Link>
                     </div>
                   </div>

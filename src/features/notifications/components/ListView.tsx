@@ -7,9 +7,11 @@ import { toast } from "react-toastify";
 import { BsHeart, BsHeartFill } from "react-icons/bs";
 import { useAuth } from "../../../context/AuthContext";
 import SupportPopup from "../../../components/SupportPopup";
+import { useTranslation } from "../../../i18n/useTranslation";
 
 const WishlistButton = ({ notification, category, onWishlisted, onLimitReached, activityMap }: { notification: HomePageNotification; category: string; onWishlisted?: () => void; onLimitReached?: () => void; activityMap?: Map<string, number> }) => {
   const { isAuthenticated, onShowAuthPopup } = useAuth();
+  const { listView: t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [hasChecked, setHasChecked] = useState(false);
@@ -55,13 +57,13 @@ const WishlistButton = ({ notification, category, onWishlisted, onLimitReached, 
     e.stopPropagation();
 
     if (!isAuthenticated) {
-      toast.info("🔒 Please login to add to wishlist");
+      toast.info(t.loginToWishlist);
       onShowAuthPopup();
       return;
     }
 
     if (deadlinePassed && !isWishlisted) {
-      toast.warning("Applications for this notification have closed.");
+      toast.warning(t.applicationsClosedToast);
       return;
     }
 
@@ -71,18 +73,18 @@ const WishlistButton = ({ notification, category, onWishlisted, onLimitReached, 
       if (isWishlisted) {
         await removeActivity(fullSk);
         setIsWishlisted(false);
-        toast.success("Removed from wishlist");
+        toast.success(t.removedFromWishlist);
       } else {
         await trackActivity(fullSk, notification.title, category, 0);
         setIsWishlisted(true);
         onWishlisted?.();
       }
     } catch (error: any) {
-      const msg = error?.message || "Failed to update wishlist.";
+      const msg = error?.message || t.wishlistUpdateFailed;
       if (msg.includes("ATTEMPT_LIMIT_REACHED")) {
         onLimitReached?.();
       } else if (msg.includes("DEADLINE_PASSED")) {
-        toast.error("Applications for this notification have closed.");
+        toast.error(t.applicationsClosedToast);
       } else {
         toast.error(msg);
       }
@@ -102,10 +104,10 @@ const WishlistButton = ({ notification, category, onWishlisted, onLimitReached, 
       className={`ai-btn-wishlist ${isWishlisted ? 'active' : ''}`}
       title={
         deadlinePassed && !isWishlisted
-          ? "Applications closed"
+          ? t.applicationsClosedTooltip
           : isWishlisted
-            ? "Remove from Wishlist"
-            : "Add to Wishlist"
+            ? t.removeFromWishlist
+            : t.addToWishlist
       }
     >
       {loading ? (
@@ -174,23 +176,6 @@ const formatItemDate = (value?: string | number) => {
   return d.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
 };
 
-const getStatusBadge = (category: string, item: HomePageNotification): StatusBadge | null => {
-  if (NO_STATUS_BADGE_CATEGORIES.has(category?.toLowerCase())) return null;
-
-  if (!item.last_date_to_apply) return null;
-  const deadline = new Date(item.last_date_to_apply as string).getTime();
-  if (isNaN(deadline)) return null;
-
-  const daysLeft = (deadline - Date.now()) / (1000 * 60 * 60 * 24);
-  if (daysLeft < 0) {
-    return { label: "Closed", color: "var(--status-closed)", bg: "var(--status-closed-bg)" };
-  }
-  if (daysLeft <= CLOSING_SOON_WINDOW_DAYS) {
-    return { label: "Closing Soon", color: "var(--status-closing)", bg: "var(--status-closing-bg)" };
-  }
-  return { label: "Open", color: "var(--status-open)", bg: "var(--status-open-bg)" };
-};
-
 const ListView: React.FC<ListViewProps> = ({
   category,
   items,
@@ -199,9 +184,27 @@ const ListView: React.FC<ListViewProps> = ({
   showAllItems = false,
   activityMap,
 }) => {
+  const { listView: t } = useTranslation();
   const [showAll, setShowAll] = useState(false);
   const [showWishlistPopup, setShowWishlistPopup] = useState(false);
   const [showSupport, setShowSupport] = useState(false);
+
+  const getStatusBadge = (category: string, item: HomePageNotification): StatusBadge | null => {
+    if (NO_STATUS_BADGE_CATEGORIES.has(category?.toLowerCase())) return null;
+
+    if (!item.last_date_to_apply) return null;
+    const deadline = new Date(item.last_date_to_apply as string).getTime();
+    if (isNaN(deadline)) return null;
+
+    const daysLeft = (deadline - Date.now()) / (1000 * 60 * 60 * 24);
+    if (daysLeft < 0) {
+      return { label: t.statusClosed, color: "var(--status-closed)", bg: "var(--status-closed-bg)" };
+    }
+    if (daysLeft <= CLOSING_SOON_WINDOW_DAYS) {
+      return { label: t.statusClosingSoon, color: "var(--status-closing)", bg: "var(--status-closing-bg)" };
+    }
+    return { label: t.statusOpen, color: "var(--status-open)", bg: "var(--status-open-bg)" };
+  };
 
   const displayedItems = showAllItems
     ? items
@@ -220,9 +223,8 @@ const ListView: React.FC<ListViewProps> = ({
       <div className="ai-list-header" style={{ background: categoryStyle.gradient }}>
         <h5 className="ai-list-header-title">
           <span aria-hidden="true" className="ai-list-header-icon">{categoryStyle.icon}</span>
-          {category
-            ?.replace(/[-]/g, " ")
-            ?.replace(/\b\w/g, (l) => l?.toUpperCase())}
+          {t.categoryNames[category?.toLowerCase()] ||
+            category?.replace(/[-]/g, " ")?.replace(/\b\w/g, (l) => l?.toUpperCase())}
         </h5>
       </div>
 
@@ -230,12 +232,12 @@ const ListView: React.FC<ListViewProps> = ({
         {loading ? (
           <div className="text-center py-5">
             <div className="spinner-border" style={{ color: "var(--color-primary)" }} role="status">
-              <span className="visually-hidden">Loading...</span>
+              <span className="visually-hidden">{t.loading}</span>
             </div>
           </div>
         ) : items.length === 0 ? (
           <div className="text-center py-5 text-muted">
-            <p className="mb-0">No notifications available</p>
+            <p className="mb-0">{t.noNotifications}</p>
           </div>
         ) : (
           <div>
@@ -312,7 +314,7 @@ const ListView: React.FC<ListViewProps> = ({
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                 <path fillRule="evenodd" d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708l6-6z" />
               </svg>
-              See Less
+              {t.seeLess}
             </button>
           ) : (
             <button
@@ -322,7 +324,7 @@ const ListView: React.FC<ListViewProps> = ({
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                 <path fillRule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z" />
               </svg>
-              See More
+              {t.seeMore}
             </button>
           )}
         </div>
@@ -335,15 +337,13 @@ const ListView: React.FC<ListViewProps> = ({
             <button
               className="ai-wishlist-popup-close"
               onClick={() => setShowWishlistPopup(false)}
-              aria-label="Close"
+              aria-label={t.close}
             >
               ✕
             </button>
             <div className="ai-wishlist-popup-emoji">❤️</div>
-            <h4 className="ai-wishlist-popup-title">Added to Wishlist!</h4>
-            <p className="ai-wishlist-popup-message">
-              You can check your wishlisted notifications anytime from your Dashboard.
-            </p>
+            <h4 className="ai-wishlist-popup-title">{t.wishlistAddedTitle}</h4>
+            <p className="ai-wishlist-popup-message">{t.wishlistAddedDesc}</p>
             <button
               className="ai-wishlist-popup-btn"
               onClick={() => {
@@ -351,7 +351,7 @@ const ListView: React.FC<ListViewProps> = ({
                 window.open("/dashboard", "_blank");
               }}
             >
-              Go to My Dashboard
+              {t.goToMyDashboard}
             </button>
           </div>
         </div>,

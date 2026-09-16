@@ -3,11 +3,13 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { FiUser, FiMail, FiMessageSquare, FiSend, FiCheckCircle } from "react-icons/fi";
 import { submitFeedback } from "../../services/public/feedbackApi";
+import { useTranslation } from "../../i18n/useTranslation";
 
 const MESSAGE_MAX_LENGTH = 1000;
 
 const FeedbackPage: React.FC = () => {
   const navigate = useNavigate();
+  const { contactFeedback: t } = useTranslation();
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -24,17 +26,17 @@ const FeedbackPage: React.FC = () => {
       const res = await submitFeedback(form);
 
       if (res.success) {
-        toast.success("Thank you! Your feedback has been sent.");
+        toast.success(t.thankYou);
 
         setTimeout(() => {
           navigate("/");
         }, 1800);
       } else {
-        toast.error(res.message || "Failed to submit feedback");
+        toast.error(res.message || t.submitFailed);
       }
     } catch (err) {
       const message = err instanceof Error ? err.message : undefined;
-      toast.error(message || "Failed to submit feedback");
+      toast.error(message || t.submitFailed);
     } finally {
       setLoading(false);
     }
@@ -52,21 +54,19 @@ const FeedbackPage: React.FC = () => {
                 <div className="ai-feedback-icon" aria-hidden="true">
                   <FiMessageSquare size={26} />
                 </div>
-                <h2 className="ai-feedback-title">Send Feedback</h2>
-                <p className="ai-feedback-subtitle">
-                  We value your feedback. Share your thoughts or suggestions with us to help improve Apply India.
-                </p>
+                <h2 className="ai-feedback-title">{t.title}</h2>
+                <p className="ai-feedback-subtitle">{t.subtitle}</p>
 
                 <form onSubmit={handleSubmit}>
                   {/* Name */}
                   <div className="mb-4">
-                    <label className="ai-form-label">Name</label>
+                    <label className="ai-form-label">{t.name}</label>
                     <div className="ai-input-icon-group">
                       <FiUser className="ai-input-icon" aria-hidden="true" />
                       <input
                         type="text"
                         className="ai-input"
-                        placeholder="Your name"
+                        placeholder={t.namePlaceholder}
                         value={form.name}
                         required
                         onChange={(e) => setForm({ ...form, name: e.target.value })}
@@ -76,13 +76,13 @@ const FeedbackPage: React.FC = () => {
 
                   {/* Email */}
                   <div className="mb-4">
-                    <label className="ai-form-label">Email Address</label>
+                    <label className="ai-form-label">{t.email}</label>
                     <div className="ai-input-icon-group">
                       <FiMail className="ai-input-icon" aria-hidden="true" />
                       <input
                         type="email"
                         className="ai-input"
-                        placeholder="you@example.com"
+                        placeholder={t.emailPlaceholder}
                         value={form.email}
                         required
                         onChange={(e) =>
@@ -95,7 +95,7 @@ const FeedbackPage: React.FC = () => {
                   {/* Message */}
                   <div className="mb-4">
                     <div className="ai-feedback-label-row">
-                      <label className="ai-form-label mb-0">Message</label>
+                      <label className="ai-form-label mb-0">{t.message}</label>
                       <span className="ai-feedback-char-count">
                         {form.message.length}/{MESSAGE_MAX_LENGTH}
                       </span>
@@ -103,7 +103,7 @@ const FeedbackPage: React.FC = () => {
                     <textarea
                       className="ai-input"
                       rows={5}
-                      placeholder="Write your feedback here..."
+                      placeholder={t.messagePlaceholder}
                       style={{ resize: "vertical", minHeight: "120px" }}
                       value={form.message}
                       required
@@ -115,7 +115,7 @@ const FeedbackPage: React.FC = () => {
                   </div>
 
                   <div className="ai-feedback-trust">
-                    <span><FiCheckCircle aria-hidden="true" /> We read every message</span>
+                    <span><FiCheckCircle aria-hidden="true" /> {t.trustLine}</span>
                   </div>
 
                   {/* Submit */}
@@ -125,9 +125,9 @@ const FeedbackPage: React.FC = () => {
                       className="ai-btn-gradient ai-feedback-submit"
                       disabled={loading}
                     >
-                      {loading ? "Sending..." : (
+                      {loading ? t.sending : (
                         <>
-                          <FiSend aria-hidden="true" /> Submit Feedback
+                          <FiSend aria-hidden="true" /> {t.submit}
                         </>
                       )}
                     </button>

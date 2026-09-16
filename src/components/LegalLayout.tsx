@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import type { IconType } from "react-icons";
 import { FiShield, FiFileText, FiAlertTriangle, FiInfo } from "react-icons/fi";
 import SEO from "./SEO/SEO";
+import { useTranslation } from "../i18n/useTranslation";
 
 interface LegalLayoutProps {
   title: string;
@@ -13,13 +14,6 @@ interface LegalLayoutProps {
   children: React.ReactNode;
 }
 
-const RELATED_PAGES: { to: string; label: string; icon: IconType }[] = [
-  { to: "/privacy", label: "Privacy Policy", icon: FiShield },
-  { to: "/terms", label: "Terms & Conditions", icon: FiFileText },
-  { to: "/disclaimer", label: "Disclaimer", icon: FiAlertTriangle },
-  { to: "/about", label: "About Us", icon: FiInfo },
-];
-
 const LegalLayout: React.FC<LegalLayoutProps> = ({
   title,
   description,
@@ -29,6 +23,14 @@ const LegalLayout: React.FC<LegalLayoutProps> = ({
   children,
 }) => {
   const { pathname } = useLocation();
+  const { footer: tf, legal: t } = useTranslation();
+
+  const RELATED_PAGES: { to: string; label: string; icon: IconType }[] = [
+    { to: "/privacy", label: tf.privacyPolicy, icon: FiShield },
+    { to: "/terms", label: tf.termsConditions, icon: FiFileText },
+    { to: "/disclaimer", label: tf.disclaimer, icon: FiAlertTriangle },
+    { to: "/about", label: tf.aboutUs, icon: FiInfo },
+  ];
   const otherPages = RELATED_PAGES.filter((page) => page.to !== pathname);
 
   return (
@@ -53,7 +55,7 @@ const LegalLayout: React.FC<LegalLayoutProps> = ({
       </div>
 
       <nav className="legal-related" aria-label="Other legal pages">
-        <span className="legal-related-label">Also see:</span>
+        <span className="legal-related-label">{t.alsoSee}</span>
         {otherPages.map(({ to, label, icon: PageIcon }) => (
           <Link key={to} to={to} className="legal-related-link">
             <PageIcon size={13} aria-hidden="true" /> {label}

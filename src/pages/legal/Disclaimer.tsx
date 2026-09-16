@@ -1,37 +1,33 @@
 import { FiAlertTriangle } from "react-icons/fi";
 import LegalLayout from "../../components/LegalLayout";
 import { WEBSITE_NAME } from "../../constant/SharedConstant";
+import { useTranslation } from "../../i18n/useTranslation";
 
 export default function Disclaimer() {
+  const { legal: t } = useTranslation();
   return (
     <LegalLayout
-      title="Disclaimer"
+      title={t.disclaimerTitle}
       icon={FiAlertTriangle}
-      description="Important notices about the information published on Apply India."
+      description={t.disclaimerDesc}
     >
       <p>
-        <strong>{WEBSITE_NAME}</strong> is an informational website only.
+        <strong>{WEBSITE_NAME}</strong> {t.disclaimerIntro}
       </p>
 
       <div className="legal-callout">
         <FiAlertTriangle className="legal-callout-icon" aria-hidden="true" />
         <div>
-          <h5>No Government Affiliation</h5>
-          <p>
-            We are not affiliated with any government organization. Users must
-            verify details from official government portals.
-          </p>
+          <h5>{t.noGovAffiliationTitle}</h5>
+          <p>{t.noGovAffiliationDesc}</p>
         </div>
       </div>
 
       <div className="legal-callout">
         <FiAlertTriangle className="legal-callout-icon" aria-hidden="true" />
         <div>
-          <h5>No Legal Responsibility</h5>
-          <p>
-            We are not responsible for any losses arising from the use of
-            information on this website.
-          </p>
+          <h5>{t.noLegalResponsibilityTitle}</h5>
+          <p>{t.noLegalResponsibilityDesc}</p>
         </div>
       </div>
     </LegalLayout>

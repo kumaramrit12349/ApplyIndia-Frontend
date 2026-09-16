@@ -5,16 +5,18 @@ import {
   APPLYINDIA_SOCIAL_LINKS,
   WEBSITE_NAME,
 } from "../../constant/SharedConstant";
-
-const LEGAL_LINKS = [
-  { to: "/privacy", label: "Privacy Policy", icon: FiShield },
-  { to: "/terms", label: "Terms & Conditions", icon: FiFileText },
-  { to: "/disclaimer", label: "Disclaimer", icon: FiAlertTriangle },
-  { to: "/about", label: "About Us", icon: FiInfo },
-];
+import { useTranslation } from "../../i18n/useTranslation";
 
 const Footer: React.FC = () => {
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
+  const { footer: t } = useTranslation();
+
+  const LEGAL_LINKS = [
+    { to: "/privacy", label: t.privacyPolicy, icon: FiShield },
+    { to: "/terms", label: t.termsConditions, icon: FiFileText },
+    { to: "/disclaimer", label: t.disclaimer, icon: FiAlertTriangle },
+    { to: "/about", label: t.aboutUs, icon: FiInfo },
+  ];
 
   return (
     <footer className="ai-footer mt-auto" role="contentinfo">
@@ -29,16 +31,13 @@ const Footer: React.FC = () => {
               <span className="ai-footer-brand-name">{WEBSITE_NAME}</span>
             </div>
             <p className="ai-footer-text">
-              {WEBSITE_NAME} provides verified government job, entrance exam,
-              admission, and scholarship notifications across India. We ensure
-              timely, authentic updates sourced from official authorities to
-              help you stay informed and ahead.
+              {WEBSITE_NAME} {t.about}
             </p>
           </div>
 
           {/* ---------- Legal ---------- */}
           <div className="col-12 col-lg-3 col-md-6">
-            <h6 className="ai-footer-title">Legal</h6>
+            <h6 className="ai-footer-title">{t.legalTitle}</h6>
             <ul className="ai-footer-links">
               {LEGAL_LINKS.map(({ to, label, icon: Icon }) => (
                 <li key={to}>
@@ -52,7 +51,7 @@ const Footer: React.FC = () => {
 
           {/* ---------- Connect With Us ---------- */}
           <div className="col-12 col-lg-4 col-md-6">
-            <h6 className="ai-footer-title">Connect With Us</h6>
+            <h6 className="ai-footer-title">{t.connectTitle}</h6>
 
             <div
               className="ai-footer-social justify-content-center justify-content-md-start mb-4"
@@ -80,7 +79,7 @@ const Footer: React.FC = () => {
 
             <div className="mb-3">
               <Link to="/testimonials" className="ai-footer-inline-link">
-                <FiMessageCircle size={14} aria-hidden="true" /> Success Stories
+                <FiMessageCircle size={14} aria-hidden="true" /> {t.successStories}
               </Link>
             </div>
 
@@ -88,9 +87,9 @@ const Footer: React.FC = () => {
               <Link
                 to="/feedback"
                 className="ai-footer-feedback-btn"
-                aria-label="Send feedback"
+                aria-label={t.sendFeedback}
               >
-                Send Feedback
+                {t.sendFeedback}
               </Link>
             </div>
           </div>
@@ -102,10 +101,10 @@ const Footer: React.FC = () => {
         {/* ================= BOTTOM ================= */}
         <div className="ai-footer-bottom-row">
           <span className="ai-footer-bottom">
-            © {new Date().getFullYear()} {WEBSITE_NAME}. All rights reserved.
+            © {new Date().getFullYear()} {WEBSITE_NAME}. {t.rightsReserved}
           </span>
           <button type="button" className="ai-footer-top-btn" onClick={scrollToTop}>
-            Back to top <FiArrowUp size={13} aria-hidden="true" />
+            {t.backToTop} <FiArrowUp size={13} aria-hidden="true" />
           </button>
         </div>
       </div>

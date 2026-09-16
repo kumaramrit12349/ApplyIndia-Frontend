@@ -5,6 +5,7 @@ import { getNotificationById } from "../../../services/public/notiifcationApi";
 import SEO from "../../../components/SEO/SEO";
 import { formatStateName } from "../../../utils/utils";
 import { buildBreadcrumbSchema, SITE_URL } from "../../../seo/site";
+import { useTranslation } from "../../../i18n/useTranslation";
 
 interface UserNotificationDetailPageProps {
   isAuthenticated?: boolean;
@@ -137,6 +138,7 @@ const UserNotificationDetailPage: React.FC<UserNotificationDetailPageProps> = ({
   onShowAuthPopup,
 }) => {
   const { id } = useParams<{ slug: string; id: string }>();
+  const { detailPage: t } = useTranslation();
   const [notification, setNotification] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -157,7 +159,7 @@ const UserNotificationDetailPage: React.FC<UserNotificationDetailPageProps> = ({
     return (
       <div className="container mt-5 text-center">
         <div className="spinner-border" style={{ color: "var(--color-primary)" }} role="status">
-          <span className="visually-hidden">Loading...</span>
+          <span className="visually-hidden">{t.loading}</span>
         </div>
       </div>
     );
@@ -167,7 +169,7 @@ const UserNotificationDetailPage: React.FC<UserNotificationDetailPageProps> = ({
     return (
       <div className="container mt-5">
         <SEO title="Notification Not Found" noindex={true} />
-        <div className="alert alert-danger">Notification not found</div>
+        <div className="alert alert-danger">{t.notFound}</div>
       </div>
     );
   }
