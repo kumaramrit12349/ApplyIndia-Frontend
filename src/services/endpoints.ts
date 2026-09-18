@@ -77,6 +77,10 @@ export const PRIVATE_API = {
     TEMPLATE_BY_KEY: (key: string) => `api/email-templates/${key}`,
     PREVIEW: (key: string) => `api/email-templates/${key}/preview`,
   },
+  PLATFORM_SETTINGS: {
+    GET: "api/platform-settings",
+    UPDATE: "api/platform-settings",
+  },
   OPEN_NOTIFICATIONS: {
     LIST: "api/open-notifications",
   },

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
-import { FiTrash2, FiEdit, FiPlus, FiMail, FiX, FiInfo, FiEye } from "react-icons/fi";
+import { FiTrash2, FiEdit, FiPlus, FiMail, FiX, FiInfo, FiEye, FiSend } from "react-icons/fi";
 import {
   getEmailTemplates,
   createEmailTemplate,
@@ -10,7 +10,23 @@ import {
   getEmailSamplePreviewUrl,
 } from "../../services/private/emailTemplateApi";
 import type { EmailTemplate } from "../../services/private/emailTemplateApi";
+import { getPlatformSettings, updatePlatformSettings } from "../../services/private/platformSettingsApi";
+import type { PlatformSettings } from "../../services/private/platformSettingsApi";
 import ConfirmModal from "../../components/ConfirmModal/ConfirmModal";
+
+const DEFAULT_PLATFORM_SETTINGS: PlatformSettings = {
+  email_communication_enabled: true,
+  contact_us_enabled: true,
+  guidance_enabled: true,
+  notification_enabled: true,
+};
+
+/** One row per feature area gated in emailService.ts's sendEmail() — see EMAIL_CHANNEL on the backend. */
+const CHANNEL_TOGGLES: { field: keyof PlatformSettings; label: string; description: string }[] = [
+  { field: "contact_us_enabled", label: "Contact Us", description: "Submitter confirmations and the internal new-submission alert." },
+  { field: "guidance_enabled", label: "Guidance Bookings", description: "Booking confirmations and slot-cancellation emails." },
+  { field: "notification_enabled", label: "Notification Alerts", description: "New job/exam notification email alerts." },
+];
 
 const EmailTemplatesPage: React.FC = () => {
   const [templates, setTemplates] = useState<EmailTemplate[]>([]);
@@ -29,6 +45,35 @@ const EmailTemplatesPage: React.FC = () => {
   // Delete confirm modal state
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const [templateToDelete, setTemplateToDelete] = useState<EmailTemplate | null>(null);
+
+  // Platform email settings — a master switch plus one toggle per feature
+  // area (see EMAIL_CHANNEL on the backend). Off master means nothing sends
+  // regardless of the section toggles; lives here since this is the only
+  // existing admin surface about email.
+  const [platformSettings, setPlatformSettings] = useState<PlatformSettings>(DEFAULT_PLATFORM_SETTINGS);
+  const [loadingEmailSetting, setLoadingEmailSetting] = useState<boolean>(true);
+  const [savingField, setSavingField] = useState<keyof PlatformSettings | null>(null);
+
+  useEffect(() => {
+    getPlatformSettings()
+      .then((res) => setPlatformSettings(res.data))
+      .catch(() => toast.error("Failed to load platform email settings"))
+      .finally(() => setLoadingEmailSetting(false));
+  }, []);
+
+  const handleToggleField = async (field: keyof PlatformSettings, label: string) => {
+    const next = !platformSettings[field];
+    setSavingField(field);
+    try {
+      const res = await updatePlatformSettings({ [field]: next });
+      setPlatformSettings(res.data);
+      toast.success(`${label} email communication ${next ? "enabled" : "disabled"}`);
+    } catch {
+      toast.error(`Failed to update ${label} email setting`);
+    } finally {
+      setSavingField(null);
+    }
+  };
 
   const fetchTemplates = async () => {
     try {
@@ -163,6 +208,104 @@ const EmailTemplatesPage: React.FC = () => {
                 <FiEye size={16} />
                 <span>Preview Theme</span>
               </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Platform Email Communication — master switch + one toggle per feature area */}
+        <div className="card shadow-sm border-0 mb-4 rounded-3" style={{ background: "var(--color-surface)" }}>
+          <div className="card-body p-4">
+            <div className="d-flex align-items-center justify-content-between gap-3 flex-wrap">
+              <div className="d-flex align-items-center gap-3">
+                <div
+                  className="rounded-circle p-3 d-flex align-items-center justify-content-center flex-shrink-0"
+                  style={{
+                    backgroundColor: platformSettings.email_communication_enabled ? "rgba(22, 163, 74, 0.12)" : "rgba(220, 38, 38, 0.12)",
+                    color: platformSettings.email_communication_enabled ? "var(--color-success, #16a34a)" : "var(--color-danger, #dc2626)",
+                  }}
+                >
+                  <FiSend size={22} />
+                </div>
+                <div>
+                  <h5 className="mb-1 fw-bold" style={{ color: "var(--color-heading)" }}>
+                    Platform Email Communication
+                  </h5>
+                  <p className="text-muted mb-0 small">
+                    Master switch for every outgoing email across the platform. When off, nothing is sent
+                    anywhere, regardless of the section switches below.
+                  </p>
+                </div>
+              </div>
+              <div className="form-check form-switch mb-0 flex-shrink-0">
+                <input
+                  type="checkbox"
+                  className="form-check-input"
+                  role="switch"
+                  id="platform-email-toggle"
+                  style={{ width: "2.75rem", height: "1.5rem", cursor: "pointer" }}
+                  checked={platformSettings.email_communication_enabled}
+                  disabled={loadingEmailSetting || savingField !== null}
+                  onChange={() => handleToggleField("email_communication_enabled", "Platform")}
+                />
+                <label className="form-check-label ms-2 fw-semibold" htmlFor="platform-email-toggle" style={{ color: "var(--color-body)" }}>
+                  {platformSettings.email_communication_enabled ? "Enabled" : "Disabled"}
+                </label>
+              </div>
+            </div>
+
+            <div
+              className="d-flex align-items-start gap-2 mt-3 p-3 rounded-3"
+              style={{ background: "rgba(var(--color-primary-rgb, 15, 61, 145), 0.08)", border: "1px solid rgba(var(--color-primary-rgb, 15, 61, 145), 0.2)" }}
+            >
+              <FiInfo size={16} className="flex-shrink-0 mt-1" style={{ color: "var(--color-primary)" }} />
+              <p className="small mb-0" style={{ color: "var(--color-body)" }}>
+                <strong style={{ color: "var(--color-heading)" }}>Why use this:</strong> pause outgoing emails
+                instantly, without a code deploy — e.g. an SES sending-limit issue, a spam/abuse wave on Contact
+                Us, or planned maintenance on one feature. Turn off just the affected section below, or the
+                master switch above to stop everything at once.
+              </p>
+            </div>
+
+            <hr style={{ borderColor: "var(--color-border)" }} />
+
+            <p className="small fw-semibold mb-3" style={{ color: "var(--color-muted)", textTransform: "uppercase", letterSpacing: "0.4px" }}>
+              By Section
+            </p>
+            {!platformSettings.email_communication_enabled && (
+              <p className="small mb-3" style={{ color: "var(--color-danger, #dc2626)" }}>
+                Master switch is off — none of these will send regardless of their own setting below.
+              </p>
+            )}
+            <div className="d-flex flex-column gap-3">
+              {CHANNEL_TOGGLES.map(({ field, label, description }) => (
+                <div key={field} className="d-flex align-items-center justify-content-between gap-3 flex-wrap">
+                  <div>
+                    <div className="fw-semibold" style={{ color: "var(--color-heading)" }}>
+                      {label}
+                    </div>
+                    <div className="small text-muted">{description}</div>
+                  </div>
+                  <div className="form-check form-switch mb-0 flex-shrink-0">
+                    <input
+                      type="checkbox"
+                      className="form-check-input"
+                      role="switch"
+                      id={`platform-email-toggle-${field}`}
+                      style={{ width: "2.75rem", height: "1.5rem", cursor: "pointer" }}
+                      checked={platformSettings[field] as boolean}
+                      disabled={loadingEmailSetting || savingField !== null || !platformSettings.email_communication_enabled}
+                      onChange={() => handleToggleField(field, label)}
+                    />
+                    <label
+                      className="form-check-label ms-2 fw-semibold"
+                      htmlFor={`platform-email-toggle-${field}`}
+                      style={{ color: "var(--color-body)" }}
+                    >
+                      {platformSettings[field] ? "Enabled" : "Disabled"}
+                    </label>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
