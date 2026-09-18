@@ -7,8 +7,8 @@ export const PUBLIC_API = {
     LATEST: "/public/notification/latest",
     FILTERS: "/public/notification/filters",
   },
-  FEEDBACK: {
-    SUBMIT: "/public/feedback",
+  CONTACT: {
+    SUBMIT: "/public/contact",
   },
   GUIDANCE_FEEDBACK: {
     LIST: "/public/guidance-feedback",
@@ -50,8 +50,21 @@ export const PRIVATE_API = {
     SOURCE_BY_KEY: (key: string) => `api/scraper/sources/${key}`,
     PREVIEW: (siteKey: string) => `api/scraper/preview/${siteKey}`,
   },
-  FEEDBACK: {
-    VIEW: "api/feedback/view",
+  CONTACT_ADMIN: {
+    LIST: "api/contact/list",
+    TRASH_LIST: "api/contact/trash/list",
+    STATS: "api/contact/stats",
+    GET: (id: string) => `api/contact/${encodeURIComponent(id)}`,
+    STATUS: (id: string) => `api/contact/${encodeURIComponent(id)}/status`,
+    PRIORITY: (id: string) => `api/contact/${encodeURIComponent(id)}/priority`,
+    NOTES: (id: string) => `api/contact/${encodeURIComponent(id)}/notes`,
+    REPLIES: (id: string) => `api/contact/${encodeURIComponent(id)}/replies`,
+    SPAM: (id: string) => `api/contact/${encodeURIComponent(id)}/spam`,
+    DELETE: (id: string) => `api/contact/${encodeURIComponent(id)}/delete`,
+    RESTORE: (id: string) => `api/contact/${encodeURIComponent(id)}/restore`,
+    DELETE_PERMANENT: (id: string) => `api/contact/${encodeURIComponent(id)}/permanent`,
+    DELETE_BULK: "api/contact/bulk-delete",
+    DELETE_BULK_PERMANENT: "api/contact/bulk-permanent-delete",
   },
   ADMIN_ROLES: {
     LIST: "api/admin-roles",

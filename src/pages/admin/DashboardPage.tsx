@@ -683,7 +683,22 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                 border: '1px solid rgba(255,255,255,0.3)'
               }}
             >
-              👥 Users & Feedback
+              👥 Users
+            </Link>
+          )}
+          {role === "admin" && (
+            <Link
+              to="/admin/contact-us"
+              className="btn fw-semibold shadow-sm w-100"
+              style={{
+                borderRadius: 12,
+                maxWidth: '200px',
+                background: 'rgba(255,255,255,0.15)',
+                color: '#fff',
+                border: '1px solid rgba(255,255,255,0.3)'
+              }}
+            >
+              📩 Contact Us
             </Link>
           )}
           {role === "admin" && (

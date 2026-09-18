@@ -212,6 +212,36 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ========================================
+   BOOTSTRAP MODAL THEMING
+   Bootstrap's own modal chrome (.modal-content/.modal-header/.modal-footer/
+   .btn-close) ships hardcoded to its light-theme defaults (white bg, near-
+   black text) via --bs-* variables this app never redefines — every plain
+   Bootstrap modal (ConfirmModal and friends) renders as a bright white box
+   regardless of [data-theme="dark"]. Retargeting the handful of properties
+   that matter onto this app's own tokens fixes every such modal at once,
+   including the confirm dialogs used throughout the Contact Us admin page.
+   ======================================== */
+.modal-content {
+  background: var(--color-surface);
+  color: var(--color-body);
+  border: 1px solid var(--color-border);
+}
+.modal-header,
+.modal-footer {
+  border-color: var(--color-border);
+}
+.modal-title {
+  color: var(--color-heading);
+}
+.btn-close {
+  filter: none;
+}
+:root[data-theme="dark"] .btn-close {
+  /* Bootstrap's btn-close is a black SVG X — invisible on a dark header. */
+  filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+/* ========================================
    ANIMATIONS
    ======================================== */
 @keyframes navFadeIn {
@@ -1508,26 +1538,38 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--color-accent);
 }
 
-.ai-footer-inline-link {
+/* Success Stories — styled as a secondary pill CTA (glass outline) sitting
+   alongside the primary "Contact Us" gradient button, rather than a plain
+   understated text link, so both read as intentional calls to action. */
+.ai-footer-success-btn {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  color: #cbd5e1;
+  padding: 10px 22px;
+  border: 1.5px solid rgba(255, 255, 255, 0.28);
+  border-radius: var(--radius-pill, 999px);
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  font-family: var(--font-base);
+  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: 0.3px;
   text-decoration: none;
-  font-size: 0.95rem;
-  transition: var(--transition-fast);
+  transition: var(--transition-smooth, transform 0.2s, box-shadow 0.2s);
 }
-.ai-footer-inline-link svg {
-  color: #64748b;
+
+.ai-footer-success-btn svg {
+  color: var(--color-accent);
   transition: var(--transition-fast);
   flex-shrink: 0;
 }
-.ai-footer-inline-link:hover {
+
+.ai-footer-success-btn:hover {
   color: #fff;
-  transform: translateX(4px);
-}
-.ai-footer-inline-link:hover svg {
-  color: var(--color-accent);
+  border-color: var(--color-accent);
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.28);
 }
 
 /* Social Icons */
@@ -1565,6 +1607,7 @@ h1, h2, h3, h4, h5, h6 {
   align-items: center;
   gap: 6px;
   padding: 10px 24px;
+  border: none;
   border-radius: var(--radius-pill, 999px);
   background: linear-gradient(135deg, var(--color-accent, #f59e0b), #d97706);
   color: #fff;
@@ -1573,6 +1616,7 @@ h1, h2, h3, h4, h5, h6 {
   font-size: 0.9rem;
   letter-spacing: 0.3px;
   text-decoration: none;
+  cursor: pointer;
   box-shadow: 0 4px 14px rgba(217, 119, 6, 0.35);
   transition: var(--transition-smooth, transform 0.2s, box-shadow 0.2s);
 }
@@ -1790,7 +1834,12 @@ h1, h2, h3, h4, h5, h6 {
    MODERN FORM INPUTS (.ai-form)
    ======================================== */
 .ai-glass-panel {
-  background: rgba(255, 255, 255, 0.95);
+  /* Was hardcoded to a light white regardless of theme, which — combined
+     with --color-heading/--color-muted being calibrated for dark surfaces
+     in dark mode — made every label and input nearly unreadable there
+     (near-white text on a near-white card). Using the theme token keeps
+     the panel correctly dark in dark mode. */
+  background: var(--color-surface);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--color-border);
@@ -1827,7 +1876,7 @@ h1, h2, h3, h4, h5, h6 {
 .ai-input:focus {
   outline: none;
   border-color: var(--color-primary);
-  background: #fff;
+  background: var(--color-surface);
   box-shadow: var(--shadow-focus);
 }
 

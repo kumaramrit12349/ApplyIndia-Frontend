@@ -116,6 +116,7 @@ const EmailTemplatesPage: React.FC = () => {
       const res = await deleteEmailTemplate(templateToDelete.key);
       if (res.success) {
         toast.success(res.message || "Email template deleted successfully.");
+        if (isEditing && key === templateToDelete.key) handleClearForm();
         fetchTemplates();
       } else {
         toast.error("Failed to delete email template.");
@@ -238,13 +239,6 @@ const EmailTemplatesPage: React.FC = () => {
                                   <FiEdit size={14} />
                                   <span>Edit</span>
                                 </button>
-                                <button
-                                  onClick={() => handleDeleteClick(t)}
-                                  className="btn btn-sm btn-outline-danger d-flex align-items-center justify-content-center shadow-sm p-2"
-                                  title="Delete template"
-                                >
-                                  <FiTrash2 size={14} />
-                                </button>
                               </div>
                             </td>
                           </tr>
@@ -273,6 +267,18 @@ const EmailTemplatesPage: React.FC = () => {
                     >
                       <FiEye size={14} />
                       Preview
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const current = templates.find((t) => t.key === key);
+                        if (current) handleDeleteClick(current);
+                      }}
+                      className="btn btn-sm btn-link p-0 d-flex align-items-center gap-1 text-decoration-none"
+                      style={{ color: "var(--color-danger, #dc3545)" }}
+                    >
+                      <FiTrash2 size={14} />
+                      Delete
                     </button>
                     <button
                       onClick={handleClearForm}

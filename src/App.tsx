@@ -37,7 +37,6 @@ const DashboardPage = lazy(() => import("./pages/admin/DashboardPage"));
 const AddNotificationPage = lazy(() => import("./pages/admin/AddNotificationPage"));
 const EditNotificationPage = lazy(() => import("./pages/admin/EditNotificationPage"));
 const ReviewNotificationPage = lazy(() => import("./pages/admin/ReviewNotificationPage"));
-const AdminFeedbackPage = lazy(() => import("./pages/admin/AdminFeedbackPage"));
 const ScraperDashboard = lazy(() => import("./pages/admin/ScraperDashboard"));
 const AdminRolesPage = lazy(() => import("./pages/admin/AdminRolesPage"));
 const EmailTemplatesPage = lazy(() => import("./pages/admin/EmailTemplatesPage"));
@@ -46,13 +45,14 @@ const PrivacyPolicy = lazy(() => import("./pages/legal/PrivacyPolicy"));
 const TermsAndConditions = lazy(() => import("./pages/legal/TermsAndConditions"));
 const Disclaimer = lazy(() => import("./pages/legal/Disclaimer"));
 const AboutUs = lazy(() => import("./pages/legal/AboutUs"));
-const FeedbackPage = lazy(() => import("./pages/feedback/FeedbackPage"));
+const ContactUsPage = lazy(() => import("./pages/ContactUsPage"));
 const ProfilePage = lazy(() => import("./pages/ProfilePage"));
 const NotificationPreferencesPage = lazy(() => import("./pages/NotificationPreferencesPage"));
 const MyDashboard = lazy(() => import("./pages/MyDashboard"));
 const GoogleCallbackPage = lazy(() => import("./pages/GoogleCallbackPage"));
 const GuidanceTestimonialsPage = lazy(() => import("./pages/GuidanceTestimonialsPage"));
 const AdminGuidancePage = lazy(() => import("./pages/admin/AdminGuidancePage"));
+const AdminContactPage = lazy(() => import("./pages/admin/AdminContactPage"));
 
 const RouteFallback: React.FC = () => (
   <div className="d-flex justify-content-center align-items-center py-5">
@@ -318,22 +318,13 @@ const AppLayout: React.FC = () => {
               }
             />
             <Route
-              path="/admin/feedback"
+              path="/admin/contact-us"
               element={
                 <ProtectedRoute
                   isAuthenticated={isAuthenticated}
                   checkingAuth={checkingAuth}
                 >
-                  <AdminFeedbackPage
-                    isAuthenticated={isAuthenticated}
-                    givenName={givenName}
-                    familyName={familyName}
-                    email={userEmail}
-                    isAdmin={isAdmin}
-                    adminRole={adminRole}
-                    onLogout={handleLogout}
-                    onShowAuthPopup={() => setShowAuthPopup(true)}
-                  />
+                  <AdminContactPage adminRole={adminRole} />
                 </ProtectedRoute>
               }
             />
@@ -437,8 +428,18 @@ const AppLayout: React.FC = () => {
             <Route path="/disclaimer" element={<Disclaimer />} />
             <Route path="/about" element={<AboutUs />} />
 
-            {/* feedback page */}
-            <Route path="/feedback" element={<FeedbackPage />} />
+            {/* Contact Us page — public, works for guests and logged-in visitors alike */}
+            <Route
+              path="/contact-us"
+              element={
+                <ContactUsPage
+                  isAuthenticated={isAuthenticated}
+                  givenName={givenName}
+                  familyName={familyName}
+                  userEmail={userEmail}
+                />
+              }
+            />
 
             {/* Guidance public testimonials */}
             <Route path="/testimonials" element={<GuidanceTestimonialsPage />} />

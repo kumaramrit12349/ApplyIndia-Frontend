@@ -79,18 +79,18 @@ const Footer: React.FC = () => {
             </div>
 
             <div className="mb-3">
-              <Link to="/testimonials" className="ai-footer-inline-link">
-                <FiMessageCircle size={14} aria-hidden="true" /> Success Stories
+              <Link to="/testimonials" className="ai-footer-success-btn">
+                <FiMessageCircle size={16} aria-hidden="true" /> Success Stories
               </Link>
             </div>
 
             <div>
               <Link
-                to="/feedback"
+                to="/contact-us"
                 className="ai-footer-feedback-btn"
-                aria-label="Send feedback"
+                aria-label="Contact us"
               >
-                Send Feedback
+                Contact Us
               </Link>
             </div>
           </div>
