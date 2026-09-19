@@ -11,11 +11,17 @@ export interface EmailTemplate {
   modified_at?: number;
 }
 
-export async function getEmailTemplates(): Promise<{
+export async function getEmailTemplates(
+  limit: number,
+  startKey?: { pk: string; sk: string }
+): Promise<{
   success: boolean;
   templates: EmailTemplate[];
+  lastEvaluatedKey?: { pk: string; sk: string };
 }> {
-  return privateFetch(PRIVATE_API.EMAIL_TEMPLATES.LIST);
+  const params = new URLSearchParams({ limit: String(limit) });
+  if (startKey) params.set("startKey", JSON.stringify(startKey));
+  return privateFetch(`${PRIVATE_API.EMAIL_TEMPLATES.LIST}?${params.toString()}`);
 }
 
 export async function getEmailTemplate(key: string): Promise<{
@@ -63,13 +69,4 @@ export async function deleteEmailTemplate(key: string): Promise<{
  */
 export function getEmailTemplatePreviewUrl(key: string): string {
   return `${CONFIG.API_BASE_URL}/${PRIVATE_API.EMAIL_TEMPLATES.PREVIEW(key)}`;
-}
-
-/**
- * Full URL for the shared header/footer theme, rendered with a sample body
- * and no DynamoDB lookup — lets you check the overall design (logo, colors,
- * social icons) without needing any real template saved first.
- */
-export function getEmailSamplePreviewUrl(): string {
-  return `${CONFIG.API_BASE_URL}/${PRIVATE_API.EMAIL_TEMPLATES.SAMPLE_PREVIEW}`;
 }

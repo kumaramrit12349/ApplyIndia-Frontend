@@ -73,7 +73,6 @@ export const PRIVATE_API = {
   },
   EMAIL_TEMPLATES: {
     LIST: "api/email-templates",
-    SAMPLE_PREVIEW: "api/email-templates/sample-preview",
     TEMPLATE_BY_KEY: (key: string) => `api/email-templates/${key}`,
     PREVIEW: (key: string) => `api/email-templates/${key}/preview`,
   },

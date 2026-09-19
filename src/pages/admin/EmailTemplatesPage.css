@@ -1,0 +1,302 @@
+/* ============================ TYPOGRAPHY ============================ */
+.etp-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--color-heading);
+  margin: 0;
+}
+.etp-subtitle {
+  font-size: 0.85rem;
+  color: var(--color-muted);
+  margin: 0;
+}
+.etp-section-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-heading);
+  margin: 0;
+}
+.etp-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-bottom: 6px;
+}
+.etp-help-text {
+  font-size: 0.78rem;
+  color: var(--color-muted);
+  margin-top: 4px;
+}
+
+/* ============================ CARD SHELLS ============================ */
+.etp-card-header {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.etp-icon-badge {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ============================ COUNT BADGE ============================ */
+.etp-count-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 7px;
+  border-radius: var(--radius-pill, 999px);
+  background: rgba(var(--color-primary-rgb, 15, 61, 145), 0.12);
+  color: var(--color-primary);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+/* ============================ TABLE ============================ */
+/* Bootstrap's raw .table hardcodes its own light-theme colors/borders via
+   --bs-table-* variables this app never redefines — left alone, every row
+   would render with light-mode text/borders even in dark mode. Retargeting
+   onto this app's tokens keeps it consistent with everything else here. */
+.etp-table {
+  --bs-table-color: var(--color-body);
+  --bs-table-bg: transparent;
+  --bs-table-border-color: var(--color-border);
+  --bs-table-hover-bg: var(--color-bg);
+  --bs-table-hover-color: var(--color-body);
+  margin-bottom: 0;
+}
+.etp-table thead th {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--color-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--color-border);
+  white-space: nowrap;
+}
+.etp-table tbody td {
+  vertical-align: middle;
+  border-color: var(--color-border);
+}
+.etp-table tbody tr {
+  transition: background var(--motion-fast, 0.15s ease);
+}
+.etp-table tbody tr.etp-row-active {
+  background: rgba(var(--color-primary-rgb, 15, 61, 145), 0.07);
+}
+.etp-key-pill {
+  display: inline-block;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  background: rgba(var(--color-primary-rgb, 15, 61, 145), 0.1);
+  padding: 3px 9px;
+  border-radius: var(--radius-md, 8px);
+}
+
+/* ============================ BUTTONS ============================ */
+/* Base pill button — tinted at rest (not just on hover) so Preview/Edit/
+   Delete read apart from each other at a glance instead of all looking like
+   the same gray outline button with only a hover-state difference. */
+.etp-btn-ghost {
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-body);
+  border-radius: var(--radius-pill, 999px);
+  padding: 7px 14px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  line-height: 1;
+  transition: var(--motion-fast, 0.15s ease), transform 0.15s ease, box-shadow 0.15s ease;
+}
+.etp-btn-ghost:hover:not(:disabled) {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background: rgba(var(--color-primary-rgb, 15, 61, 145), 0.08);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-xs);
+}
+.etp-btn-ghost:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: none;
+}
+.etp-btn-ghost:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Preview — informational blue tint */
+.etp-btn-ghost--info {
+  color: var(--color-secondary, #2563eb);
+  border-color: rgba(37, 99, 235, 0.3);
+  background: rgba(37, 99, 235, 0.08);
+}
+.etp-btn-ghost--info:hover:not(:disabled) {
+  border-color: var(--color-secondary, #2563eb);
+  background: rgba(37, 99, 235, 0.16);
+  color: var(--color-secondary, #2563eb);
+}
+
+/* Edit — amber tint */
+.etp-btn-ghost--warn {
+  color: #d97706;
+  border-color: rgba(217, 119, 6, 0.3);
+  background: rgba(217, 119, 6, 0.08);
+}
+.etp-btn-ghost--warn:hover:not(:disabled) {
+  border-color: #d97706;
+  background: rgba(217, 119, 6, 0.16);
+  color: #d97706;
+}
+
+/* Delete — danger red tint */
+.etp-btn-ghost--danger {
+  color: var(--color-danger, #dc2626);
+  border-color: rgba(220, 38, 38, 0.3);
+  background: rgba(220, 38, 38, 0.08);
+}
+.etp-btn-ghost--danger:hover:not(:disabled) {
+  border-color: var(--color-danger, #dc2626);
+  background: rgba(220, 38, 38, 0.16);
+  color: var(--color-danger, #dc2626);
+}
+
+/* Solid gradient pill — reserved for the one primary call-to-action in a
+   header ("New Template") so it stands apart from the tinted row actions. */
+.etp-btn-primary-pill {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  border: none;
+  border-radius: var(--radius-pill, 999px);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.8rem;
+  padding: 8px 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: var(--shadow-xs);
+  transition: var(--motion-fast, 0.15s ease), transform 0.15s ease, box-shadow 0.15s ease;
+}
+.etp-btn-primary-pill:hover:not(:disabled) {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+.etp-btn-primary-pill:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* Minimal text-style buttons (modal header Preview/Close) — a soft tinted
+   pill on hover instead of just a color swap. */
+.etp-btn-link {
+  border: none;
+  background: none;
+  padding: 5px 10px;
+  border-radius: var(--radius-pill, 999px);
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--color-muted);
+  transition: var(--motion-fast, 0.15s ease);
+}
+.etp-btn-link:hover:not(:disabled) {
+  color: var(--color-primary);
+  background: rgba(var(--color-primary-rgb, 15, 61, 145), 0.1);
+}
+.etp-btn-link--danger {
+  color: var(--color-danger, #dc2626);
+}
+.etp-btn-link--danger:hover:not(:disabled) {
+  color: var(--color-danger, #dc2626);
+  background: rgba(220, 38, 38, 0.1);
+}
+
+.etp-btn-submit {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  border: none;
+  border-radius: var(--radius-lg, 10px);
+  color: #fff;
+  font-weight: 700;
+  padding: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  box-shadow: var(--shadow-xs);
+  transition: var(--motion-fast, 0.15s ease), transform 0.15s ease, box-shadow 0.15s ease;
+}
+.etp-btn-submit:hover:not(:disabled) {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+.etp-btn-submit:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* ============================ FORM FIELDS ============================ */
+/* Same reasoning as .etp-table — raw .form-control/.form-select ship
+   hardcoded to a white background + dark text regardless of theme. */
+.etp-input {
+  width: 100%;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  color: var(--color-heading);
+  border-radius: var(--radius-md, 8px);
+  padding: 9px 12px;
+  font-size: 0.9rem;
+  transition: var(--motion-fast, 0.15s ease);
+}
+.etp-input::placeholder {
+  color: var(--color-muted);
+}
+.etp-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-focus);
+}
+.etp-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+textarea.etp-input {
+  resize: vertical;
+  min-height: 140px;
+}
+
+/* ============================ EMPTY STATE ============================ */
+.etp-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 56px 20px;
+  color: var(--color-muted);
+  text-align: center;
+}
