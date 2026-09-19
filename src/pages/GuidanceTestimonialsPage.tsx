@@ -37,7 +37,7 @@ const GuidanceTestimonialsPage: React.FC = () => {
 
       {loading ? (
         <div className="text-center py-5">
-          <span className="spinner-border" style={{ color: "var(--color-primary)" }} />
+          <span className="spinner-border" style={{ color: "var(--color-primary-text)" }} />
         </div>
       ) : items.length === 0 ? (
         <div className="text-center text-muted py-5">

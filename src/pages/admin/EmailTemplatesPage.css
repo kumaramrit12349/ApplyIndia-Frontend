@@ -61,7 +61,7 @@
   padding: 0 7px;
   border-radius: var(--radius-pill, 999px);
   background: rgba(var(--color-primary-rgb, 15, 61, 145), 0.12);
-  color: var(--color-primary);
+  color: var(--color-primary-text);
   font-size: 0.75rem;
   font-weight: 700;
 }
@@ -103,7 +103,7 @@
   font-family: var(--font-mono, monospace);
   font-size: 0.78rem;
   font-weight: 600;
-  color: var(--color-primary);
+  color: var(--color-primary-text);
   background: rgba(var(--color-primary-rgb, 15, 61, 145), 0.1);
   padding: 3px 9px;
   border-radius: var(--radius-md, 8px);
@@ -129,7 +129,7 @@
 }
 .etp-btn-ghost:hover:not(:disabled) {
   border-color: var(--color-primary);
-  color: var(--color-primary);
+  color: var(--color-primary-text);
   background: rgba(var(--color-primary-rgb, 15, 61, 145), 0.08);
   transform: translateY(-1px);
   box-shadow: var(--shadow-xs);
@@ -159,14 +159,14 @@
 
 /* Edit — amber tint */
 .etp-btn-ghost--warn {
-  color: #d97706;
+  color: var(--color-warn-text);
   border-color: rgba(217, 119, 6, 0.3);
   background: rgba(217, 119, 6, 0.08);
 }
 .etp-btn-ghost--warn:hover:not(:disabled) {
   border-color: #d97706;
   background: rgba(217, 119, 6, 0.16);
-  color: #d97706;
+  color: var(--color-warn-text);
 }
 
 /* Delete — danger red tint */
@@ -222,7 +222,7 @@
   transition: var(--motion-fast, 0.15s ease);
 }
 .etp-btn-link:hover:not(:disabled) {
-  color: var(--color-primary);
+  color: var(--color-primary-text);
   background: rgba(var(--color-primary-rgb, 15, 61, 145), 0.1);
 }
 .etp-btn-link--danger {

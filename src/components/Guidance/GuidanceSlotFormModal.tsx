@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import "./Guidance.css";
+import { APP_TIME_ZONE, toIstDateKey, istTimestamp, upperAmPm } from "../../utils/dateTime";
 
 interface GuidanceSlotFormModalProps {
   show: boolean;
@@ -31,7 +32,7 @@ function generateTimeOptions(window: (typeof TIME_WINDOWS)[number]): { value: st
   let m = window.startMinute;
   while (h < window.endHour || (h === window.endHour && m < window.endMinute)) {
     const value = `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
-    const label = new Date(2000, 0, 1, h, m).toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit" });
+    const label = upperAmPm(new Date(2000, 0, 1, h, m).toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit" }));
     options.push({ value, label });
     m += SLOT_STEP_MINUTES;
     if (m >= 60) {
@@ -40,15 +41,6 @@ function generateTimeOptions(window: (typeof TIME_WINDOWS)[number]): { value: st
     }
   }
   return options;
-}
-
-/** Local YYYY-MM-DD for a given Date (or now), used for the date input's
- * `min`/`max` so out-of-range dates can't be picked. */
-function toDateInputValue(d: Date): string {
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
 }
 
 const makeBlockId = () => Math.random().toString(36).slice(2);
@@ -77,8 +69,8 @@ const GuidanceSlotFormModal: React.FC<GuidanceSlotFormModalProps> = ({
 
   if (!show) return null;
 
-  const todayValue = toDateInputValue(new Date());
-  const maxValue = lastDateToApply ? toDateInputValue(new Date(lastDateToApply)) : undefined;
+  const todayValue = toIstDateKey(Date.now());
+  const maxValue = lastDateToApply ? toIstDateKey(lastDateToApply) : undefined;
 
   const isDateInvalid = (blockDate: string) => {
     const isPastDate = !!blockDate && blockDate < todayValue;
@@ -88,7 +80,7 @@ const GuidanceSlotFormModal: React.FC<GuidanceSlotFormModalProps> = ({
 
   const isTimeUnavailable = (blockDate: string, value: string) => {
     if (!blockDate) return false;
-    const timestamp = new Date(`${blockDate}T${value}`).getTime();
+    const timestamp = istTimestamp(blockDate, value);
     if (blockDate === todayValue && timestamp <= Date.now()) return true;
     if (lastDateToApply && timestamp > lastDateToApply) return true;
     return false;
@@ -100,7 +92,7 @@ const GuidanceSlotFormModal: React.FC<GuidanceSlotFormModalProps> = ({
         if (b.id !== id) return b;
         // Drop any already-selected times that are no longer valid for the new date.
         const selectedTimes = b.selectedTimes.filter((t) => {
-          const timestamp = new Date(`${value}T${t}`).getTime();
+          const timestamp = istTimestamp(value, t);
           if (value === todayValue && timestamp <= Date.now()) return false;
           if (lastDateToApply && timestamp > lastDateToApply) return false;
           return true;
@@ -135,7 +127,7 @@ const GuidanceSlotFormModal: React.FC<GuidanceSlotFormModalProps> = ({
   const handleConfirmClick = async () => {
     if (confirming || totalSelectedTimes === 0 || hasInvalidDate || !meetLink.trim()) return;
     const start_times = dateBlocks
-      .flatMap((b) => b.selectedTimes.map((t) => new Date(`${b.date}T${t}`).getTime()))
+      .flatMap((b) => b.selectedTimes.map((t) => istTimestamp(b.date, t)))
       .filter((t) => Number.isFinite(t) && t > Date.now() && (!lastDateToApply || t <= lastDateToApply))
       .sort((a, b) => a - b);
     if (start_times.length === 0) return;
@@ -187,11 +179,11 @@ const GuidanceSlotFormModal: React.FC<GuidanceSlotFormModalProps> = ({
                       <p className="text-danger small mb-3">Please pick today or a future date.</p>
                     ) : isBeyondDeadline ? (
                       <p className="text-danger small mb-3">
-                        This is beyond the application's last date to apply ({new Date(lastDateToApply!).toLocaleDateString("en-IN")}).
+                        This is beyond the application's last date to apply ({new Date(lastDateToApply!).toLocaleDateString("en-IN", { timeZone: APP_TIME_ZONE })}).
                       </p>
                     ) : maxValue ? (
                       <p className="text-muted small mb-3">
-                        Must be on or before the last date to apply ({new Date(lastDateToApply!).toLocaleDateString("en-IN")}).
+                        Must be on or before the last date to apply ({new Date(lastDateToApply!).toLocaleDateString("en-IN", { timeZone: APP_TIME_ZONE })}).
                       </p>
                     ) : (
                       <div className="mb-3" />

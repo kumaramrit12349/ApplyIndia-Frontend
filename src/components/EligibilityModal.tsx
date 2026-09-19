@@ -26,7 +26,7 @@ const EligibilityModal: React.FC<EligibilityModalProps> = ({ show, loading, resu
 
         {loading && (
           <div className="elig-loading">
-            <div className="spinner-border" style={{ color: "var(--color-primary)" }} role="status">
+            <div className="spinner-border" style={{ color: "var(--color-primary-text)" }} role="status">
               <span className="visually-hidden">Checking...</span>
             </div>
             <p className="mt-3 mb-0">Checking your eligibility…</p>

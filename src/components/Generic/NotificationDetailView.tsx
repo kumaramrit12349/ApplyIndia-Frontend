@@ -49,12 +49,14 @@ import {
 import { toast } from "react-toastify";
 import GuidanceBookingCard from "../Guidance/GuidanceBookingCard";
 import "./NotificationDetailView.css";
+import { APP_TIME_ZONE, upperAmPm } from "../../utils/dateTime";
 
 /* ──────────────── Helpers ──────────────── */
 
 const formatDate = (d?: string) =>
   d
     ? new Date(d).toLocaleDateString("en-IN", {
+      timeZone: APP_TIME_ZONE,
         year: "numeric",
         month: "short",
         day: "numeric",
@@ -64,7 +66,7 @@ const formatDate = (d?: string) =>
 const formatDateTime = (d?: number | string | null) => {
   if (!d) return "—";
   const date = typeof d === "number" ? new Date(d) : new Date(d);
-  return isNaN(date.getTime()) ? "—" : date.toLocaleString("en-IN");
+  return isNaN(date.getTime()) ? "—" : upperAmPm(date.toLocaleString("en-IN", { timeZone: APP_TIME_ZONE }));
 };
 
 const formatCurrency = (amount?: string | number | null) => {
@@ -987,7 +989,7 @@ export default function NotificationDetailView({
                 <button
                   onClick={() => window.open("/dashboard", "_blank")}
                   style={{
-                    background: "var(--color-secondary)",
+                    background: "var(--color-primary)",
                     color: "white",
                     border: "none",
                     borderRadius: "4px",

@@ -1,0 +1,63 @@
+.btd {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 20px 6px 6px;
+  border-radius: var(--radius-pill, 999px);
+  font-size: 0.86rem;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+/* light sweep across the button on hover */
+.btd::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -70%;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.55s ease;
+  pointer-events: none;
+}
+.btd:hover::after { left: 130%; }
+.btd:hover { transform: translateY(-2px); }
+.btd:active { transform: translateY(0); }
+.btd:focus-visible { outline: none; box-shadow: var(--shadow-focus); }
+
+.btd-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+.btd:hover .btd-icon { transform: translateX(-4px); }
+
+.btd--solid,
+.btd--solid:hover {
+  color: #fff;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  box-shadow: 0 4px 14px rgba(var(--color-primary-rgb, 15, 61, 145), 0.35);
+}
+.btd--solid:hover { box-shadow: 0 8px 20px rgba(var(--color-primary-rgb, 15, 61, 145), 0.45); filter: brightness(1.06); }
+.btd--solid .btd-icon { background: rgba(255, 255, 255, 0.22); }
+
+.btd--light,
+.btd--light:hover {
+  color: var(--color-primary);
+  background: #fff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+}
+.btd--light:hover { box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25); }
+.btd--light .btd-icon { background: var(--color-primary); color: #fff; }

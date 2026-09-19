@@ -52,6 +52,9 @@ export const bulkDeleteGuidanceSlots = (slotSks: string[]) => {
 export const listAdminGuidanceBookings = (filters: {
   notificationId?: string;
   status?: string;
+  /** Only sessions starting in [slotDateFrom, slotDateTo) — epoch ms, one day's window. */
+  slotDateFrom?: number;
+  slotDateTo?: number;
   limit?: number;
   startKey?: { pk: string; sk: string };
 }) => {

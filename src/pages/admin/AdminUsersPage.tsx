@@ -13,6 +13,8 @@ import {
     FiMapPin,
 } from "react-icons/fi";
 import { BsGoogle } from "react-icons/bs";
+import { APP_TIME_ZONE } from "../../utils/dateTime";
+import BackToDashboard from "../../components/BackToDashboard/BackToDashboard";
 
 const AdminUsersPage: React.FC = () => {
     const [timeRange, setTimeRange] = useState<string>("all");
@@ -46,6 +48,7 @@ const AdminUsersPage: React.FC = () => {
     const formatDate = (timestamp?: number) => {
         if (!timestamp) return "N/A";
         return new Date(timestamp).toLocaleDateString("en-IN", {
+          timeZone: APP_TIME_ZONE,
             day: "numeric",
             month: "short",
             year: "numeric",
@@ -67,7 +70,7 @@ const AdminUsersPage: React.FC = () => {
                             <div className="d-flex align-items-center gap-3">
                                 <div
                                     className="d-flex align-items-center justify-content-center rounded-circle shadow-xs"
-                                    style={{ width: "44px", height: "44px", background: "rgba(29, 78, 216, 0.15)", color: "var(--color-primary)" }}
+                                    style={{ width: "44px", height: "44px", background: "rgba(29, 78, 216, 0.15)", color: "var(--color-primary-text)" }}
                                 >
                                     <FiShield size={24} />
                                 </div>
@@ -77,8 +80,9 @@ const AdminUsersPage: React.FC = () => {
                                 </div>
                             </div>
 
-                            {/* Filter & Refresh */}
-                            <div className="d-flex align-items-center gap-2">
+                            {/* Back + Filter & Refresh */}
+                            <div className="d-flex align-items-center gap-2 flex-wrap">
+                                <BackToDashboard />
                                 <label htmlFor="adminPageTimeRange" className="small fw-semibold mb-0" style={{ color: "var(--color-muted)" }}>
                                     Filter:
                                 </label>
@@ -126,7 +130,7 @@ const AdminUsersPage: React.FC = () => {
                         <div>
                             {statsLoading ? (
                                 <div className="py-5 text-center">
-                                    <div className="spinner-border" style={{ color: "var(--color-primary)" }} role="status">
+                                    <div className="spinner-border" style={{ color: "var(--color-primary-text)" }} role="status">
                                         <span className="visually-hidden">Loading user stats...</span>
                                     </div>
                                     <p className="small mt-2" style={{ color: "var(--color-muted)" }}>Aggregating platform user insights…</p>
@@ -148,13 +152,13 @@ const AdminUsersPage: React.FC = () => {
                                                     <span className="small fw-semibold" style={{ color: "var(--color-muted)" }}>Total Users</span>
                                                     <span
                                                         className="p-2 rounded-circle shadow-xs"
-                                                        style={{ background: "var(--color-surface)", color: "var(--color-primary)" }}
+                                                        style={{ background: "var(--color-surface)", color: "var(--color-primary-text)" }}
                                                     >
                                                         <FiUsers size={18} />
                                                     </span>
                                                 </div>
                                                 <div>
-                                                    <h2 className="fw-bold mb-0" style={{ color: "var(--color-primary)" }}>{userStats.totalUsers}</h2>
+                                                    <h2 className="fw-bold mb-0" style={{ color: "var(--color-primary-text)" }}>{userStats.totalUsers}</h2>
                                                     <span className="small" style={{ color: "var(--color-muted)" }}>Registered on platform</span>
                                                 </div>
                                             </div>
@@ -227,7 +231,7 @@ const AdminUsersPage: React.FC = () => {
                                                 style={{ background: "var(--color-bg)", border: "1px solid var(--color-border)", borderRadius: "10px" }}
                                             >
                                                 <h6 className="fw-bold mb-3 d-flex align-items-center gap-2" style={{ color: "var(--color-heading)" }}>
-                                                    <FiLayers style={{ color: "var(--color-primary)" }} /> Category Distribution
+                                                    <FiLayers style={{ color: "var(--color-primary-text)" }} /> Category Distribution
                                                 </h6>
                                                 {Object.keys(userStats.byCategory).length === 0 ? (
                                                     <p className="small mb-0" style={{ color: "var(--color-muted)" }}>No category data recorded.</p>
@@ -265,7 +269,7 @@ const AdminUsersPage: React.FC = () => {
                                                 style={{ background: "var(--color-bg)", border: "1px solid var(--color-border)", borderRadius: "10px" }}
                                             >
                                                 <h6 className="fw-bold mb-3 d-flex align-items-center gap-2" style={{ color: "var(--color-heading)" }}>
-                                                    <FiMapPin style={{ color: "var(--color-primary)" }} /> State Distribution
+                                                    <FiMapPin style={{ color: "var(--color-primary-text)" }} /> State Distribution
                                                 </h6>
                                                 {Object.keys(userStats.byState).length === 0 ? (
                                                     <p className="small mb-0" style={{ color: "var(--color-muted)" }}>No state data recorded.</p>
@@ -297,7 +301,7 @@ const AdminUsersPage: React.FC = () => {
                                     {/* Recent Users List */}
                                     <div>
                                         <h6 className="fw-bold mb-3 d-flex align-items-center gap-2" style={{ color: "var(--color-heading)" }}>
-                                            <FiTrendingUp style={{ color: "var(--color-primary)" }} /> Recent Registrations
+                                            <FiTrendingUp style={{ color: "var(--color-primary-text)" }} /> Recent Registrations
                                         </h6>
                                         {userStats.recentUsers.length === 0 ? (
                                             <div
@@ -308,7 +312,7 @@ const AdminUsersPage: React.FC = () => {
                                             </div>
                                         ) : (
                                             <div className="table-responsive" style={{ border: "1px solid var(--color-border)", borderRadius: "8px", overflow: "hidden" }}>
-                                                <table className="table table-hover align-middle mb-0 small" style={{ color: "var(--color-body)" }}>
+                                                <table className="table table-hover align-middle mb-0 small table-stack" style={{ color: "var(--color-body)" }}>
                                                     <thead style={{ background: "var(--color-bg)", borderBottom: "1px solid var(--color-border)" }}>
                                                         <tr>
                                                             <th className="px-3 py-2.5" style={{ color: "var(--color-muted)" }}>User</th>
@@ -325,8 +329,8 @@ const AdminUsersPage: React.FC = () => {
                                                                     <div className="fw-semibold" style={{ color: "var(--color-heading)" }}>{u.given_name} {u.family_name}</div>
                                                                     {u.gender && <span style={{ fontSize: "0.75rem", color: "var(--color-muted)" }}>{u.gender}</span>}
                                                                 </td>
-                                                                <td style={{ color: "var(--color-muted)" }}>{u.email}</td>
-                                                                <td>
+                                                                <td data-label="Email" style={{ color: "var(--color-muted)" }}>{u.email}</td>
+                                                                <td data-label="Sign-in">
                                                                     {u.auth_provider === "google" ? (
                                                                         <span
                                                                             className="badge d-inline-flex align-items-center gap-1"
@@ -351,11 +355,11 @@ const AdminUsersPage: React.FC = () => {
                                                                         </span>
                                                                     )}
                                                                 </td>
-                                                                <td>
+                                                                <td data-label="State / Category">
                                                                     <div style={{ color: "var(--color-heading)" }}>{getStateLabel(u.state || "") || "—"}</div>
                                                                     <span style={{ fontSize: "0.75rem", color: "var(--color-muted)" }}>{u.category || "—"}</span>
                                                                 </td>
-                                                                <td style={{ color: "var(--color-muted)" }}>{formatDate(u.created_at)}</td>
+                                                                <td data-label="Joined" style={{ color: "var(--color-muted)" }}>{formatDate(u.created_at)}</td>
                                                             </tr>
                                                         ))}
                                                     </tbody>

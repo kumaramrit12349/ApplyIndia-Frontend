@@ -166,7 +166,7 @@ const AuthPopup: React.FC<AuthPopupProps> = ({
               <span className="text-muted">New user?</span>
               <a
                 className="fw-bold text-decoration-none"
-                style={{ cursor: "pointer", color: "var(--color-primary)", transition: "color 0.2s" }}
+                style={{ cursor: "pointer", color: "var(--color-primary-text)", transition: "color 0.2s" }}
                 onClick={() => swapTab("register")}
               >
                 Register Now
@@ -177,7 +177,7 @@ const AuthPopup: React.FC<AuthPopupProps> = ({
               <span className="text-muted">Already have an account?</span>
               <a
                 className="fw-bold text-decoration-none"
-                style={{ cursor: "pointer", color: "var(--color-primary)", transition: "color 0.2s" }}
+                style={{ cursor: "pointer", color: "var(--color-primary-text)", transition: "color 0.2s" }}
                 onClick={() => swapTab("login")}
               >
                 Log in
@@ -332,7 +332,7 @@ const AuthPopup: React.FC<AuthPopupProps> = ({
             {tab === "login" && (
               <a
                 className="fw-bold text-decoration-none"
-                style={{ fontSize: "0.95rem", cursor: "pointer", color: "var(--color-primary)", transition: "color 0.2s" }}
+                style={{ fontSize: "0.95rem", cursor: "pointer", color: "var(--color-primary-text)", transition: "color 0.2s" }}
                 onClick={onForgotPassword}
               >
                 Forgot Password?

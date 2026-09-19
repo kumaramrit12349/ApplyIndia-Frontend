@@ -96,7 +96,7 @@
 }
 
 .onb-card-title:hover {
-  color: var(--color-primary);
+  color: var(--color-primary-text);
 }
 
 .onb-badge-row {

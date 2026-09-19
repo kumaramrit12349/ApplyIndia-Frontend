@@ -119,7 +119,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onProfileUpdated, isAdmin: pr
     if (loading) {
         return (
             <div className="container py-5 text-center">
-                <div className="spinner-border" style={{ color: "var(--color-primary)" }} role="status">
+                <div className="spinner-border" style={{ color: "var(--color-primary-text)" }} role="status">
                     <span className="visually-hidden">Loading...</span>
                 </div>
             </div>

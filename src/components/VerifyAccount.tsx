@@ -93,7 +93,7 @@ const VerifyAccountPopup: React.FC<VerifyAccountPopupProps> = ({
           type="button"
           variant="link"
           className="p-0 mt-2"
-          style={{ color: "var(--color-primary)" }}
+          style={{ color: "var(--color-primary-text)" }}
           onClick={handleResend}
           disabled={loading}
         >

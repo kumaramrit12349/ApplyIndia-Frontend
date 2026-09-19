@@ -8,6 +8,7 @@ import { fetchAvailableFilters } from "../../../services/public/notiifcationApi"
 import { NOTIFICATION_CATEGORIES, INDIAN_STATES } from "../../../constant/SharedConstant";
 import { makeSlug } from "../../../utils/utils";
 import "./OpenNotificationsBrowser.css";
+import { APP_TIME_ZONE } from "../../../utils/dateTime";
 
 const PAGE_SIZE = 12;
 
@@ -23,7 +24,7 @@ const getCategoryLabel = (value: string) => {
 
 const formatDate = (epoch?: number) => {
   if (!epoch) return "—";
-  return new Date(epoch).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+  return new Date(epoch).toLocaleDateString("en-IN", { timeZone: APP_TIME_ZONE, day: "numeric", month: "short", year: "numeric" });
 };
 
 const formatFee = (fee?: number) => {
@@ -184,7 +185,7 @@ const OpenNotificationsBrowser: React.FC = () => {
 
       {loading && items.length === 0 ? (
         <div className="text-center py-5">
-          <span className="spinner-border" style={{ color: "var(--color-primary)" }} />
+          <span className="spinner-border" style={{ color: "var(--color-primary-text)" }} />
         </div>
       ) : items.length === 0 ? (
         <div className="text-center py-5 text-muted">
@@ -199,7 +200,7 @@ const OpenNotificationsBrowser: React.FC = () => {
           style={{ overflow: "visible" }}
           loader={
             <div className="text-center py-4">
-              <span className="spinner-border" style={{ color: "var(--color-primary)" }} />
+              <span className="spinner-border" style={{ color: "var(--color-primary-text)" }} />
             </div>
           }
           endMessage={

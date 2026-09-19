@@ -64,7 +64,7 @@
   padding: 6px 14px;
   border-radius: var(--radius-pill);
   background: rgba(15, 61, 145, 0.08);
-  color: var(--color-primary);
+  color: var(--color-primary-text);
   font: var(--text-caption);
   font-weight: 600;
   letter-spacing: 0.3px;
@@ -78,7 +78,7 @@
 }
 
 .ai-hero-highlight {
-  color: var(--color-primary);
+  color: var(--color-primary-text);
 }
 
 .ai-hero-subtitle {

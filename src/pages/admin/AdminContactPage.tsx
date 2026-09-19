@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Link, Navigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import {
   FiMail,
@@ -9,7 +9,7 @@ import {
   FiCheckCircle,
   FiAlertTriangle,
   FiAlertOctagon,
-  FiArrowLeft,
+  FiX,
   FiSearch,
   FiChevronDown,
   FiChevronUp,
@@ -42,6 +42,8 @@ import type {
 } from "../../interface/ContactInterface";
 import ConfirmModal from "../../components/ConfirmModal/ConfirmModal";
 import "./AdminContactPage.css";
+import { APP_TIME_ZONE, istTimestamp, toIstDateKey, upperAmPm } from "../../utils/dateTime";
+import BackToDashboard from "../../components/BackToDashboard/BackToDashboard";
 
 interface AdminContactPageProps {
   adminRole?: string;
@@ -86,8 +88,8 @@ const DATE_RANGES: { value: string; label: string }[] = [
  */
 function getDateRangeBounds(range: string): { dateFrom?: number; dateTo?: number } {
   const DAY = 24 * 60 * 60 * 1000;
-  const startOfToday = new Date();
-  startOfToday.setHours(0, 0, 0, 0);
+  // Midnight at the start of today in India, not in the browser's zone.
+  const startOfToday = new Date(istTimestamp(toIstDateKey(Date.now()), "00:00"));
   switch (range) {
     case "today":
       return { dateFrom: startOfToday.getTime() };
@@ -114,6 +116,7 @@ const formatDateTime = (epoch?: number) => {
   // en-IN's Intl output lowercases am/pm regardless of options — uppercase
   // it after the fact rather than fighting the locale for it.
   const formatted = new Date(epoch).toLocaleString("en-IN", {
+    timeZone: APP_TIME_ZONE,
     day: "numeric",
     month: "short",
     year: "numeric",
@@ -121,7 +124,7 @@ const formatDateTime = (epoch?: number) => {
     minute: "2-digit",
     hour12: true,
   });
-  return formatted.replace(/\b(am|pm)\b/i, (m) => m.toUpperCase());
+  return upperAmPm(formatted);
 };
 
 const AdminContactPage: React.FC<AdminContactPageProps> = ({ adminRole }) => {
@@ -304,14 +307,34 @@ const AdminContactPage: React.FC<AdminContactPageProps> = ({ adminRole }) => {
     return <Navigate to="/dashboard" replace />;
   }
 
+  const hasActiveFilters = !!(statusFilter || categoryFilter || priorityFilter || spamOnly || dateRange || search);
+  const clearAllFilters = () => {
+    setStatusFilter("");
+    setCategoryFilter("");
+    setPriorityFilter("");
+    setSpamOnly(false);
+    setDateRange("");
+    setSearch("");
+  };
+
+  // Clicking a stat tile jumps straight to that slice of the list.
+  const applyTile = (apply: () => void) => {
+    setView("list");
+    setStatusFilter("");
+    setPriorityFilter("");
+    setSpamOnly(false);
+    apply();
+  };
+  const noQuickFilter = !statusFilter && !priorityFilter && !spamOnly;
+
   const STAT_TILES = stats
     ? [
-        { label: "Total", value: stats.total, icon: FiInbox, tint: "15, 61, 145" },
-        { label: "New", value: stats.byStatus.new || 0, icon: FiBell, tint: "107, 114, 128" },
-        { label: "In Progress", value: stats.byStatus.in_progress || 0, icon: FiClock, tint: "217, 119, 6" },
-        { label: "Resolved", value: stats.byStatus.resolved || 0, icon: FiCheckCircle, tint: "22, 163, 74" },
-        { label: "High Priority", value: stats.byPriority.high || 0, icon: FiAlertTriangle, tint: "220, 38, 38" },
-        { label: "Spam", value: stats.spam, icon: FiAlertOctagon, tint: "234, 88, 12" },
+        { label: "Total", value: stats.total, icon: FiInbox, tint: "15, 61, 145", active: view === "list" && noQuickFilter, onClick: () => applyTile(() => {}) },
+        { label: "New", value: stats.byStatus.new || 0, icon: FiBell, tint: "107, 114, 128", active: view === "list" && statusFilter === "new", onClick: () => applyTile(() => setStatusFilter("new")) },
+        { label: "In Progress", value: stats.byStatus.in_progress || 0, icon: FiClock, tint: "217, 119, 6", active: view === "list" && statusFilter === "in_progress", onClick: () => applyTile(() => setStatusFilter("in_progress")) },
+        { label: "Resolved", value: stats.byStatus.resolved || 0, icon: FiCheckCircle, tint: "22, 163, 74", active: view === "list" && statusFilter === "resolved", onClick: () => applyTile(() => setStatusFilter("resolved")) },
+        { label: "High Priority", value: stats.byPriority.high || 0, icon: FiAlertTriangle, tint: "220, 38, 38", active: view === "list" && priorityFilter === "high", onClick: () => applyTile(() => setPriorityFilter("high")) },
+        { label: "Spam", value: stats.spam, icon: FiAlertOctagon, tint: "234, 88, 12", active: view === "list" && spamOnly, onClick: () => applyTile(() => setSpamOnly(true)) },
       ]
     : [];
 
@@ -333,9 +356,7 @@ const AdminContactPage: React.FC<AdminContactPageProps> = ({ adminRole }) => {
                   <p className="acp-subtitle mt-1">Review, triage, and respond to visitor enquiries</p>
                 </div>
               </div>
-              <Link to="/admin/dashboard" className="acp-btn-ghost d-flex align-items-center gap-2 text-decoration-none">
-                <FiArrowLeft size={14} /> Back to Dashboard
-              </Link>
+              <BackToDashboard />
             </div>
           </div>
         </div>
@@ -344,9 +365,17 @@ const AdminContactPage: React.FC<AdminContactPageProps> = ({ adminRole }) => {
           <div className="row g-3 mb-4">
             {STAT_TILES.map((tile) => (
               <div key={tile.label} className="col-6 col-md-4 col-lg-2">
-                <div
-                  className="acp-stat-tile"
-                  style={{ background: `rgba(${tile.tint}, 0.07)`, borderColor: `rgba(${tile.tint}, 0.22)` }}
+                <button
+                  type="button"
+                  className="acp-stat-tile acp-stat-tile--clickable"
+                  onClick={tile.onClick}
+                  aria-pressed={tile.active}
+                  title={`Show ${tile.label.toLowerCase()}`}
+                  style={{
+                    background: `rgba(${tile.tint}, ${tile.active ? 0.14 : 0.07})`,
+                    borderColor: tile.active ? `rgb(${tile.tint})` : `rgba(${tile.tint}, 0.22)`,
+                    boxShadow: tile.active ? `0 0 0 3px rgba(${tile.tint}, 0.22)` : undefined,
+                  }}
                 >
                   <div className="acp-stat-icon" style={{ background: `rgba(${tile.tint}, 0.14)`, color: `rgb(${tile.tint})` }}>
                     <tile.icon size={17} />
@@ -355,7 +384,7 @@ const AdminContactPage: React.FC<AdminContactPageProps> = ({ adminRole }) => {
                     {tile.value}
                   </div>
                   <div className="acp-stat-label">{tile.label}</div>
-                </div>
+                </button>
               </div>
             ))}
           </div>
@@ -385,24 +414,19 @@ const AdminContactPage: React.FC<AdminContactPageProps> = ({ adminRole }) => {
                   Select All
                 </label>
               </div>
-              {view === "list" && (
-                <button
-                  className="acp-btn-ghost"
-                  style={{ color: "var(--color-danger)", borderColor: "rgba(220, 38, 38, 0.35)" }}
-                  disabled={selectedSks.size === 0 || bulkTrashing}
-                  onClick={() => setShowBulkTrashConfirm(true)}
-                >
-                  🗑️ Move to Trash{selectedSks.size > 0 ? ` (${selectedSks.size})` : ""}
-                </button>
+              {selectedSks.size > 0 && (
+                <>
+                  <span className="acp-selected-count">{selectedSks.size} selected</span>
+                  {view === "list" && (
+                    <button className="acp-btn-danger" disabled={bulkTrashing} onClick={() => setShowBulkTrashConfirm(true)}>
+                      🗑️ Move to Trash
+                    </button>
+                  )}
+                  <button className="acp-btn-danger" disabled={bulkDeleting} onClick={() => setShowBulkDeleteConfirm(true)}>
+                    ⚠️ Delete Permanently
+                  </button>
+                </>
               )}
-              <button
-                className="acp-btn-ghost"
-                style={{ color: "var(--color-danger)", borderColor: "rgba(220, 38, 38, 0.35)" }}
-                disabled={selectedSks.size === 0 || bulkDeleting}
-                onClick={() => setShowBulkDeleteConfirm(true)}
-              >
-                ⚠️ Delete Permanently{selectedSks.size > 0 ? ` (${selectedSks.size})` : ""}
-              </button>
             </div>
           )}
         </div>
@@ -417,8 +441,16 @@ const AdminContactPage: React.FC<AdminContactPageProps> = ({ adminRole }) => {
                   onClick={() => setStatusFilter(t.value)}
                 >
                   {t.label}
+                  {stats && (
+                    <span className="acp-chip-count">{t.value ? stats.byStatus[t.value] || 0 : stats.total}</span>
+                  )}
                 </button>
               ))}
+              {hasActiveFilters && (
+                <button className="acp-btn-ghost ms-auto" onClick={clearAllFilters}>
+                  <FiX size={13} className="me-1" /> Clear filters
+                </button>
+              )}
             </div>
 
             <div className="acp-filter-panel mb-3">
@@ -504,10 +536,22 @@ const AdminContactPage: React.FC<AdminContactPageProps> = ({ adminRole }) => {
 
         {loading ? (
           <div className="text-center py-4">
-            <span className="spinner-border" style={{ color: "var(--color-primary)" }} />
+            <span className="spinner-border" style={{ color: "var(--color-primary-text)" }} />
           </div>
         ) : contacts.length === 0 ? (
-          <p className="acp-muted-text">{view === "trash" ? "Trash is empty." : "No submissions found for this filter."}</p>
+          <div className="acp-empty">
+            <div className="acp-empty-icon">
+              <FiInbox size={26} />
+            </div>
+            <div className="acp-empty-title">{view === "trash" ? "Trash is empty" : "No submissions found"}</div>
+            <div className="acp-muted-text">
+              {view === "trash"
+                ? "Submissions you move to Trash show up here until you delete them permanently."
+                : hasActiveFilters
+                  ? "Nothing matches the current filters."
+                  : "New enquiries from the Contact Us form will appear here."}
+            </div>
+          </div>
         ) : (
           <div className="acp-grid">
             {contacts.map((c, index) => (
@@ -535,7 +579,7 @@ const AdminContactPage: React.FC<AdminContactPageProps> = ({ adminRole }) => {
         )}
         {fetchingMore && (
           <div className="text-center mt-3">
-            <span className="spinner-border spinner-border-sm" style={{ color: "var(--color-primary)" }} />
+            <span className="spinner-border spinner-border-sm" style={{ color: "var(--color-primary-text)" }} />
           </div>
         )}
       </div>
@@ -723,12 +767,12 @@ const ContactCard: React.FC<ContactCardProps> = ({
   };
 
   return (
-    <div className="acp-card">
+    <div className={`acp-card acp-card--priority-${contact.priority}`}>
       <div>
-        <div className="d-flex align-items-center gap-2" style={{ minWidth: 0 }}>
+        <div className="acp-card-head d-flex align-items-center gap-2" style={{ minWidth: 0 }}>
           <input
             type="checkbox"
-            className="form-check-input flex-shrink-0"
+            className="form-check-input flex-shrink-0 mt-0"
             checked={isSelected}
             onChange={onToggleSelect}
             aria-label={`Select ${contact.name}'s submission`}
@@ -867,7 +911,7 @@ const ContactCard: React.FC<ContactCardProps> = ({
 
             {loadingThread ? (
               <div className="text-center py-2">
-                <span className="spinner-border spinner-border-sm" style={{ color: "var(--color-primary)" }} />
+                <span className="spinner-border spinner-border-sm" style={{ color: "var(--color-primary-text)" }} />
               </div>
             ) : (
               <div className="acp-thread-cols">

@@ -62,6 +62,7 @@
   background: rgba(67, 56, 202, 0.08);
   color: #4338ca;
 }
+:root[data-theme="dark"] .gtp-tag { background: rgba(129, 140, 248, 0.16); color: #a5b4fc; }
 
 .gtp-author {
   font-size: 0.85rem;

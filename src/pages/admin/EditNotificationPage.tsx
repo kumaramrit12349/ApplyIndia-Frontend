@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import NotificationForm from "./NotificationForm";
 import type { INotification } from "../../interface/NotificationInterface";
 import { getNotificationById, updateNotification } from "../../services/private/notificationApi";
+import BackToDashboard from "../../components/BackToDashboard/BackToDashboard";
 
 interface EditNotificationPageProps {
   adminRole?: string;
@@ -52,20 +53,18 @@ const EditNotificationPage: React.FC<EditNotificationPageProps> = ({ adminRole }
   if (loading || !initialValues) {
     return (
       <div className="container mt-5 text-center">
-        <div className="spinner-border" style={{ color: "var(--color-primary)" }} />
+        <div className="spinner-border" style={{ color: "var(--color-primary-text)" }} />
       </div>
     );
   }
 
   return (
     <div className="container py-5 mb-5">
-      <div className="d-flex justify-content-between align-items-center mb-5 p-4 rounded-4 shadow-sm" style={{ background: 'linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))' }}>
+      <div className="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-5 p-4 rounded-4 shadow-sm" style={{ background: 'linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))' }}>
         <h2 className="brand-name text-white mb-0 d-flex align-items-center gap-2" style={{fontSize: '1.75rem'}}>
           ✏️ Edit Notification
         </h2>
-        <Link to="/admin/dashboard" className="btn btn-light fw-semibold text-decoration-none shadow-sm" style={{ borderRadius: 12 }}>
-          ← Back to Dashboard
-        </Link>
+        <BackToDashboard variant="light" />
       </div>
 
       <NotificationForm

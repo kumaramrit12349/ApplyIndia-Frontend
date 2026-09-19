@@ -318,7 +318,7 @@
 }
 .ndv-short-desc a:hover,
 .ndv-long-desc a:hover {
-  color: var(--color-primary);
+  color: var(--color-primary-text);
   text-decoration: underline;
 }
 
@@ -743,7 +743,7 @@
 .ndv-link-item:hover {
   border-color: rgba(15,61,145,0.3);
   background: rgba(15,61,145,0.04);
-  color: var(--color-primary);
+  color: var(--color-primary-text);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(0,0,0,0.06);
 }
