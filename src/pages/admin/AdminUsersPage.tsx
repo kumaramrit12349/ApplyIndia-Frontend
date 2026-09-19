@@ -312,7 +312,7 @@ const AdminUsersPage: React.FC = () => {
                                             </div>
                                         ) : (
                                             <div className="table-responsive" style={{ border: "1px solid var(--color-border)", borderRadius: "8px", overflow: "hidden" }}>
-                                                <table className="table table-hover align-middle mb-0 small" style={{ color: "var(--color-body)" }}>
+                                                <table className="table table-hover align-middle mb-0 small table-stack" style={{ color: "var(--color-body)" }}>
                                                     <thead style={{ background: "var(--color-bg)", borderBottom: "1px solid var(--color-border)" }}>
                                                         <tr>
                                                             <th className="px-3 py-2.5" style={{ color: "var(--color-muted)" }}>User</th>
@@ -329,8 +329,8 @@ const AdminUsersPage: React.FC = () => {
                                                                     <div className="fw-semibold" style={{ color: "var(--color-heading)" }}>{u.given_name} {u.family_name}</div>
                                                                     {u.gender && <span style={{ fontSize: "0.75rem", color: "var(--color-muted)" }}>{u.gender}</span>}
                                                                 </td>
-                                                                <td style={{ color: "var(--color-muted)" }}>{u.email}</td>
-                                                                <td>
+                                                                <td data-label="Email" style={{ color: "var(--color-muted)" }}>{u.email}</td>
+                                                                <td data-label="Sign-in">
                                                                     {u.auth_provider === "google" ? (
                                                                         <span
                                                                             className="badge d-inline-flex align-items-center gap-1"
@@ -355,11 +355,11 @@ const AdminUsersPage: React.FC = () => {
                                                                         </span>
                                                                     )}
                                                                 </td>
-                                                                <td>
+                                                                <td data-label="State / Category">
                                                                     <div style={{ color: "var(--color-heading)" }}>{getStateLabel(u.state || "") || "—"}</div>
                                                                     <span style={{ fontSize: "0.75rem", color: "var(--color-muted)" }}>{u.category || "—"}</span>
                                                                 </td>
-                                                                <td style={{ color: "var(--color-muted)" }}>{formatDate(u.created_at)}</td>
+                                                                <td data-label="Joined" style={{ color: "var(--color-muted)" }}>{formatDate(u.created_at)}</td>
                                                             </tr>
                                                         ))}
                                                     </tbody>

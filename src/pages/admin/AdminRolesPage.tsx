@@ -355,7 +355,7 @@ const AdminRolesPage: React.FC = () => {
               </div>
             ) : (
               <div className="table-responsive scroll-fade-x">
-                <table className="table table-hover align-middle rlp-table">
+                <table className="table table-hover align-middle rlp-table table-stack">
                   <thead>
                     <tr>
                       <th className="px-4 py-3">User</th>
@@ -392,12 +392,12 @@ const AdminRolesPage: React.FC = () => {
                               </div>
                             </div>
                           </td>
-                          <td className="py-3">
+                          <td className="py-3" data-label="Role">
                             <span className="rlp-role-pill" style={{ backgroundColor: roleStyle.bg, color: roleStyle.text }}>
                               {roleStyle.label}
                             </span>
                           </td>
-                          <td className="py-3" style={{ maxWidth: 380 }}>
+                          <td className="py-3" data-label="Permissions" style={{ maxWidth: 380 }}>
                             <div className="rlp-chips">
                               {summarize(catLabels).map((l) => (
                                 <span key={`c-${l}`} className="rlp-chip" title={catLabels.join(", ")}>

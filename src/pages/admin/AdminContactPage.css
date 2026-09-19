@@ -412,3 +412,17 @@ select.acp-input {
   color: var(--color-primary);
 }
 .acp-empty-title { font-size: 1rem; font-weight: 700; color: var(--color-heading); }
+
+/* ============================ MOBILE ============================ */
+/* On phones the single-line header strip hid everything but the name (category/status/priority
+   needed a sideways swipe) — let it wrap so every badge is visible. */
+@media (max-width: 767.98px) {
+  .acp-header-scroll { flex-wrap: wrap !important; overflow: visible; row-gap: 6px; }
+  .acp-header-scroll .text-nowrap { white-space: normal !important; word-break: break-word; }
+  .acp-header-scroll .ms-auto { margin-left: 0 !important; flex-basis: 100%; }
+  .acp-meta-row .acp-field { width: 100%; }
+}
+@media (max-width: 767.98px) {
+  .acp-card-head { align-items: flex-start !important; }
+  .acp-card-head > input[type="checkbox"] { margin-top: 5px !important; }
+}

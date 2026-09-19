@@ -411,7 +411,7 @@ const EmailTemplatesPage: React.FC = () => {
               </div>
             ) : (
               <div className="table-responsive scroll-fade-x">
-                <table className="table table-hover align-middle etp-table">
+                <table className="table table-hover align-middle etp-table table-stack">
                   <thead>
                     <tr>
                       <th className="px-4 py-3">Key</th>
@@ -434,7 +434,7 @@ const EmailTemplatesPage: React.FC = () => {
                             </div>
                           )}
                         </td>
-                        <td className="py-3">
+                        <td className="py-3" data-label="Subject">
                           <span className="text-truncate d-block" style={{ maxWidth: "420px", color: "var(--color-body)" }} title={t.subject}>
                             {t.subject}
                           </span>

@@ -311,3 +311,9 @@
   background: rgba(var(--color-primary-rgb, 15, 61, 145), 0.1);
   color: var(--color-primary);
 }
+
+/* ============================ MOBILE ============================ */
+@media (max-width: 575.98px) {
+  .agp-segment { display: flex; width: 100%; }
+  .agp-segment-btn { flex: 1; justify-content: center; padding: 8px 6px; font-size: 0.78rem; gap: 5px; }
+}

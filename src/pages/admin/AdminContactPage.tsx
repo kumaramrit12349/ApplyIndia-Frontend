@@ -769,7 +769,7 @@ const ContactCard: React.FC<ContactCardProps> = ({
   return (
     <div className={`acp-card acp-card--priority-${contact.priority}`}>
       <div>
-        <div className="d-flex align-items-center gap-2" style={{ minWidth: 0 }}>
+        <div className="acp-card-head d-flex align-items-center gap-2" style={{ minWidth: 0 }}>
           <input
             type="checkbox"
             className="form-check-input flex-shrink-0 mt-0"

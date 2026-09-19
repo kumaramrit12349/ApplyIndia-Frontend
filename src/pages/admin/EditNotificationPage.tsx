@@ -60,7 +60,7 @@ const EditNotificationPage: React.FC<EditNotificationPageProps> = ({ adminRole }
 
   return (
     <div className="container py-5 mb-5">
-      <div className="d-flex justify-content-between align-items-center mb-5 p-4 rounded-4 shadow-sm" style={{ background: 'linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))' }}>
+      <div className="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-5 p-4 rounded-4 shadow-sm" style={{ background: 'linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))' }}>
         <h2 className="brand-name text-white mb-0 d-flex align-items-center gap-2" style={{fontSize: '1.75rem'}}>
           ✏️ Edit Notification
         </h2>
