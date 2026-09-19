@@ -178,7 +178,7 @@ const MyDashboard: React.FC = () => {
                 <MyGuidanceBookings />
             ) : loading ? (
                 <div className="text-center py-5">
-                    <div className="spinner-border" style={{ color: "var(--color-primary)" }} role="status">
+                    <div className="spinner-border" style={{ color: "var(--color-primary-text)" }} role="status">
                         <span className="visually-hidden">Loading...</span>
                     </div>
                 </div>

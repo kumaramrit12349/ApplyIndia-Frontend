@@ -536,7 +536,7 @@ const AdminContactPage: React.FC<AdminContactPageProps> = ({ adminRole }) => {
 
         {loading ? (
           <div className="text-center py-4">
-            <span className="spinner-border" style={{ color: "var(--color-primary)" }} />
+            <span className="spinner-border" style={{ color: "var(--color-primary-text)" }} />
           </div>
         ) : contacts.length === 0 ? (
           <div className="acp-empty">
@@ -579,7 +579,7 @@ const AdminContactPage: React.FC<AdminContactPageProps> = ({ adminRole }) => {
         )}
         {fetchingMore && (
           <div className="text-center mt-3">
-            <span className="spinner-border spinner-border-sm" style={{ color: "var(--color-primary)" }} />
+            <span className="spinner-border spinner-border-sm" style={{ color: "var(--color-primary-text)" }} />
           </div>
         )}
       </div>
@@ -911,7 +911,7 @@ const ContactCard: React.FC<ContactCardProps> = ({
 
             {loadingThread ? (
               <div className="text-center py-2">
-                <span className="spinner-border spinner-border-sm" style={{ color: "var(--color-primary)" }} />
+                <span className="spinner-border spinner-border-sm" style={{ color: "var(--color-primary-text)" }} />
               </div>
             ) : (
               <div className="acp-thread-cols">

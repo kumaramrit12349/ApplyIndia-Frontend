@@ -72,7 +72,7 @@ function useHasScrolledRef() {
 
 const Spinner: React.FC = () => (
   <div className="text-center py-5">
-    <span className="spinner-border" style={{ color: "var(--color-primary)" }} />
+    <span className="spinner-border" style={{ color: "var(--color-primary-text)" }} />
   </div>
 );
 
@@ -728,7 +728,7 @@ const BookingsTab: React.FC = () => {
       )}
       {fetchingMore && (
         <div className="text-center mt-3">
-          <span className="spinner-border spinner-border-sm" style={{ color: "var(--color-primary)" }} />
+          <span className="spinner-border spinner-border-sm" style={{ color: "var(--color-primary-text)" }} />
         </div>
       )}
 
@@ -896,7 +896,7 @@ const FeedbackTab: React.FC = () => {
       )}
       {fetchingMore && (
         <div className="text-center mt-3">
-          <span className="spinner-border spinner-border-sm" style={{ color: "var(--color-primary)" }} />
+          <span className="spinner-border spinner-border-sm" style={{ color: "var(--color-primary-text)" }} />
         </div>
       )}
     </div>

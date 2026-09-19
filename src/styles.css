@@ -64,7 +64,7 @@
   --color-info: #0284C7;
 
   /* ---- Application / notification status ---- */
-  --status-open: #16A34A;
+  --status-open: #15803D;
   --status-open-bg: #ECFDF3;
   --status-closing: #F59E0B;
   --status-closing-bg: #FFFBEB;
@@ -131,6 +131,23 @@
 
   /* ---- Breakpoints (reference only — mirrors the Bootstrap grid already in use) ----
      sm: 576px   md: 768px   lg: 992px   xl: 1200px   xxl: 1400px */
+}
+
+/* ---- Text-safe accent colours ----
+   --color-primary is a deep blue meant for fills; as *text* on a dark surface
+   it only reaches ~2.4:1 contrast. These tokens are for text/icons/pills:
+   same look in light mode, lighter (readable) shades in dark mode. */
+:root {
+  --color-primary-text: var(--color-primary);
+  --color-warn-text: #b45309;
+  --color-success-text: #15803d;
+  --color-neutral-text: #4b5563;
+}
+:root[data-theme="dark"] {
+  --color-primary-text: var(--color-secondary);
+  --color-warn-text: #fbbf24;
+  --color-success-text: #4ade80;
+  --color-neutral-text: #94a3b8;
 }
 
 /* ========================================
@@ -505,7 +522,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .ai-dropdown-item:hover {
   background: rgba(15, 61, 145, 0.08);
-  color: var(--color-primary);
+  color: var(--color-primary-text);
   transform: translateX(2px);
 }
 
@@ -651,7 +668,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .ai-pill:hover {
-  color: var(--color-primary);
+  color: var(--color-primary-text);
   border-color: rgba(15, 61, 145, 0.3);
   background: rgba(15, 61, 145, 0.05);
   transform: translateY(-1px);
@@ -1138,7 +1155,7 @@ h1, h2, h3, h4, h5, h6 {
   padding: 10px;
   background: transparent;
   border: 1px solid rgba(15, 61, 145, 0.35);
-  color: var(--color-primary);
+  color: var(--color-primary-text);
   border-radius: var(--radius-sm);
   font-size: 0.95rem;
   font-weight: 500;
@@ -2148,7 +2165,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .legal-content h5 {
-  color: var(--color-primary);
+  color: var(--color-primary-text);
   font-weight: 700;
   margin-top: 2rem;
   margin-bottom: 1rem;
@@ -2181,7 +2198,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .legal-content li::marker {
-  color: var(--color-primary);
+  color: var(--color-primary-text);
   font-weight: 700;
 }
 
@@ -2193,7 +2210,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .legal-content a:hover {
-  color: var(--color-primary);
+  color: var(--color-primary-text);
   text-decoration: underline;
 }
 
@@ -2264,7 +2281,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .legal-related-link:hover {
-  color: var(--color-primary);
+  color: var(--color-primary-text);
   border-color: var(--color-primary);
   transform: translateY(-2px);
   box-shadow: var(--shadow-sm);

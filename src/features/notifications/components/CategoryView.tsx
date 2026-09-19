@@ -249,7 +249,7 @@ const CategoryView: React.FC = () => {
           {mode === "eligible" ? (
             eligLoading ? (
               <div className="text-center py-5">
-                <span className="spinner-border" style={{ color: "var(--color-primary)" }} />
+                <span className="spinner-border" style={{ color: "var(--color-primary-text)" }} />
               </div>
             ) : eligIncompleteProfile ? (
               <div className="ai-elig-prompt">
@@ -282,7 +282,7 @@ const CategoryView: React.FC = () => {
             )
           ) : loading && items.length === 0 ? (
             <div className="text-center py-5">
-              <span className="spinner-border" style={{ color: "var(--color-primary)" }} />
+              <span className="spinner-border" style={{ color: "var(--color-primary-text)" }} />
             </div>
           ) : items.length === 0 ? (
             <div className="text-center py-5 text-muted">
@@ -295,7 +295,7 @@ const CategoryView: React.FC = () => {
               hasMore={hasMore}
               loader={
                 <div className="text-center py-4">
-                  <span className="spinner-border" style={{ color: "var(--color-primary)" }} />
+                  <span className="spinner-border" style={{ color: "var(--color-primary-text)" }} />
                 </div>
               }
               endMessage={

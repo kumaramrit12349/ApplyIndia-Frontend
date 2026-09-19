@@ -45,9 +45,9 @@ const WINDOW_LABELS: Record<string, string> = {
 };
 
 const ROLE_STYLES: Record<string, { bg: string; text: string; label: string }> = {
-  admin: { bg: "rgba(15, 61, 145, 0.12)", text: "var(--color-primary)", label: "Admin" },
+  admin: { bg: "rgba(15, 61, 145, 0.12)", text: "var(--color-primary-text)", label: "Admin" },
   senior_reviewer: { bg: "rgba(124, 58, 237, 0.14)", text: "#7c3aed", label: "Senior Reviewer" },
-  reviewer: { bg: "rgba(245, 158, 11, 0.15)", text: "#d97706", label: "Reviewer" },
+  reviewer: { bg: "rgba(245, 158, 11, 0.15)", text: "var(--color-warn-text)", label: "Reviewer" },
   creator: { bg: "rgba(37, 99, 235, 0.12)", text: "var(--color-secondary)", label: "Creator" },
   guidance_partner: { bg: "rgba(13, 148, 136, 0.14)", text: "#0d9488", label: "Guidance Partner" },
 };
@@ -344,7 +344,7 @@ const AdminRolesPage: React.FC = () => {
           <div className="card-body p-0">
             {loading ? (
               <div className="d-flex justify-content-center py-5">
-                <div className="spinner-border" style={{ color: "var(--color-primary)" }} role="status">
+                <div className="spinner-border" style={{ color: "var(--color-primary-text)" }} role="status">
                   <span className="visually-hidden">Loading...</span>
                 </div>
               </div>
@@ -613,7 +613,7 @@ const AdminRolesPage: React.FC = () => {
 
                     {(role === "creator" || role === "reviewer") && (
                       <div className="rlp-note mb-3">
-                        <FiInfo className="flex-shrink-0 mt-1" size={14} style={{ color: "var(--color-primary)" }} />
+                        <FiInfo className="flex-shrink-0 mt-1" size={14} style={{ color: "var(--color-primary-text)" }} />
                         <div>
                           {role === "reviewer" ? "Reviewers" : "Creators"} can only edit notifications that haven't been approved yet, and can't archive notifications. Assign the "Senior Reviewer" role for full edit/archive access.
                         </div>

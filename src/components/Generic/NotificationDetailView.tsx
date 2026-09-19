@@ -989,7 +989,7 @@ export default function NotificationDetailView({
                 <button
                   onClick={() => window.open("/dashboard", "_blank")}
                   style={{
-                    background: "var(--color-secondary)",
+                    background: "var(--color-primary)",
                     color: "white",
                     border: "none",
                     borderRadius: "4px",

@@ -53,7 +53,7 @@ const EditNotificationPage: React.FC<EditNotificationPageProps> = ({ adminRole }
   if (loading || !initialValues) {
     return (
       <div className="container mt-5 text-center">
-        <div className="spinner-border" style={{ color: "var(--color-primary)" }} />
+        <div className="spinner-border" style={{ color: "var(--color-primary-text)" }} />
       </div>
     );
   }

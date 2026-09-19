@@ -380,7 +380,7 @@ const NotificationForm: React.FC<Props> = ({
           form.details.long_description,
           (v) => handleNestedChange("details", "long_description", v),
           <span>
-            <strong style={{ color: '#1e293b' }}>Note:-</strong> ⚠️ Include Important Dates, Application Fee, Age Relaxation, Selection Process, and other important details if available. Keep the content concise, well-formatted, and do not exceed <strong>250 KB</strong>.
+            <strong style={{ color: "var(--color-heading)" }}>Note:-</strong> ⚠️ Include Important Dates, Application Fee, Age Relaxation, Selection Process, and other important details if available. Keep the content concise, well-formatted, and do not exceed <strong>250 KB</strong>.
           </span>
         )}
 

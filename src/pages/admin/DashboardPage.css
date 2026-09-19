@@ -167,7 +167,7 @@
 .admin-tab-btn:hover {
   border-color: var(--color-primary);
   background: rgba(var(--color-primary-rgb, 15, 61, 145), 0.08);
-  color: var(--color-primary);
+  color: var(--color-primary-text);
 }
 .admin-tab-btn--active,
 .admin-tab-btn--active:hover {
@@ -198,7 +198,7 @@
   align-items: center;
   justify-content: center;
   background: rgba(var(--color-primary-rgb, 15, 61, 145), 0.1);
-  color: var(--color-primary);
+  color: var(--color-primary-text);
 }
 .adp-empty-title { font-size: 1.05rem; font-weight: 700; color: var(--color-heading); }
 .adp-empty-text { font-size: 0.88rem; color: var(--color-muted); max-width: 420px; }

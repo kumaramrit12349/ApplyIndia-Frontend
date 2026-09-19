@@ -253,7 +253,7 @@ const EmailTemplatesPage: React.FC = () => {
           <div className="card-body p-4">
             <div className="d-flex align-items-center justify-content-between gap-3 flex-wrap">
               <div className="d-flex align-items-center gap-3">
-                <div className="etp-icon-badge" style={{ background: "rgba(15, 61, 145, 0.12)", color: "var(--color-primary)" }}>
+                <div className="etp-icon-badge" style={{ background: "rgba(15, 61, 145, 0.12)", color: "var(--color-primary-text)" }}>
                   <FiMail size={22} />
                 </div>
                 <div>
@@ -327,7 +327,7 @@ const EmailTemplatesPage: React.FC = () => {
               className="d-flex align-items-start gap-2 mt-3 p-3 rounded-3"
               style={{ background: "rgba(var(--color-primary-rgb, 15, 61, 145), 0.08)", border: "1px solid rgba(var(--color-primary-rgb, 15, 61, 145), 0.2)" }}
             >
-              <FiInfo size={16} className="flex-shrink-0 mt-1" style={{ color: "var(--color-primary)" }} />
+              <FiInfo size={16} className="flex-shrink-0 mt-1" style={{ color: "var(--color-primary-text)" }} />
               <p className="small mb-0" style={{ color: "var(--color-body)" }}>
                 <strong style={{ color: "var(--color-heading)" }}>Why use this:</strong> pause outgoing emails
                 instantly, without a code deploy — e.g. an SES sending-limit issue, a spam/abuse wave on Contact
@@ -400,7 +400,7 @@ const EmailTemplatesPage: React.FC = () => {
           <div className="card-body p-0" style={{ background: "var(--color-surface)" }}>
             {loading ? (
               <div className="d-flex justify-content-center py-5">
-                <div className="spinner-border" style={{ color: "var(--color-primary)" }} role="status">
+                <div className="spinner-border" style={{ color: "var(--color-primary-text)" }} role="status">
                   <span className="visually-hidden">Loading...</span>
                 </div>
               </div>
@@ -469,7 +469,7 @@ const EmailTemplatesPage: React.FC = () => {
                 </table>
                 {fetchingMore && (
                   <div className="text-center py-3">
-                    <span className="spinner-border spinner-border-sm" style={{ color: "var(--color-primary)" }} />
+                    <span className="spinner-border spinner-border-sm" style={{ color: "var(--color-primary-text)" }} />
                   </div>
                 )}
               </div>

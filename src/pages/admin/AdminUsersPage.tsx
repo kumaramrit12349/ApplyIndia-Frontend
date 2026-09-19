@@ -70,7 +70,7 @@ const AdminUsersPage: React.FC = () => {
                             <div className="d-flex align-items-center gap-3">
                                 <div
                                     className="d-flex align-items-center justify-content-center rounded-circle shadow-xs"
-                                    style={{ width: "44px", height: "44px", background: "rgba(29, 78, 216, 0.15)", color: "var(--color-primary)" }}
+                                    style={{ width: "44px", height: "44px", background: "rgba(29, 78, 216, 0.15)", color: "var(--color-primary-text)" }}
                                 >
                                     <FiShield size={24} />
                                 </div>
@@ -130,7 +130,7 @@ const AdminUsersPage: React.FC = () => {
                         <div>
                             {statsLoading ? (
                                 <div className="py-5 text-center">
-                                    <div className="spinner-border" style={{ color: "var(--color-primary)" }} role="status">
+                                    <div className="spinner-border" style={{ color: "var(--color-primary-text)" }} role="status">
                                         <span className="visually-hidden">Loading user stats...</span>
                                     </div>
                                     <p className="small mt-2" style={{ color: "var(--color-muted)" }}>Aggregating platform user insights…</p>
@@ -152,13 +152,13 @@ const AdminUsersPage: React.FC = () => {
                                                     <span className="small fw-semibold" style={{ color: "var(--color-muted)" }}>Total Users</span>
                                                     <span
                                                         className="p-2 rounded-circle shadow-xs"
-                                                        style={{ background: "var(--color-surface)", color: "var(--color-primary)" }}
+                                                        style={{ background: "var(--color-surface)", color: "var(--color-primary-text)" }}
                                                     >
                                                         <FiUsers size={18} />
                                                     </span>
                                                 </div>
                                                 <div>
-                                                    <h2 className="fw-bold mb-0" style={{ color: "var(--color-primary)" }}>{userStats.totalUsers}</h2>
+                                                    <h2 className="fw-bold mb-0" style={{ color: "var(--color-primary-text)" }}>{userStats.totalUsers}</h2>
                                                     <span className="small" style={{ color: "var(--color-muted)" }}>Registered on platform</span>
                                                 </div>
                                             </div>
@@ -231,7 +231,7 @@ const AdminUsersPage: React.FC = () => {
                                                 style={{ background: "var(--color-bg)", border: "1px solid var(--color-border)", borderRadius: "10px" }}
                                             >
                                                 <h6 className="fw-bold mb-3 d-flex align-items-center gap-2" style={{ color: "var(--color-heading)" }}>
-                                                    <FiLayers style={{ color: "var(--color-primary)" }} /> Category Distribution
+                                                    <FiLayers style={{ color: "var(--color-primary-text)" }} /> Category Distribution
                                                 </h6>
                                                 {Object.keys(userStats.byCategory).length === 0 ? (
                                                     <p className="small mb-0" style={{ color: "var(--color-muted)" }}>No category data recorded.</p>
@@ -269,7 +269,7 @@ const AdminUsersPage: React.FC = () => {
                                                 style={{ background: "var(--color-bg)", border: "1px solid var(--color-border)", borderRadius: "10px" }}
                                             >
                                                 <h6 className="fw-bold mb-3 d-flex align-items-center gap-2" style={{ color: "var(--color-heading)" }}>
-                                                    <FiMapPin style={{ color: "var(--color-primary)" }} /> State Distribution
+                                                    <FiMapPin style={{ color: "var(--color-primary-text)" }} /> State Distribution
                                                 </h6>
                                                 {Object.keys(userStats.byState).length === 0 ? (
                                                     <p className="small mb-0" style={{ color: "var(--color-muted)" }}>No state data recorded.</p>
@@ -301,7 +301,7 @@ const AdminUsersPage: React.FC = () => {
                                     {/* Recent Users List */}
                                     <div>
                                         <h6 className="fw-bold mb-3 d-flex align-items-center gap-2" style={{ color: "var(--color-heading)" }}>
-                                            <FiTrendingUp style={{ color: "var(--color-primary)" }} /> Recent Registrations
+                                            <FiTrendingUp style={{ color: "var(--color-primary-text)" }} /> Recent Registrations
                                         </h6>
                                         {userStats.recentUsers.length === 0 ? (
                                             <div

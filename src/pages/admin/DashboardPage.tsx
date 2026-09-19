@@ -960,7 +960,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
       {/* Content */}
       {loading ? (
         <div className="text-center py-5">
-          <div className="spinner-border" style={{ color: "var(--color-primary)" }} role="status">
+          <div className="spinner-border" style={{ color: "var(--color-primary-text)" }} role="status">
             <span className="visually-hidden">Loading...</span>
           </div>
         </div>
@@ -1318,7 +1318,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
       {/* Infinite scroll loading indicator */}
       {hasMore && !loading && (
         <div className="d-flex justify-content-center mt-4">
-          <div className="spinner-border spinner-border-sm" style={{ color: "var(--color-primary)" }} role="status">
+          <div className="spinner-border spinner-border-sm" style={{ color: "var(--color-primary-text)" }} role="status">
             <span className="visually-hidden">Loading more...</span>
           </div>
         </div>

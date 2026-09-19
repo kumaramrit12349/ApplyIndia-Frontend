@@ -126,7 +126,7 @@ const GuidanceBookingModal: React.FC<GuidanceBookingModalProps> = ({
                 <>
                   {loading ? (
                     <div className="guidance-loading-state">
-                      <span className="spinner-border" style={{ color: "var(--color-primary)" }} />
+                      <span className="spinner-border" style={{ color: "var(--color-primary-text)" }} />
                       <div>Loading available slots…</div>
                     </div>
                   ) : slots.length === 0 ? (
