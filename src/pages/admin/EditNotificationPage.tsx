@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import NotificationForm from "./NotificationForm";
 import type { INotification } from "../../interface/NotificationInterface";
 import { getNotificationById, updateNotification } from "../../services/private/notificationApi";
+import BackToDashboard from "../../components/BackToDashboard/BackToDashboard";
 
 interface EditNotificationPageProps {
   adminRole?: string;
@@ -63,9 +64,7 @@ const EditNotificationPage: React.FC<EditNotificationPageProps> = ({ adminRole }
         <h2 className="brand-name text-white mb-0 d-flex align-items-center gap-2" style={{fontSize: '1.75rem'}}>
           ✏️ Edit Notification
         </h2>
-        <Link to="/admin/dashboard" className="btn btn-light fw-semibold text-decoration-none shadow-sm" style={{ borderRadius: 12 }}>
-          ← Back to Dashboard
-        </Link>
+        <BackToDashboard variant="light" />
       </div>
 
       <NotificationForm

@@ -4,6 +4,7 @@ import { fetchLatestNotifications } from "../../services/public/notiifcationApi"
 import { makeSlug } from "../../utils/utils";
 import type { HomePageNotification } from "../../types/notification";
 import "./JobBanner.css";
+import { APP_TIME_ZONE } from "../../utils/dateTime";
 
 const JobBanner: React.FC = () => {
     const [latestItems, setLatestItems] = useState<HomePageNotification[]>([]);
@@ -97,7 +98,7 @@ const JobBanner: React.FC = () => {
                                     <span className="job-banner-deadline">
                                         Last Date: {(() => {
                                             const d = new Date(item.last_date_to_apply as string);
-                                            return isNaN(d.getTime()) ? item.last_date_to_apply : d.toLocaleDateString("en-GB", { day: '2-digit', month: 'short', year: 'numeric' });
+                                            return isNaN(d.getTime()) ? item.last_date_to_apply : d.toLocaleDateString("en-GB", { timeZone: APP_TIME_ZONE, day: '2-digit', month: 'short', year: 'numeric' });
                                         })()}
                                     </span>
                                 )}

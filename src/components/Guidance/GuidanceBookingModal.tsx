@@ -5,6 +5,7 @@ import { FiVideo, FiCheckCircle, FiCalendar, FiClock } from "react-icons/fi";
 import { fetchAvailableSlots, createGuidanceBooking } from "../../services/private/guidanceApi";
 import type { IGuidanceSlot, IGuidanceBooking } from "../../interface/GuidanceInterface";
 import "./Guidance.css";
+import { APP_TIME_ZONE, upperAmPm } from "../../utils/dateTime";
 
 interface GuidanceBookingModalProps {
   show: boolean;
@@ -17,10 +18,10 @@ interface GuidanceBookingModalProps {
 type Step = "list" | "confirm" | "success";
 
 const formatDateHeading = (epoch: number) =>
-  new Date(epoch).toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "long" });
+  new Date(epoch).toLocaleDateString("en-IN", { timeZone: APP_TIME_ZONE, weekday: "short", day: "numeric", month: "long" });
 
 const formatTimeRange = (start: number, end: number) =>
-  `${new Date(start).toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit" })} – ${new Date(end).toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit" })}`;
+  `${upperAmPm(new Date(start).toLocaleTimeString("en-IN", { timeZone: APP_TIME_ZONE, hour: "numeric", minute: "2-digit" }))} – ${upperAmPm(new Date(end).toLocaleTimeString("en-IN", { timeZone: APP_TIME_ZONE, hour: "numeric", minute: "2-digit" }))}`;
 
 const GuidanceBookingModal: React.FC<GuidanceBookingModalProps> = ({
   show,

@@ -10,6 +10,8 @@ import {
   addReviewComment,
 } from "../../services/private/notificationApi";
 import type { IReviewComment } from "../../interface/NotificationInterface";
+import { APP_TIME_ZONE, upperAmPm } from "../../utils/dateTime";
+import BackToDashboard from "../../components/BackToDashboard/BackToDashboard";
 
 type AdminRole = "creator" | "reviewer" | "senior_reviewer" | "admin";
 
@@ -129,6 +131,9 @@ const ReviewNotificationPage: React.FC<ReviewNotificationPageProps> = ({
 
   return (
     <div className="container mt-4 mb-5">
+      <div className="mb-3">
+        <BackToDashboard />
+      </div>
       <NotificationDetailView
         notification={notification}
         isAdmin={true}
@@ -225,7 +230,7 @@ const ReviewNotificationPage: React.FC<ReviewNotificationPageProps> = ({
                             className="text-muted"
                             style={{ fontSize: "0.75rem" }}
                           >
-                            {new Date(c.created_at).toLocaleString("en-IN")}
+                            {upperAmPm(new Date(c.created_at).toLocaleString("en-IN", { timeZone: APP_TIME_ZONE }))}
                           </span>
                         </div>
                         <p

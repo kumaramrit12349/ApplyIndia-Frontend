@@ -21,7 +21,10 @@ import {
 } from "../../services/private/notificationApi";
 import { NOTIFICATION_CATEGORIES, INDIAN_STATES } from "../../constant/SharedConstant";
 import { Dropdown, Form } from "react-bootstrap";
-import { FiTrash2, FiArchive, FiCopy } from "react-icons/fi";
+import { FiTrash2, FiArchive, FiCopy, FiPlus, FiKey, FiUsers, FiMail, FiLifeBuoy, FiShield, FiSearch, FiInbox, FiCheckCircle } from "react-icons/fi";
+import type { IconType } from "react-icons";
+import "./DashboardPage.css";
+import { APP_TIME_ZONE } from "../../utils/dateTime";
 
 /* ============ Role helpers ============ */
 type AdminRole = "creator" | "reviewer" | "senior_reviewer" | "admin";
@@ -55,6 +58,15 @@ const ROLE_COLORS: Record<string, string> = {
   reviewer: "linear-gradient(135deg, var(--color-accent), #d97706)",
   creator: "linear-gradient(135deg, var(--color-secondary), var(--status-result))",
 };
+
+/** Admin-only quick links shown in the hero banner. */
+const ADMIN_QUICK_LINKS: { to: string; label: string; icon: IconType }[] = [
+  { to: "/admin/roles", label: "Manage Roles", icon: FiKey },
+  { to: "/admin/users", label: "Users", icon: FiUsers },
+  { to: "/admin/contact-us", label: "Contact Us", icon: FiMail },
+  { to: "/admin/guidance", label: "Application Assistance", icon: FiLifeBuoy },
+  { to: "/admin/email-templates", label: "Email Templates", icon: FiMail },
+];
 
 const PAGE_SIZE = 20;
 
@@ -570,7 +582,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
   );
 
   return (
-    <div className="container-fluid px-3 px-lg-4 px-xxl-5 py-3 py-md-4">
+    <div className="adp-page container-fluid px-3 px-lg-4 px-xxl-5 py-3 py-md-4">
       {/* CSS to hide default Bootstrap dropdown carets + brand-color overrides */}
       <style>
         {`
@@ -580,21 +592,6 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
           .dropdown-menu {
             --bs-dropdown-link-active-bg: var(--color-primary);
             --bs-dropdown-link-active-color: #fff;
-          }
-          .admin-tab-btn {
-            border: 1px solid var(--color-border);
-            background: var(--color-surface);
-            color: var(--color-body);
-          }
-          .admin-tab-btn:hover {
-            border-color: rgba(15, 61, 145, 0.3);
-            background: rgba(15, 61, 145, 0.05);
-          }
-          .admin-tab-btn--active,
-          .admin-tab-btn--active:hover {
-            background: var(--color-primary);
-            border-color: var(--color-primary);
-            color: #fff;
           }
           .admin-notif-card {
             position: relative;
@@ -610,112 +607,29 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
       </style>
 
       {/* Header */}
-      <div
-        className="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3 mb-4 p-3 p-md-4 rounded-4"
-        style={{
-          background: ROLE_COLORS[role || "admin"] || ROLE_COLORS.admin,
-          color: "#fff",
-        }}
-      >
-        <div>
-          <h2 className="mb-1 fw-bold" style={{ fontSize: "clamp(1.2rem, 4vw, 1.8rem)" }}>
-            🛡️ Admin Dashboard
-          </h2>
-          {role && (
-            <span
-              className="badge bg-white bg-opacity-25"
-              style={{ fontSize: "clamp(0.7rem, 2vw, 0.85rem)" }}
-            >
-              Role:{" "}
-              {role.charAt(0).toUpperCase() + role.slice(1)}
-            </span>
-          )}
+      <div className="adp-hero" style={{ background: ROLE_COLORS[role || "admin"] || ROLE_COLORS.admin }}>
+        <div className="adp-hero-heading">
+          <div className="adp-hero-icon">
+            <FiShield size={26} />
+          </div>
+          <div style={{ minWidth: 0 }}>
+            <h2 className="adp-hero-title">Admin Dashboard</h2>
+            <p className="adp-hero-sub">Review, approve and manage notifications</p>
+            {role && <span className="adp-role-pill">Role: {role.charAt(0).toUpperCase() + role.slice(1).replace(/_/g, " ")}</span>}
+          </div>
         </div>
-        <div className="d-flex flex-column flex-sm-row gap-2 mt-3 mt-sm-0 w-100 justify-content-sm-end">
+        <div className="adp-hero-actions">
           {can(role, "create") && (
-            <Link
-              to="/admin/addNotification"
-              className="btn btn-light fw-semibold shadow-sm w-100"
-              style={{ borderRadius: 12, maxWidth: '200px' }}
-            >
-              + Add Notification
+            <Link to="/admin/addNotification" className="adp-hero-btn adp-hero-btn--primary">
+              <FiPlus size={16} /> Add Notification
             </Link>
           )}
-          {role === "admin" && (
-            <Link
-              to="/admin/roles"
-              className="btn fw-semibold shadow-sm w-100"
-              style={{
-                borderRadius: 12,
-                maxWidth: '200px',
-                background: 'rgba(255,255,255,0.15)',
-                color: '#fff',
-                border: '1px solid rgba(255,255,255,0.3)'
-              }}
-            >
-              🔑 Manage Roles
-            </Link>
-          )}
-          {role === "admin" && (
-            <Link
-              to="/admin/users"
-              className="btn fw-semibold shadow-sm w-100"
-              style={{
-                borderRadius: 12,
-                maxWidth: '200px',
-                background: 'rgba(255,255,255,0.15)',
-                color: '#fff',
-                border: '1px solid rgba(255,255,255,0.3)'
-              }}
-            >
-              👥 Users
-            </Link>
-          )}
-          {role === "admin" && (
-            <Link
-              to="/admin/contact-us"
-              className="btn fw-semibold shadow-sm w-100"
-              style={{
-                borderRadius: 12,
-                maxWidth: '200px',
-                background: 'rgba(255,255,255,0.15)',
-                color: '#fff',
-                border: '1px solid rgba(255,255,255,0.3)'
-              }}
-            >
-              📩 Contact Us
-            </Link>
-          )}
-          {role === "admin" && (
-            <Link
-              to="/admin/guidance"
-              className="btn fw-semibold shadow-sm w-100"
-              style={{
-                borderRadius: 12,
-                maxWidth: '200px',
-                background: 'rgba(255,255,255,0.15)',
-                color: '#fff',
-                border: '1px solid rgba(255,255,255,0.3)'
-              }}
-            >
-              🎓 Online Application Assistance
-            </Link>
-          )}
-          {role === "admin" && (
-            <Link
-              to="/admin/email-templates"
-              className="btn fw-semibold shadow-sm w-100"
-              style={{
-                borderRadius: 12,
-                maxWidth: '200px',
-                background: 'rgba(255,255,255,0.15)',
-                color: '#fff',
-                border: '1px solid rgba(255,255,255,0.3)'
-              }}
-            >
-              ✉️ Email Templates
-            </Link>
-          )}
+          {role === "admin" &&
+            ADMIN_QUICK_LINKS.map(({ to, label, icon: Icon }) => (
+              <Link key={to} to={to} className="adp-hero-btn">
+                <Icon size={16} /> {label}
+              </Link>
+            ))}
         </div>
       </div>
 
@@ -735,27 +649,14 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
           {/* Search Section */}
           <div className="col-12 col-lg-5">
             <div className="position-relative">
-              <span
-                className="position-absolute top-50 translate-middle-y"
-                style={{ left: 16, fontSize: '1rem', opacity: 0.4, pointerEvents: 'none' }}
-              >
-                🔍
-              </span>
+              <FiSearch className="adp-search-icon" size={17} aria-hidden="true" />
               <input
                 id="notification-search"
                 type="text"
-                className="form-control border-0 shadow-sm"
+                className="adp-search-input"
                 placeholder="Search by title or notification ID..."
                 value={searchInput}
                 onChange={handleSearchChange}
-                style={{
-                  borderRadius: 14,
-                  paddingLeft: 46,
-                  height: 48,
-                  fontSize: '0.95rem',
-                  background: 'var(--color-bg)',
-                  color: 'var(--color-heading)',
-                }}
               />
             </div>
           </div>
@@ -768,10 +669,9 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                  <Dropdown.Toggle 
                   as="div" 
                   role="button"
-                  className="input-group input-group-sm shadow-sm justify-content-center"
-                  style={{ borderRadius: 14, overflow: 'hidden', height: 48, background: 'var(--color-bg)' }}
+                  className="adp-filter"
                 >
-                  <div className="d-flex align-items-center gap-2 px-3 text-muted" style={{ fontSize: '0.9rem' }}>
+                  <div className="adp-filter-inner">
                     <span>📁</span>
                     <span className="fw-medium">
                       {getCategoryLabel(categoryFilter) || "Categories"}
@@ -807,10 +707,9 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                 <Dropdown.Toggle 
                   as="div" 
                   role="button"
-                  className="input-group input-group-sm shadow-sm justify-content-center"
-                  style={{ borderRadius: 14, overflow: 'hidden', height: 48, background: 'var(--color-bg)' }}
+                  className="adp-filter"
                 >
-                  <div className="d-flex align-items-center gap-2 px-3 text-muted" style={{ fontSize: '0.9rem' }}>
+                  <div className="adp-filter-inner">
                     <span>🕒</span>
                     <span className="fw-medium">
                       {timeRange === "all" ? "Anytime" : timeRange.replace(/_/g, " ")}
@@ -841,10 +740,9 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                 <Dropdown.Toggle 
                   as="div" 
                   role="button"
-                  className="input-group input-group-sm shadow-sm justify-content-center"
-                  style={{ borderRadius: 14, overflow: 'hidden', height: 48, background: 'var(--color-bg)' }}
+                  className="adp-filter"
                 >
-                  <div className="d-flex align-items-center gap-2 px-3 text-muted text-truncate" style={{ fontSize: '0.9rem' }}>
+                  <div className="adp-filter-inner">
                     <span>📍</span>
                     <span className="fw-medium">
                       {stateFilter === "all" ? "Everywhere" : getStateLabel(stateFilter)}
@@ -906,10 +804,9 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                     <Dropdown.Toggle
                       as="div"
                       role="button"
-                      className="input-group input-group-sm shadow-sm justify-content-center"
-                      style={{ borderRadius: 14, overflow: 'hidden', height: 48, background: 'var(--color-bg)' }}
+                      className="adp-filter"
                     >
-                      <div className="d-flex align-items-center gap-2 px-3 text-muted" style={{ fontSize: '0.9rem' }}>
+                      <div className="adp-filter-inner">
                         <span>🎥</span>
                         <span className="fw-medium">
                           {dailyVideoFilter === "all" ? "Daily Video" : dailyVideoFilter === "done" ? "Daily: Done" : "Daily: Not Done"}
@@ -929,10 +826,9 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                     <Dropdown.Toggle
                       as="div"
                       role="button"
-                      className="input-group input-group-sm shadow-sm justify-content-center"
-                      style={{ borderRadius: 14, overflow: 'hidden', height: 48, background: 'var(--color-bg)' }}
+                      className="adp-filter"
                     >
-                      <div className="d-flex align-items-center gap-2 px-3 text-muted" style={{ fontSize: '0.9rem' }}>
+                      <div className="adp-filter-inner">
                         <span>🎬</span>
                         <span className="fw-medium">
                           {weeklyVideoFilter === "all" ? "Weekly Video" : weeklyVideoFilter === "done" ? "Weekly: Done" : "Weekly: Not Done"}
@@ -1069,13 +965,18 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
           </div>
         </div>
       ) : displayList.length === 0 ? (
-        <div className="text-center py-5 text-muted">
-          <div style={{ fontSize: 48 }}>📭</div>
-          <p className="mt-2">
+        <div className="adp-empty">
+          <div className="adp-empty-icon">{tab === "pending" && !search ? <FiCheckCircle size={30} /> : <FiInbox size={30} />}</div>
+          <div className="adp-empty-title">
+            {search ? `No notifications matching "${search}"` : tab === "pending" ? "You're all caught up" : "Nothing here yet"}
+          </div>
+          <div className="adp-empty-text">
             {search
-              ? `No notifications matching "${search}"`
-              : "No notifications in this tab"}
-          </p>
+              ? "Try a different keyword, or clear the filters above."
+              : tab === "pending"
+                ? "No notifications are waiting for review right now."
+                : "No notifications in this tab."}
+          </div>
         </div>
       ) : (
         <div className="row g-4">
@@ -1185,6 +1086,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                           style={{ fontSize: "0.75rem", fontWeight: 500 }}
                         >
                           📅 {new Date(n.created_at).toLocaleDateString("en-IN", {
+                            timeZone: APP_TIME_ZONE,
                             day: "numeric",
                             month: "short",
                             year: "numeric",
@@ -1463,6 +1365,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
         title="Mark Guidance Available"
         message="Paste the 'How to Apply' YouTube video link for this notification. Users will only be able to book a free guidance slot once this is set."
         confirmText="Mark Available"
+        required
         onConfirm={handleGuidanceModalConfirm}
         onCancel={() => setGuidanceModal(null)}
       />

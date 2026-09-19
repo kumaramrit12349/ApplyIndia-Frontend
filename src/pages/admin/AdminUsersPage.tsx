@@ -13,6 +13,8 @@ import {
     FiMapPin,
 } from "react-icons/fi";
 import { BsGoogle } from "react-icons/bs";
+import { APP_TIME_ZONE } from "../../utils/dateTime";
+import BackToDashboard from "../../components/BackToDashboard/BackToDashboard";
 
 const AdminUsersPage: React.FC = () => {
     const [timeRange, setTimeRange] = useState<string>("all");
@@ -46,6 +48,7 @@ const AdminUsersPage: React.FC = () => {
     const formatDate = (timestamp?: number) => {
         if (!timestamp) return "N/A";
         return new Date(timestamp).toLocaleDateString("en-IN", {
+          timeZone: APP_TIME_ZONE,
             day: "numeric",
             month: "short",
             year: "numeric",
@@ -77,8 +80,9 @@ const AdminUsersPage: React.FC = () => {
                                 </div>
                             </div>
 
-                            {/* Filter & Refresh */}
-                            <div className="d-flex align-items-center gap-2">
+                            {/* Back + Filter & Refresh */}
+                            <div className="d-flex align-items-center gap-2 flex-wrap">
+                                <BackToDashboard />
                                 <label htmlFor="adminPageTimeRange" className="small fw-semibold mb-0" style={{ color: "var(--color-muted)" }}>
                                     Filter:
                                 </label>

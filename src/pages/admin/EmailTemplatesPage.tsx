@@ -14,6 +14,7 @@ import type { PlatformSettings } from "../../services/private/platformSettingsAp
 import ConfirmModal from "../../components/ConfirmModal/ConfirmModal";
 import "./EmailTemplatesPage.css";
 import cognitoEmailHtml from "../../../email-templates/cognito-verification-email.html?raw";
+import BackToDashboard from "../../components/BackToDashboard/BackToDashboard";
 
 /**
  * The one Cognito-sent email design (Sign Up, Account Verification and
@@ -267,6 +268,8 @@ const EmailTemplatesPage: React.FC = () => {
                   </p>
                 </div>
               </div>
+              <div className="d-flex align-items-center gap-2 flex-wrap">
+              <BackToDashboard />
               <button
                 type="button"
                 onClick={openCognitoEmailPreview}
@@ -276,6 +279,7 @@ const EmailTemplatesPage: React.FC = () => {
                 <FiEye size={14} />
                 <span>Preview Theme</span>
               </button>
+              </div>
             </div>
           </div>
         </div>

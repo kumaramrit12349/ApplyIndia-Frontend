@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import { BsHeart, BsHeartFill } from "react-icons/bs";
 import { useAuth } from "../../../context/AuthContext";
 import SupportPopup from "../../../components/SupportPopup";
+import { APP_TIME_ZONE } from "../../../utils/dateTime";
 
 const WishlistButton = ({ notification, category, onWishlisted, onLimitReached, activityMap }: { notification: HomePageNotification; category: string; onWishlisted?: () => void; onLimitReached?: () => void; activityMap?: Map<string, number> }) => {
   const { isAuthenticated, onShowAuthPopup } = useAuth();
@@ -171,7 +172,7 @@ const formatItemDate = (value?: string | number) => {
   if (!value) return null;
   const d = new Date(value);
   if (isNaN(d.getTime())) return null;
-  return d.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+  return d.toLocaleDateString("en-IN", { timeZone: APP_TIME_ZONE, day: "numeric", month: "short", year: "numeric" });
 };
 
 const getStatusBadge = (category: string, item: HomePageNotification): StatusBadge | null => {

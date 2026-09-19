@@ -13,6 +13,7 @@ import SupportPopup from "../components/SupportPopup";
 import OpenNotificationsBrowser from "../features/notifications/components/OpenNotificationsBrowser";
 import MyGuidanceBookings from "../features/guidance/components/MyGuidanceBookings";
 import "./MyDashboard.css";
+import { APP_TIME_ZONE } from "../utils/dateTime";
 
 const STATUS_CONFIG: Record<
     UserActivityStatus,
@@ -326,6 +327,7 @@ const MyDashboard: React.FC = () => {
                                         {/* Date */}
                                         <small className="text-muted d-block mt-2">
                                             Updated: {new Date(activity.modified_at).toLocaleDateString("en-IN", {
+ timeZone: APP_TIME_ZONE,
                                                 day: "numeric",
                                                 month: "short",
                                                 year: "numeric",

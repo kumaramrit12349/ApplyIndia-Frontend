@@ -10,6 +10,7 @@ import { makeSlug } from "../../../utils/utils";
 import ConfirmationModal from "../../../components/Generic/ConfirmationModal";
 import GuidanceFeedbackModal from "../../../components/Guidance/GuidanceFeedbackModal";
 import "./MyGuidanceBookings.css";
+import { APP_TIME_ZONE, toIstDateKey, upperAmPm } from "../../../utils/dateTime";
 
 const PAGE_SIZE = 20;
 
@@ -22,7 +23,7 @@ const STATUS_LABEL: Record<string, { label: string; className: string }> = {
 };
 
 const formatDateTime = (start: number, end: number) =>
-  `${new Date(start).toLocaleDateString("en-IN", { day: "numeric", month: "short" })} · ${new Date(start).toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit" })}–${new Date(end).toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit" })}`;
+  `${new Date(start).toLocaleDateString("en-IN", { timeZone: APP_TIME_ZONE, day: "numeric", month: "short" })} · ${upperAmPm(new Date(start).toLocaleTimeString("en-IN", { timeZone: APP_TIME_ZONE, hour: "numeric", minute: "2-digit" }))}–${upperAmPm(new Date(end).toLocaleTimeString("en-IN", { timeZone: APP_TIME_ZONE, hour: "numeric", minute: "2-digit" }))}`;
 
 const isCancellable = (booking: IGuidanceBooking) =>
   booking.status === "upcoming" && booking.slot_start_time - Date.now() > GUIDANCE_CANCEL_CUTOFF_MINUTES * 60 * 1000;
@@ -35,7 +36,7 @@ const JOIN_WINDOW_AFTER_MS = 15 * 60 * 1000;
 const isJoinable = (booking: IGuidanceBooking, now: number) =>
   now >= booking.slot_start_time - JOIN_WINDOW_BEFORE_MS && now <= booking.slot_end_time + JOIN_WINDOW_AFTER_MS;
 
-const isToday = (epoch: number, now: number) => new Date(epoch).toDateString() === new Date(now).toDateString();
+const isToday = (epoch: number, now: number) => toIstDateKey(epoch) === toIstDateKey(now);
 
 const MyGuidanceBookings: React.FC = () => {
   const [bookings, setBookings] = useState<IGuidanceBooking[]>([]);
