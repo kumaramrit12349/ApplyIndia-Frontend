@@ -42,7 +42,7 @@ import GuidanceSlotFormModal from "../../components/Guidance/GuidanceSlotFormMod
 import CancelSlotModal from "../../components/Guidance/CancelSlotModal";
 import ConfirmModal from "../../components/ConfirmModal/ConfirmModal";
 import "./AdminGuidancePage.css";
-import { APP_TIME_ZONE, toIstDateKey, upperAmPm } from "../../utils/dateTime";
+import { APP_TIME_ZONE, istTimestamp, toIstDateKey, upperAmPm } from "../../utils/dateTime";
 import BackToDashboard from "../../components/BackToDashboard/BackToDashboard";
 
 type Tab = "slots" | "bookings" | "feedback" | "overview";
@@ -515,9 +515,26 @@ const SlotsTab: React.FC = () => {
 
 /* ============================ BOOKINGS TAB ============================ */
 
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+/** Session-date filter for the Bookings tab: quick "Today"/"Tomorrow" or any picked date, all in Indian time. */
+type DateFilter = "" | "today" | "tomorrow" | "custom";
+
+const getDateBounds = (filter: DateFilter, customDate: string): { slotDateFrom?: number; slotDateTo?: number } => {
+  let key: string | undefined;
+  if (filter === "today") key = toIstDateKey(Date.now());
+  else if (filter === "tomorrow") key = toIstDateKey(Date.now() + DAY_MS);
+  else if (filter === "custom" && customDate) key = customDate;
+  if (!key) return {};
+  const from = istTimestamp(key, "00:00");
+  return { slotDateFrom: from, slotDateTo: from + DAY_MS };
+};
+
 const BookingsTab: React.FC = () => {
   const [bookings, setBookings] = useState<IGuidanceBooking[]>([]);
   const [statusFilter, setStatusFilter] = useState("");
+  const [dateFilter, setDateFilter] = useState<DateFilter>("");
+  const [customDate, setCustomDate] = useState("");
   const [loading, setLoading] = useState(true);
   const [lastEvaluatedKey, setLastEvaluatedKey] = useState<{ pk: string; sk: string } | undefined>();
   const [hasMore, setHasMore] = useState(true);
@@ -528,7 +545,12 @@ const BookingsTab: React.FC = () => {
   const load = useCallback((isFirst = true) => {
     if (isFirst) setLoading(true);
     else setFetchingMore(true);
-    listAdminGuidanceBookings({ status: statusFilter || undefined, limit: 30, startKey: isFirst ? undefined : lastEvaluatedKey })
+    listAdminGuidanceBookings({
+      status: statusFilter || undefined,
+      ...getDateBounds(dateFilter, customDate),
+      limit: 30,
+      startKey: isFirst ? undefined : lastEvaluatedKey,
+    })
       .then((res) => {
         setBookings((prev) => (isFirst ? res.results : [...prev, ...res.results]));
         setLastEvaluatedKey(res.lastEvaluatedKey);
@@ -539,12 +561,12 @@ const BookingsTab: React.FC = () => {
         setLoading(false);
         setFetchingMore(false);
       });
-  }, [statusFilter, lastEvaluatedKey]);
+  }, [statusFilter, dateFilter, customDate, lastEvaluatedKey]);
 
   useEffect(() => {
     load(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [statusFilter]);
+  }, [statusFilter, dateFilter, customDate]);
 
   const lastElementRef = useCallback(
     (node: HTMLDivElement | null) => {
@@ -584,6 +606,13 @@ const BookingsTab: React.FC = () => {
     }
   };
 
+  // A single day's sessions are listed earliest-first, i.e. in the order they run.
+  // (The server pages by booking order, so the loaded rows are re-sorted by
+  // session time for display.)
+  const displayBookings = dateFilter
+    ? [...bookings].sort((a, b) => a.slot_start_time - b.slot_start_time)
+    : bookings;
+
   const bookingFilters = [
     { value: "", label: "All" },
     { value: "upcoming", label: "Upcoming" },
@@ -603,14 +632,53 @@ const BookingsTab: React.FC = () => {
         ))}
       </div>
 
+      <div className="d-flex gap-2 mb-3 flex-wrap align-items-center">
+        <span className="agp-label mb-0 me-1">Session date</span>
+        {(
+          [
+            { value: "", label: "Any date" },
+            { value: "today", label: "Today" },
+            { value: "tomorrow", label: "Tomorrow" },
+          ] as { value: DateFilter; label: string }[]
+        ).map((f) => (
+          <button
+            key={f.value}
+            className={`agp-chip ${dateFilter === f.value ? "active" : ""}`}
+            onClick={() => {
+              setDateFilter(f.value);
+              setCustomDate("");
+              // Picking a day means "what's still coming up that day" — show only upcoming sessions.
+              if (f.value) setStatusFilter("upcoming");
+            }}
+          >
+            {f.label}
+          </button>
+        ))}
+        <input
+          type="date"
+          className={`agp-input agp-date-input ${dateFilter === "custom" ? "agp-date-input--active" : ""}`}
+          value={customDate}
+          aria-label="Filter by a specific session date"
+          onChange={(e) => {
+            setCustomDate(e.target.value);
+            setDateFilter(e.target.value ? "custom" : "");
+            if (e.target.value) setStatusFilter("upcoming");
+          }}
+        />
+      </div>
+
       {loading ? (
         <Spinner />
-      ) : bookings.length === 0 ? (
-        <EmptyState icon={FiUsers} title="No bookings found" text="Bookings appear here once learners reserve a slot." />
+      ) : displayBookings.length === 0 ? (
+        <EmptyState
+          icon={FiUsers}
+          title="No bookings found"
+          text={dateFilter || statusFilter ? "No bookings match these filters." : "Bookings appear here once learners reserve a slot."}
+        />
       ) : (
         <div className="d-flex flex-column gap-3">
-          {bookings.map((booking, index) => (
-            <div key={booking.sk} ref={index === bookings.length - 1 ? lastElementRef : null}>
+          {displayBookings.map((booking, index) => (
+            <div key={booking.sk} ref={index === displayBookings.length - 1 ? lastElementRef : null}>
               <div className={`agp-card agp-card--${booking.status}`}>
                 <div className="d-flex justify-content-between align-items-start flex-wrap gap-3">
                   <div style={{ minWidth: 0 }}>
