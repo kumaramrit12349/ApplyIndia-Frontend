@@ -37,7 +37,6 @@ const DashboardPage = lazy(() => import("./pages/admin/DashboardPage"));
 const AddNotificationPage = lazy(() => import("./pages/admin/AddNotificationPage"));
 const EditNotificationPage = lazy(() => import("./pages/admin/EditNotificationPage"));
 const ReviewNotificationPage = lazy(() => import("./pages/admin/ReviewNotificationPage"));
-const ScraperDashboard = lazy(() => import("./pages/admin/ScraperDashboard"));
 const AdminRolesPage = lazy(() => import("./pages/admin/AdminRolesPage"));
 const EmailTemplatesPage = lazy(() => import("./pages/admin/EmailTemplatesPage"));
 const AdminUsersPage = lazy(() => import("./pages/admin/AdminUsersPage"));
@@ -336,17 +335,6 @@ const AppLayout: React.FC = () => {
                   checkingAuth={checkingAuth}
                 >
                   <AdminGuidancePage adminRole={adminRole} />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/scraper"
-              element={
-                <ProtectedRoute
-                  isAuthenticated={isAuthenticated}
-                  checkingAuth={checkingAuth}
-                >
-                  <ScraperDashboard />
                 </ProtectedRoute>
               }
             />

@@ -42,14 +42,6 @@ export const PRIVATE_API = {
     SOCIAL_STATUS: (id: string) => `api/notification/${id}/social-status`,
     RETRY_SOCIAL: (id: string, platform: string) => `api/notification/${id}/retry-social/${platform}`,
   },
-  SCRAPER: {
-    RUN: "api/scraper/run",
-    STATUS: "api/scraper/status",
-    SOURCES: "api/scraper/sources",
-    SOURCES_BULK_STATUS: "api/scraper/sources/bulk-status",
-    SOURCE_BY_KEY: (key: string) => `api/scraper/sources/${key}`,
-    PREVIEW: (siteKey: string) => `api/scraper/preview/${siteKey}`,
-  },
   CONTACT_ADMIN: {
     LIST: "api/contact/list",
     TRASH_LIST: "api/contact/trash/list",
