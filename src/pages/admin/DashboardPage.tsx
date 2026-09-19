@@ -643,21 +643,6 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
           )}
           {role === "admin" && (
             <Link
-              to="/admin/scraper"
-              className="btn fw-semibold shadow-sm w-100"
-              style={{ 
-                borderRadius: 12, 
-                maxWidth: '200px', 
-                background: 'rgba(255,255,255,0.15)', 
-                color: '#fff', 
-                border: '1px solid rgba(255,255,255,0.3)' 
-              }}
-            >
-              🕷️ Auto Scraper
-            </Link>
-          )}
-          {role === "admin" && (
-            <Link
               to="/admin/roles"
               className="btn fw-semibold shadow-sm w-100"
               style={{
@@ -683,7 +668,22 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                 border: '1px solid rgba(255,255,255,0.3)'
               }}
             >
-              👥 Users & Feedback
+              👥 Users
+            </Link>
+          )}
+          {role === "admin" && (
+            <Link
+              to="/admin/contact-us"
+              className="btn fw-semibold shadow-sm w-100"
+              style={{
+                borderRadius: 12,
+                maxWidth: '200px',
+                background: 'rgba(255,255,255,0.15)',
+                color: '#fff',
+                border: '1px solid rgba(255,255,255,0.3)'
+              }}
+            >
+              📩 Contact Us
             </Link>
           )}
           {role === "admin" && (
@@ -1180,22 +1180,6 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ adminRole }) => {
                         >
                           📍 {getStateLabel(n.state)}
                         </span>
-                        {n.scraped_from && (
-                          <span
-                            className="badge"
-                            style={{
-                              background: "rgba(22, 163, 74, 0.1)",
-                              color: "var(--color-success)",
-                              fontSize: "0.7rem",
-                              padding: "4px 10px",
-                              borderRadius: 6,
-                              fontWeight: 600
-                            }}
-                            title={`Scraped from ${n.scraped_from}`}
-                          >
-                            🌐 {n.scraped_from}
-                          </span>
-                        )}
                         <span
                           className="text-muted ms-auto"
                           style={{ fontSize: "0.75rem", fontWeight: 500 }}

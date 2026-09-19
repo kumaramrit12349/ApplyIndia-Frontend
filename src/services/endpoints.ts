@@ -7,8 +7,8 @@ export const PUBLIC_API = {
     LATEST: "/public/notification/latest",
     FILTERS: "/public/notification/filters",
   },
-  FEEDBACK: {
-    SUBMIT: "/public/feedback",
+  CONTACT: {
+    SUBMIT: "/public/contact",
   },
   GUIDANCE_FEEDBACK: {
     LIST: "/public/guidance-feedback",
@@ -42,16 +42,21 @@ export const PRIVATE_API = {
     SOCIAL_STATUS: (id: string) => `api/notification/${id}/social-status`,
     RETRY_SOCIAL: (id: string, platform: string) => `api/notification/${id}/retry-social/${platform}`,
   },
-  SCRAPER: {
-    RUN: "api/scraper/run",
-    STATUS: "api/scraper/status",
-    SOURCES: "api/scraper/sources",
-    SOURCES_BULK_STATUS: "api/scraper/sources/bulk-status",
-    SOURCE_BY_KEY: (key: string) => `api/scraper/sources/${key}`,
-    PREVIEW: (siteKey: string) => `api/scraper/preview/${siteKey}`,
-  },
-  FEEDBACK: {
-    VIEW: "api/feedback/view",
+  CONTACT_ADMIN: {
+    LIST: "api/contact/list",
+    TRASH_LIST: "api/contact/trash/list",
+    STATS: "api/contact/stats",
+    GET: (id: string) => `api/contact/${encodeURIComponent(id)}`,
+    STATUS: (id: string) => `api/contact/${encodeURIComponent(id)}/status`,
+    PRIORITY: (id: string) => `api/contact/${encodeURIComponent(id)}/priority`,
+    NOTES: (id: string) => `api/contact/${encodeURIComponent(id)}/notes`,
+    REPLIES: (id: string) => `api/contact/${encodeURIComponent(id)}/replies`,
+    SPAM: (id: string) => `api/contact/${encodeURIComponent(id)}/spam`,
+    DELETE: (id: string) => `api/contact/${encodeURIComponent(id)}/delete`,
+    RESTORE: (id: string) => `api/contact/${encodeURIComponent(id)}/restore`,
+    DELETE_PERMANENT: (id: string) => `api/contact/${encodeURIComponent(id)}/permanent`,
+    DELETE_BULK: "api/contact/bulk-delete",
+    DELETE_BULK_PERMANENT: "api/contact/bulk-permanent-delete",
   },
   ADMIN_ROLES: {
     LIST: "api/admin-roles",
@@ -60,9 +65,12 @@ export const PRIVATE_API = {
   },
   EMAIL_TEMPLATES: {
     LIST: "api/email-templates",
-    SAMPLE_PREVIEW: "api/email-templates/sample-preview",
     TEMPLATE_BY_KEY: (key: string) => `api/email-templates/${key}`,
     PREVIEW: (key: string) => `api/email-templates/${key}/preview`,
+  },
+  PLATFORM_SETTINGS: {
+    GET: "api/platform-settings",
+    UPDATE: "api/platform-settings",
   },
   OPEN_NOTIFICATIONS: {
     LIST: "api/open-notifications",
