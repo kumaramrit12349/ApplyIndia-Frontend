@@ -520,14 +520,22 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 /** Session-date filter for the Bookings tab: quick "Today"/"Tomorrow" or any picked date, all in Indian time. */
 type DateFilter = "" | "today" | "tomorrow" | "custom";
 
-const getDateBounds = (filter: DateFilter, customDate: string): { slotDateFrom?: number; slotDateTo?: number } => {
+/**
+ * `isUpcoming` floors the lower bound to "now" — without it, picking "Today"
+ * after some sessions have already run would still show them under the
+ * Upcoming status filter (a booking stays "upcoming" until an admin marks it
+ * completed/no-show), even though their time has already passed.
+ */
+const getDateBounds = (filter: DateFilter, customDate: string, isUpcoming: boolean): { slotDateFrom?: number; slotDateTo?: number } => {
   let key: string | undefined;
   if (filter === "today") key = toIstDateKey(Date.now());
   else if (filter === "tomorrow") key = toIstDateKey(Date.now() + DAY_MS);
   else if (filter === "custom" && customDate) key = customDate;
-  if (!key) return {};
-  const from = istTimestamp(key, "00:00");
-  return { slotDateFrom: from, slotDateTo: from + DAY_MS };
+
+  let slotDateFrom = key ? istTimestamp(key, "00:00") : undefined;
+  const slotDateTo = slotDateFrom !== undefined ? slotDateFrom + DAY_MS : undefined;
+  if (isUpcoming) slotDateFrom = Math.max(slotDateFrom ?? 0, Date.now());
+  return { slotDateFrom, slotDateTo };
 };
 
 const BookingsTab: React.FC = () => {
@@ -547,7 +555,7 @@ const BookingsTab: React.FC = () => {
     else setFetchingMore(true);
     listAdminGuidanceBookings({
       status: statusFilter || undefined,
-      ...getDateBounds(dateFilter, customDate),
+      ...getDateBounds(dateFilter, customDate, statusFilter === "upcoming"),
       limit: 30,
       startKey: isFirst ? undefined : lastEvaluatedKey,
     })
