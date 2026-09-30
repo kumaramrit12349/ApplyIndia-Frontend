@@ -52,6 +52,14 @@ const GoogleCallbackPage = lazy(() => import("./pages/GoogleCallbackPage"));
 const GuidanceTestimonialsPage = lazy(() => import("./pages/GuidanceTestimonialsPage"));
 const AdminGuidancePage = lazy(() => import("./pages/admin/AdminGuidancePage"));
 const AdminContactPage = lazy(() => import("./pages/admin/AdminContactPage"));
+const AdminTestSeriesPage = lazy(() => import("./pages/admin/AdminTestSeriesPage"));
+const TestSeriesCatalogPage = lazy(() => import("./pages/MockTests/TestSeriesCatalogPage"));
+const TestSeriesDetailPage = lazy(() => import("./pages/MockTests/TestSeriesDetailPage"));
+const MockTestInstructionsPage = lazy(() => import("./pages/MockTests/MockTestInstructionsPage"));
+const MockTestTakingPage = lazy(() => import("./pages/MockTests/MockTestTakingPage"));
+const MockTestResultPage = lazy(() => import("./pages/MockTests/MockTestResultPage"));
+const MockTestReviewPage = lazy(() => import("./pages/MockTests/MockTestReviewPage"));
+const MyMockTestAttemptsPage = lazy(() => import("./pages/MockTests/MyMockTestAttemptsPage"));
 
 const RouteFallback: React.FC = () => (
   <div className="d-flex justify-content-center align-items-center py-5">
@@ -65,6 +73,8 @@ const AppLayout: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const isAdminRoute = location.pathname.startsWith("/admin");
+  // Locked-in test-taking screen — same chrome-free treatment as admin routes, so there's no stray nav link tempting a student away mid-test.
+  const isTakingTestRoute = /^\/mock-tests\/tests\/[^/]+\/take$/.test(location.pathname);
   const showSearchBarBanner =
     location.pathname === "/" ||
     matchPath("/notification/category/:category", location.pathname) !== null ||
@@ -261,10 +271,10 @@ const AppLayout: React.FC = () => {
         onShowSignUpPopup={() => { setShowSignUpTab(true); setShowAuthPopup(true); }}
       />
 
-      {!isAdminRoute && <Navigation availableStates={availableStates} />}
+      {!isAdminRoute && !isTakingTestRoute && <Navigation availableStates={availableStates} />}
       {location.pathname === "/" && <Hero />}
       {showSearchBarBanner && <SearchBar availableStates={availableStates} />}
-      {!isAdminRoute && <JobBanner />}
+      {!isAdminRoute && !isTakingTestRoute && <JobBanner />}
 
       <main className="flex-grow-1">
         <Suspense fallback={<RouteFallback />}>
@@ -371,6 +381,75 @@ const AppLayout: React.FC = () => {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/admin/test-series"
+              element={
+                <ProtectedRoute
+                  isAuthenticated={isAuthenticated}
+                  checkingAuth={checkingAuth}
+                >
+                  <AdminTestSeriesPage adminRole={adminRole} />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Mock Tests – logged-in-only, but not admin-gated */}
+            <Route
+              path="/mock-tests"
+              element={
+                <ProtectedRoute isAuthenticated={isAuthenticated} checkingAuth={checkingAuth}>
+                  <TestSeriesCatalogPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/mock-tests/my-attempts"
+              element={
+                <ProtectedRoute isAuthenticated={isAuthenticated} checkingAuth={checkingAuth}>
+                  <MyMockTestAttemptsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/mock-tests/series/:seriesId"
+              element={
+                <ProtectedRoute isAuthenticated={isAuthenticated} checkingAuth={checkingAuth}>
+                  <TestSeriesDetailPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/mock-tests/tests/:testId/instructions"
+              element={
+                <ProtectedRoute isAuthenticated={isAuthenticated} checkingAuth={checkingAuth}>
+                  <MockTestInstructionsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/mock-tests/tests/:testId/take"
+              element={
+                <ProtectedRoute isAuthenticated={isAuthenticated} checkingAuth={checkingAuth}>
+                  <MockTestTakingPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/mock-tests/attempts/:attemptId"
+              element={
+                <ProtectedRoute isAuthenticated={isAuthenticated} checkingAuth={checkingAuth}>
+                  <MockTestResultPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/mock-tests/attempts/:attemptId/review"
+              element={
+                <ProtectedRoute isAuthenticated={isAuthenticated} checkingAuth={checkingAuth}>
+                  <MockTestReviewPage />
+                </ProtectedRoute>
+              }
+            />
 
             {/* Public routes */}
             <Route
@@ -472,7 +551,7 @@ const AppLayout: React.FC = () => {
         closeOnClick
         pauseOnHover
       />
-      <Footer />
+      {!isTakingTestRoute && <Footer />}
 
       <SignUpPopup
         show={showAuthPopup && !isAuthenticated}

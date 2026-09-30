@@ -50,6 +50,7 @@ const ROLE_STYLES: Record<string, { bg: string; text: string; label: string }> =
   reviewer: { bg: "rgba(245, 158, 11, 0.15)", text: "var(--color-warn-text)", label: "Reviewer" },
   creator: { bg: "rgba(37, 99, 235, 0.12)", text: "var(--color-secondary)", label: "Creator" },
   guidance_partner: { bg: "rgba(13, 148, 136, 0.14)", text: "#0d9488", label: "Guidance Partner" },
+  test_series_manager: { bg: "rgba(217, 70, 239, 0.14)", text: "#a21caf", label: "Test Series Manager" },
 };
 
 const AdminRolesPage: React.FC = () => {
@@ -59,7 +60,7 @@ const AdminRolesPage: React.FC = () => {
 
   // Form State
   const [email, setEmail] = useState<string>("");
-  const [role, setRole] = useState<"creator" | "reviewer" | "senior_reviewer" | "admin" | "guidance_partner">("creator");
+  const [role, setRole] = useState<"creator" | "reviewer" | "senior_reviewer" | "admin" | "guidance_partner" | "test_series_manager">("creator");
   const [allCategories, setAllCategories] = useState<boolean>(true);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [allStates, setAllStates] = useState<boolean>(true);
@@ -131,7 +132,7 @@ const AdminRolesPage: React.FC = () => {
   };
 
   const handleEditClick = (user: AdminUser) => {
-    const newRole = user.admin_role as "creator" | "reviewer" | "senior_reviewer" | "admin" | "guidance_partner";
+    const newRole = user.admin_role as "creator" | "reviewer" | "senior_reviewer" | "admin" | "guidance_partner" | "test_series_manager";
     let newAllCategories = true;
     let newSelectedCategories: string[] = [];
     let newAllStates = true;
@@ -479,7 +480,7 @@ const AdminRolesPage: React.FC = () => {
                           className="rlp-input"
                           value={role}
                           onChange={(e) =>
-                            setRole(e.target.value as "creator" | "reviewer" | "senior_reviewer" | "admin" | "guidance_partner")
+                            setRole(e.target.value as "creator" | "reviewer" | "senior_reviewer" | "admin" | "guidance_partner" | "test_series_manager")
                           }
                         >
                           <option value="creator">Creator (Add/Edit notifications)</option>
@@ -487,6 +488,7 @@ const AdminRolesPage: React.FC = () => {
                           <option value="senior_reviewer">Senior Reviewer (Create, edit, approve &amp; archive)</option>
                           <option value="admin">Admin (All actions, full control)</option>
                           <option value="guidance_partner">Guidance Partner (Add slots &amp; run sessions)</option>
+                          <option value="test_series_manager">Test Series Manager (Create/manage test series, tests &amp; questions)</option>
                         </select>
                       </div>
                     </div>

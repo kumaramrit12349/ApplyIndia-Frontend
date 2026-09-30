@@ -12,7 +12,7 @@ export interface AdminUser {
   email: string;
   given_name?: string;
   family_name?: string;
-  admin_role: "creator" | "reviewer" | "senior_reviewer" | "admin" | "guidance_partner" | null;
+  admin_role: "creator" | "reviewer" | "senior_reviewer" | "admin" | "guidance_partner" | "test_series_manager" | null;
   admin_permissions?: AdminPermissions | null;
 }
 
@@ -46,7 +46,7 @@ export async function listAdminUsers(): Promise<ListAdminUsersResponse> {
  */
 export async function assignAdminRole(
   email: string,
-  role: "creator" | "reviewer" | "senior_reviewer" | "admin" | "guidance_partner",
+  role: "creator" | "reviewer" | "senior_reviewer" | "admin" | "guidance_partner" | "test_series_manager",
   permissions: AdminPermissions
 ): Promise<AssignRoleResponse> {
   return privateFetch<AssignRoleResponse>(PRIVATE_API.ADMIN_ROLES.ASSIGN, {

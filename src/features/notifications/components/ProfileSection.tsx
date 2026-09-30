@@ -136,7 +136,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({
 
           {/* Actions */}
           <div className="ai-dropdown-actions">
-            {(isAdmin || (adminRole && adminRole !== "guidance_partner")) && (
+            {(isAdmin || (adminRole && adminRole !== "guidance_partner" && adminRole !== "test_series_manager")) && (
               <button
                 className="ai-dropdown-item"
                 onClick={() => { setOpen(false); navigate("/admin/dashboard"); }}
@@ -181,6 +181,15 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({
               </button>
             )}
 
+            {(adminRole === "admin" || adminRole === "test_series_manager") && (
+              <button
+                className="ai-dropdown-item"
+                onClick={() => { setOpen(false); navigate("/admin/test-series"); }}
+              >
+                📝 Test Series
+              </button>
+            )}
+
             {(adminRole === "admin" || adminRole === "guidance_partner") && (
               <button
                 className="ai-dropdown-item"
@@ -195,6 +204,13 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({
               onClick={() => { setOpen(false); navigate("/dashboard"); }}
             >
               📋 My Dashboard
+            </button>
+
+            <button
+              className="ai-dropdown-item"
+              onClick={() => { setOpen(false); navigate("/mock-tests"); }}
+            >
+              📝 Mock Tests
             </button>
 
             <button

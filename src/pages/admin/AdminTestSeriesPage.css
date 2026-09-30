@@ -1,0 +1,493 @@
+.ats-page {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.ats-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.ats-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.ats-title-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.ats-title-icon-badge {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  flex-shrink: 0;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
+}
+
+.ats-subtitle {
+  color: var(--color-neutral-text);
+  margin: 0;
+}
+
+.ats-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.ats-crumb {
+  background: none;
+  border: none;
+  font-weight: 600;
+  color: var(--color-neutral-text);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.ats-crumb:hover {
+  background: var(--color-surface-alt, #f4f6f8);
+  color: var(--color-primary-text);
+}
+
+.ats-crumb--active {
+  color: var(--color-primary-text);
+}
+
+.ats-crumb-sep {
+  color: var(--color-neutral-text);
+}
+
+.ats-card {
+  background: var(--color-surface, #fff);
+  border: 1px solid var(--color-border, #e5e8ec);
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+}
+
+.ats-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding: 16px 20px;
+  margin: -20px -20px 16px;
+  border-bottom: 1px solid var(--color-border, #e5e8ec);
+}
+
+.ats-card-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+/* Dedicated modal chrome — deliberately NOT reusing .ats-card-head's
+   negative-margin trick, which only cancels out correctly inside .ats-card's
+   own 20px padding. Reusing it directly inside modal-content (no padding of
+   its own) pushed the header 20px past the dialog's rounded corners on every
+   side, exposing the backdrop through the gap. */
+.ats-modal-content {
+  border: none;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: ats-modal-in 0.18s ease-out;
+}
+
+@keyframes ats-modal-in {
+  from { opacity: 0; transform: translateY(12px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.ats-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 24px;
+  background: var(--color-surface-alt, #f4f6f8);
+  border-bottom: 1px solid var(--color-border, #e5e8ec);
+}
+
+.ats-modal-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.ats-modal-body {
+  padding: 24px;
+}
+
+.ats-empty {
+  text-align: center;
+  color: var(--color-neutral-text);
+  padding: 32px 0;
+}
+
+.ats-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.ats-table th {
+  text-align: left;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--color-neutral-text);
+  padding: 8px 10px;
+  border-bottom: 2px solid var(--color-border, #e5e8ec);
+}
+
+.ats-table td {
+  padding: 12px 10px;
+  border-bottom: 1px solid var(--color-border, #eef1f5);
+  vertical-align: top;
+}
+
+.ats-table tbody tr {
+  transition: background 0.12s ease;
+}
+
+.ats-table tbody tr:hover {
+  background: var(--color-surface-alt, #f8f9fb);
+}
+
+.ats-subtext {
+  font-size: 0.8rem;
+  color: var(--color-neutral-text);
+}
+
+.ats-link {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--color-primary-text);
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  text-align: left;
+  transition: opacity 0.15s ease;
+}
+
+.ats-link:hover {
+  opacity: 0.75;
+  text-decoration: underline;
+}
+
+.ats-actions {
+  display: flex;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.ats-icon-btn {
+  border: 1px solid var(--color-border, #d8dee3);
+  background: transparent;
+  border-radius: 8px;
+  padding: 6px 8px;
+  cursor: pointer;
+  color: var(--color-neutral-text);
+  display: inline-flex;
+  transition: transform 0.12s ease, background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.ats-icon-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+}
+
+.ats-icon-btn--edit {
+  color: var(--color-warn-text);
+  border-color: var(--color-warn-text);
+}
+
+.ats-icon-btn--edit:hover {
+  background: rgba(245, 158, 11, 0.1);
+}
+
+.ats-icon-btn--danger {
+  color: #dc2626;
+  border-color: #dc2626;
+}
+
+.ats-icon-btn--danger:hover {
+  background: rgba(220, 38, 38, 0.1);
+}
+
+.ats-btn {
+  border: 1px solid var(--color-border, #d8dee3);
+  background: transparent;
+  color: inherit;
+  padding: 8px 16px;
+  border-radius: 9px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: transform 0.12s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.ats-btn:hover:not(:disabled) {
+  border-color: var(--color-primary);
+  transform: translateY(-1px);
+}
+
+.ats-btn-primary {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 3px 10px rgba(37, 99, 235, 0.25);
+}
+
+.ats-btn-primary:hover:not(:disabled) {
+  border-color: transparent;
+  filter: brightness(1.06);
+}
+
+.ats-btn-link {
+  background: none;
+  border: none;
+  color: var(--color-neutral-text);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.ats-btn-link:hover {
+  color: var(--color-primary-text);
+}
+
+.ats-label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.85rem;
+  margin-bottom: 4px;
+}
+
+.ats-input {
+  width: 100%;
+  border: 1px solid var(--color-border, #d8dee3);
+  border-radius: 8px;
+  padding: 8px 12px;
+  background: var(--color-surface, #fff);
+  color: inherit;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.ats-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.ats-help {
+  font-size: 0.78rem;
+  color: var(--color-neutral-text);
+  margin-top: 4px;
+}
+
+.ats-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border, #e5e8ec);
+}
+
+.ats-option-letter {
+  font-weight: 700;
+  width: 20px;
+  flex-shrink: 0;
+}
+
+.ats-lang-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 14px;
+  border-bottom: 1px solid var(--color-border, #e5e8ec);
+}
+
+.ats-lang-tab {
+  background: none;
+  border: none;
+  padding: 8px 14px;
+  font-weight: 600;
+  color: var(--color-neutral-text);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+}
+
+.ats-lang-tab--active {
+  color: var(--color-primary-text);
+  border-bottom-color: var(--color-primary);
+}
+
+.ats-rules-box {
+  background: var(--color-surface-alt, #f4f6f8);
+  border-radius: 8px;
+  padding: 14px 20px;
+  margin: 10px 0;
+  font-size: 0.85rem;
+}
+
+.ats-import-panel {
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.ats-import-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ats-import-row {
+  border: 1px solid var(--color-border, #e5e8ec);
+  border-radius: 10px;
+  padding: 14px;
+}
+
+.ats-import-section {
+  max-width: 260px;
+}
+
+.ats-import-warning {
+  color: var(--color-warn-text);
+  font-size: 0.8rem;
+  margin-bottom: 6px;
+}
+
+.ats-import-hi {
+  background: var(--color-surface-alt, #f4f6f8);
+}
+
+.ats-preset-pill {
+  border: 1.5px solid var(--color-border, #d8dee3);
+  background: transparent;
+  color: inherit;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.ats-preset-pill:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary-text);
+}
+
+.ats-preset-pill--active {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 3px 10px rgba(37, 99, 235, 0.3);
+}
+
+.ats-section-ranges {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ats-section-range-header,
+.ats-section-range-row {
+  display: grid;
+  grid-template-columns: 32px 100px 100px 1fr 40px;
+  gap: 12px;
+  align-items: center;
+}
+
+.ats-section-range-header {
+  padding: 0 14px;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-neutral-text);
+  font-weight: 700;
+}
+
+.ats-section-range-row {
+  background: var(--color-surface-alt, #f8f9fb);
+  border: 1px solid var(--color-border, #e5e8ec);
+  border-radius: 12px;
+  padding: 10px 14px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.ats-section-range-row:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.ats-section-range-badge {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.75rem;
+  flex-shrink: 0;
+}
+
+@media (max-width: 767.98px) {
+  .ats-section-range-row {
+    grid-template-columns: 26px 1fr 1fr 34px;
+    grid-template-areas:
+      "badge from to del"
+      "name name name name";
+    row-gap: 8px;
+  }
+  .ats-section-range-badge { grid-area: badge; }
+  .ats-section-range-row input[aria-label="From question number"] { grid-area: from; }
+  .ats-section-range-row input[aria-label="To question number"] { grid-area: to; }
+  .ats-section-range-row input[aria-label="Section name"] { grid-area: name; }
+  .ats-section-range-row button { grid-area: del; }
+}
+
+.ats-preview-banner {
+  background: rgba(37, 99, 235, 0.08);
+  border: 1px solid rgba(37, 99, 235, 0.25);
+  color: var(--color-primary-text);
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 767.98px) {
+  .ats-page {
+    padding: 14px;
+  }
+}
