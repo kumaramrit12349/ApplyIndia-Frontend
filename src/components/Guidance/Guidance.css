@@ -523,7 +523,7 @@
   transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
   text-align: center;
 }
-.gsf-time-btn:hover:not(:disabled) {
+.gsf-time-btn:hover:not(:disabled):not(.gsf-time-btn--selected) {
   border-color: var(--color-secondary);
   color: var(--color-secondary);
 }
