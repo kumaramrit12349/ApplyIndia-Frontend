@@ -688,12 +688,7 @@ h1, h2, h3, h4, h5, h6 {
   color: #fff;
 }
 
-/* State pills */
-.ai-pill.state-pill {
-  font-size: 0.82rem;
-  padding: 5px 14px;
-}
-
+/* State pills — same size as category pills; only the active-state color differs, to visually distinguish which filter axis (category vs state) is currently applied. */
 .ai-pill.state-pill.active {
   background: var(--state-pill-gradient);
   color: #064e3b;
