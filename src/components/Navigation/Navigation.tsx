@@ -87,18 +87,20 @@ const Navigation: React.FC<NavigationProps> = ({ availableStates }) => {
         {visibleStates.length > 0 && (
           <div className="ai-nav-row border-top">
             <span className="ai-nav-row-label">By State</span>
-            <ul className="ai-pill-list" style={{ flexWrap: "wrap" }}>
-              {visibleStates.map((item) => (
-                <li key={`state-${item.value}`}>
-                  <Link
-                    to={getStateNavLink(item)}
-                    className={`ai-pill state-pill ${isStateActive(item) ? "active" : ""}`}
-                  >
-                    <FiMapPin size={12} /> {item.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            <div className="ai-nav-scroll">
+              <ul className="ai-pill-list">
+                {visibleStates.map((item) => (
+                  <li key={`state-${item.value}`}>
+                    <Link
+                      to={getStateNavLink(item)}
+                      className={`ai-pill state-pill ${isStateActive(item) ? "active" : ""}`}
+                    >
+                      <FiMapPin size={12} /> {item.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         )}
       </div>
